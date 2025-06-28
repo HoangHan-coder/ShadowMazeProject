@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
  * Class chịu trách nhiệm vẽ nhân vật chính với animation.
  */
 public class PlayerRenderer {
+
     private Player player;
     private Animation<TextureRegion> animation;
     private float stateTime;
@@ -20,7 +21,7 @@ public class PlayerRenderer {
         this.animation = animation;
         this.stateTime = 0f;
 
-        // Đảm bảo texture không bị mờ (nét pixel rõ)
+        // �?ảm bảo texture không bị m�? (nét pixel rõ)
         for (TextureRegion frame : animation.getKeyFrames()) {
             frame.getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         }
@@ -42,16 +43,22 @@ public class PlayerRenderer {
         } else if (!facingLeft && frame.isFlipX()) {
             frame.flip(true, false);
         }
-
+        float scale = 2.8f; // Ph�ng to nh�n v?t g?p 2 l?n
         // Vẽ frame tại vị trí nhân vật quy đổi từ mê cung → pixel
         float drawX = offsetX + x * tileSize;
         float drawY = offsetY + y * tileSize;
 
-        batch.draw(frame, drawX, drawY, tileSize, tileSize);
+        float drawWidth = tileSize * scale;
+        float drawHeight = tileSize * scale;
+
+// C?n gi?a nh�n v?t (n?u b?n mu?n n� v?n n?m gi?a � l??i)
+        float offsetDrawX = drawX - (drawWidth - tileSize) / 2f;
+        float offsetDrawY = drawY - (drawHeight - tileSize) / 2f + 40;
+
+        batch.draw(frame, offsetDrawX, offsetDrawY, drawWidth, drawHeight);
     }
 
     // ================= Getter / Setter =================
-
     public Player getPlayer() {
         return player;
     }
