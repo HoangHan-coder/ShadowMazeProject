@@ -2,46 +2,47 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.ShadowMaze;
+package com.ShadowMaze.model;
 
 /**
  *
  * @author NgKaitou
  */
-public class LootTable {
-    private int lootID;
-    private int monsterID;
+public class InventoryItem {
+    private int itemID;
+    private int playerID;
     private String itemType;
     private String name;
-    private float dropRate;
     private int value;
     private String icon;
+    private int quantity;
 
-    public LootTable(int lootID, int monsterID, String itemType, String name, float dropRate, int value, String icon) {
-        this.lootID = lootID;
-        this.monsterID = monsterID;
+    public InventoryItem() {}
+
+    public InventoryItem(int itemID, int playerID, String itemType, String name, int value, String icon, int quantity) {
+        this.itemID = itemID;
+        this.playerID = playerID;
         this.itemType = itemType;
         this.name = name;
-        this.dropRate = dropRate;
         this.value = value;
         this.icon = icon;
+        this.quantity = quantity;
     }
 
-
-    public int getLootID() {
-        return lootID;
+    public int getItemID() {
+        return itemID;
     }
 
-    public void setLootID(int lootID) {
-        this.lootID = lootID;
+    public void setItemID(int itemID) {
+        this.itemID = itemID;
     }
 
-    public int getMonsterID() {
-        return monsterID;
+    public int getPlayerID() {
+        return playerID;
     }
 
-    public void setMonsterID(int monsterID) {
-        this.monsterID = monsterID;
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
     }
 
     public String getItemType() {
@@ -60,14 +61,6 @@ public class LootTable {
         this.name = name;
     }
 
-    public float getDropRate() {
-        return dropRate;
-    }
-
-    public void setDropRate(float dropRate) {
-        this.dropRate = dropRate;
-    }
-
     public int getValue() {
         return value;
     }
@@ -82,5 +75,13 @@ public class LootTable {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

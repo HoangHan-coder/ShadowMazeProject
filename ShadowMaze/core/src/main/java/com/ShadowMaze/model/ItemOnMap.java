@@ -2,47 +2,47 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.ShadowMaze;
+package com.ShadowMaze.model;
 
 /**
  *
  * @author NgKaitou
  */
-public class InventoryItem {
-    private int itemID;
-    private int playerID;
+public class ItemOnMap {
+    private int mapItemID;
+    private int levelID;
     private String itemType;
     private String name;
     private int value;
     private String icon;
-    private int quantity;
+    private int positionX;
+    private int positionY;
 
-    public InventoryItem() {}
-
-    public InventoryItem(int itemID, int playerID, String itemType, String name, int value, String icon, int quantity) {
-        this.itemID = itemID;
-        this.playerID = playerID;
+    public ItemOnMap(int mapItemID, int levelID, String itemType, String name, int value, String icon, int positionX, int positionY) {
+        this.mapItemID = mapItemID;
+        this.levelID = levelID;
         this.itemType = itemType;
         this.name = name;
         this.value = value;
         this.icon = icon;
-        this.quantity = quantity;
+        this.positionX = positionX;
+        this.positionY = positionY;
     }
 
-    public int getItemID() {
-        return itemID;
+    public int getMapItemID() {
+        return mapItemID;
     }
 
-    public void setItemID(int itemID) {
-        this.itemID = itemID;
+    public void setMapItemID(int mapItemID) {
+        this.mapItemID = mapItemID;
     }
 
-    public int getPlayerID() {
-        return playerID;
+    public int getLevelID() {
+        return levelID;
     }
 
-    public void setPlayerID(int playerID) {
-        this.playerID = playerID;
+    public void setLevelID(int levelID) {
+        this.levelID = levelID;
     }
 
     public String getItemType() {
@@ -77,11 +77,22 @@ public class InventoryItem {
         this.icon = icon;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public int getPositionX() {
+        return positionX;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
     }
+
+    public int getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
+    }
+
+    
 }
+
