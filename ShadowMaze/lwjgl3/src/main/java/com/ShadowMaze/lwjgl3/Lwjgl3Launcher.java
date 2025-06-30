@@ -28,7 +28,7 @@ public class Lwjgl3Launcher {
 
     // Maze size (đồng bộ với MazeGenerator trong GameScreen)
     final int TILE_SIZE = 42;
-    final int MAZE_COLS = 21;
+    final int MAZE_COLS = 31;
     final int MAZE_ROWS = 21;
 
     int screenWidth = MAZE_COLS * TILE_SIZE;

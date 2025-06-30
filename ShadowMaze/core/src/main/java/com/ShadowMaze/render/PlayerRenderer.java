@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
  * Class chịu trách nhiệm vẽ nhân vật chính với animation.
  */
 public class PlayerRenderer {
+
     private Player player;
     private Animation<TextureRegion> animation;
     private float stateTime;
@@ -36,22 +37,28 @@ public class PlayerRenderer {
 
         TextureRegion frame = animation.getKeyFrame(stateTime, true);
 
-        // Flip nếu hướng di chuyển thay đổi (tuỳ mở rộng sau này)
+
         if (facingLeft && !frame.isFlipX()) {
             frame.flip(true, false);
         } else if (!facingLeft && frame.isFlipX()) {
             frame.flip(true, false);
         }
+        float scale = 1f; // Phóng to nhân vật gấp 2 lần
 
-        // Vẽ frame tại vị trí nhân vật quy đổi từ mê cung → pixel
         float drawX = offsetX + x * tileSize;
         float drawY = offsetY + y * tileSize;
 
-        batch.draw(frame, drawX, drawY, tileSize, tileSize);
+        float drawWidth = tileSize * scale;
+        float drawHeight = tileSize * scale;
+
+        // Căn giữa nhân vật (nếu bạn muốn nó vẫn nằm giữa ô lưới)
+//        float offsetDrawX = drawX - (drawWidth - tileSize) / 2f;
+//        float offsetDrawY = drawY - (drawHeight - tileSize) / 2f + 40;
+
+        batch.draw(frame, drawX, drawY, drawWidth, drawHeight);
     }
 
     // ================= Getter / Setter =================
-
     public Player getPlayer() {
         return player;
     }
