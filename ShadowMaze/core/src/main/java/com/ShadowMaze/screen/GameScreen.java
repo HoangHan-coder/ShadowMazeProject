@@ -4,7 +4,6 @@ import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
 import com.ShadowMaze.model.Player;
-import com.ShadowMaze.render.MazeRenderer;
 import com.ShadowMaze.render.MirrorRenderer;
 import com.ShadowMaze.render.PlayerRenderer;
 import com.badlogic.gdx.*;
@@ -45,7 +44,7 @@ public class GameScreen implements Screen {
     public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
 
-    Map map;
+    public Map map;
     public Knight knight;
     private Player player;
     private PlayerRenderer playerRenderer;
@@ -56,7 +55,6 @@ public class GameScreen implements Screen {
     private MirrorRenderer mirrorRenderer;
     private Stage stage;
     private boolean isPaused = false;
-    private MazeRenderer mazeRenderer;
 
     public GameScreen(Game game) {
         this.game = game;
@@ -67,6 +65,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         initGame(); // Gá»?i á»Ÿ Ä‘Ã¢y Ä‘á»ƒ Gdx.graphics hoáº¡t Ä‘á»™ng á»•n Ä‘á»‹nh
+
     }
 
     /**
@@ -74,17 +73,12 @@ public class GameScreen implements Screen {
      */
     private void initGame() {
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage); // ?? nh?n input
-        map = new Map(this);
+        Gdx.input.setInputProcessor(stage);
+        map = new Map(this, game);
+        map.createButtons(stage);
         knight = new Knight(this);
         player = new Player(1, "Hero", 100, 0, 1, 1, 1);
         System.out.println("Player at: (" + player.getPositionX() + ", " + player.getPositionY() + ")");
-
-        // Center the maze if needed
-//        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
-//        offsetY = 0;
-        mazeRenderer = new MazeRenderer(maze, TILE_SIZE, game);
-        mazeRenderer.createButtons(stage); // ? gi? s? ho?t ??ng
 
     }
 
@@ -165,13 +159,29 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        knight.inputHandle();
-        // Clear screen
+        if (map.isPaused()) {
+            ScreenUtils.clear(0, 0, 0, 1);
+            batch.begin();
+            map.drawMap();                        // v? b?n ??
+            batch.end();
+            stage.act(delta);
+            stage.draw();
+            return;
+        }
+
+        // Ch? ch?y n?u KHÔNG pause
+        knight.inputHandle();                 // x? lý phím
+        knight.update(delta);                 // (n?u b?n có update riêng)
         ScreenUtils.clear(0, 0, 0, 1);
+
         batch.begin();
-        map.drawMap();
-        knight.knightRender(delta);
+        map.drawMap();                        // v? b?n ??
+        map.createButtons(stage);
+        knight.knightRender(delta);          // v? nhân v?t
         batch.end();
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
