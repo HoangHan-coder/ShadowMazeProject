@@ -1,6 +1,8 @@
 package com.ShadowMaze.screen;
 
 import com.ShadowMaze.generator.MazeGenerator;
+import com.ShadowMaze.model.Knight;
+import com.ShadowMaze.model.Map;
 import com.ShadowMaze.model.Player;
 import com.ShadowMaze.render.MazeRenderer;
 import com.ShadowMaze.render.MirrorRenderer;
@@ -9,6 +11,8 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -18,15 +22,31 @@ import java.util.List;
 public class GameScreen implements Screen {
 
     protected final Game game;
-    private final SpriteBatch batch;
+    public final SpriteBatch batch;
 
     private int[][] maze;
-    private int TILE_SIZE;
     private int offsetX, offsetY;
     private Player npc; // nh�n v?t ph?
     private PlayerRenderer npcRenderer;
+    // Screen setting 
+    public static final int ORIGINAL_TILE_SIZE = 16;
+    public static final int SCALE = 3;
+    public static final int TILE_SIZE = ORIGINAL_TILE_SIZE * SCALE;
 
-    private MazeGenerator mazeGenerator;
+    public static final int MAX_SCREEN_COL = 27; // 73 colums
+    public static final int MAX_SCREEN_ROW = 19; // 53 rows
+
+    public static final int SCREEN_WIDTH = MAX_SCREEN_COL * TILE_SIZE;
+    public static final int SCREEN_HEIGHT = MAX_SCREEN_ROW * TILE_SIZE;
+
+    // Map setting
+    public static final int MAP_X = 73;
+    public static final int MAP_Y = 53;
+    public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
+    public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
+
+    Map map;
+    public Knight knight;
     private Player player;
     private PlayerRenderer playerRenderer;
     private long lastMoveTime = 0;
@@ -42,6 +62,7 @@ public class GameScreen implements Screen {
         this.game = game;
         this.batch = new SpriteBatch();
     }
+//    private PlayerRenderer playerRender;
 
     @Override
     public void show() {
@@ -49,57 +70,20 @@ public class GameScreen implements Screen {
     }
 
     /**
-     * Khởi tạo mê cung và các thành phần game
+     * Initialize the game state, player, map, textures
      */
     private void initGame() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage); // ?? nh?n input
-        // 1. Tạo mê cung
-        mazeGenerator = new MazeGenerator(21, 21); // Có thể thay đổi tùy ý
-        maze = mazeGenerator.generate(1, 1);
+        map = new Map(this);
+        knight = new Knight(this);
+        player = new Player(1, "Hero", 100, 0, 1, 1, 1);
+        System.out.println("Player at: (" + player.getPositionX() + ", " + player.getPositionY() + ")");
 
-        // 2. Lấy kích thước màn hình
-        int screenWidth = Gdx.graphics.getWidth();
-        int screenHeight = Gdx.graphics.getHeight();
-
-        // 3. Tính TILE_SIZE tự động để maze vừa khít
-        int tileSizeX = screenWidth / maze[0].length;
-        int tileSizeY = screenHeight / maze.length;
-        TILE_SIZE = Math.max(32, Math.min(tileSizeX, tileSizeY));
-
-        // 4. Tính offset để canh giữa mê cung
-        int mazePixelWidth = maze[0].length * TILE_SIZE;
-        int mazePixelHeight = maze.length * TILE_SIZE;
-        offsetX = (screenWidth - mazePixelWidth) / 2;
-        offsetY = (screenHeight - mazePixelHeight) / 2;
-
-        // 5. Load texture
-        wallTexture = new Texture("wall.png");
-        floorTexture = new Texture("floor.png");
-
-        // 6. Tạo ngư�?i chơi
-        player = new Player(1, "Hero", 100, 0,
-                mazeGenerator.getStartX(), mazeGenerator.getStartY(), 1);
-
-        // 7. Load animation
-        Animation<TextureRegion> anim = loadPlayerAnimation();
-        playerRenderer = new PlayerRenderer(player, anim);
-        // Load animation cho g??ng (ho?c v?t trang tr�)
-        Animation<TextureRegion> mirrorAnim = loadPlayerItemCheast();
-
-        // T?o danh s�ch v? tr� g??ng (v� d? ng?u nhi�n)
-        List<int[]> mirrorPositions = new ArrayList<>();
-        for (int i = 0; i < 5; i++) { // t?o 5 g??ng
-            int x, y;
-            do {
-                x = (int) (Math.random() * maze[0].length);
-                y = (int) (Math.random() * maze.length);
-            } while (maze[y][x] != 1 || (x == player.getPositionX() && y == player.getPositionY()));
-            mirrorPositions.add(new int[]{x, y});
-        }
-
-        mirrorRenderer = new MirrorRenderer(mirrorAnim, mirrorPositions);
-        mazeRenderer = new MazeRenderer(maze, TILE_SIZE,game);
+        // Center the maze if needed
+//        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
+//        offsetY = 0;
+        mazeRenderer = new MazeRenderer(maze, TILE_SIZE, game);
         mazeRenderer.createButtons(stage); // ? gi? s? ho?t ??ng
 
     }
@@ -181,35 +165,13 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        knight.inputHandle();
+        // Clear screen
         ScreenUtils.clear(0, 0, 0, 1);
-
-        // N?u game KH�NG b? t?m d?ng th� m?i update v� render logic
-        if (!mazeRenderer.isPaused()) {
-            handleInput();
-            playerRenderer.update(delta);
-            mirrorRenderer.update(delta);
-
-            batch.begin();
-            drawMaze();
-            mirrorRenderer.render(batch, TILE_SIZE, offsetX, offsetY);
-            playerRenderer.render(batch, TILE_SIZE, offsetX, offsetY);
-            batch.end();
-
-            // Ki?m tra chi?n th?ng
-            if (player.getPositionX() == mazeGenerator.getEndX()
-                    && player.getPositionY() == mazeGenerator.getEndY()) {
-                System.out.println("? YOU WIN!");
-            }
-        } else {
-            // N?u pause: ch? v? n?n t?m d?ng n?u mu?n
-            batch.begin();
-            drawMaze(); // ho?c v? n?n, ho?c ?? tr?ng
-            batch.end();
-        }
-
-        // Giao di?n lu�n ch?y
-        stage.act(delta);
-        stage.draw();
+        batch.begin();
+        map.drawMap();
+        knight.knightRender(delta);
+        batch.end();
     }
 
     @Override
@@ -231,10 +193,6 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
-        wallTexture.dispose();
-        floorTexture.dispose();
-        for (TextureRegion f : playerRenderer.getAnimation().getKeyFrames()) {
-            f.getTexture().dispose();
-        }
+        knight.dispose();
     }
 }

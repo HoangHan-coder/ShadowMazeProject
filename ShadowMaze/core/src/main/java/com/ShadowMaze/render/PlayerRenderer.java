@@ -3,7 +3,6 @@ package com.ShadowMaze.render;
 import com.ShadowMaze.model.Player;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.Gdx;
 
 /**
  * Class chịu trách nhiệm vẽ nhân vật chính với animation.
@@ -31,9 +30,18 @@ public class PlayerRenderer {
         stateTime += delta;
     }
 
-    public void render(SpriteBatch batch, int tileSize, int offsetX, int offsetY) {
-        int x = player.getPositionX();
-        int y = player.getPositionY();
+    /**
+     * Vẽ nhân vật, hỗ trợ playerY để đi�?u chỉnh chi�?u cao khi nhảy/rơi.
+     *
+     * @param batch SpriteBatch từ GameScreen
+     * @param tileSize Kích thước ô
+     * @param offsetX �?ộ lệch X
+     * @param offsetY �?ộ lệch Y
+     * @param playerY Vị trí phụ theo trục Y (để nhảy mượt hơn)
+     */
+    public void render(SpriteBatch batch,int tileSize, int offsetX, int offsetY) {
+        float drawX = offsetX + player.getRenderX() * tileSize;
+        float drawY = offsetY + player.getRenderY() * tileSize;
 
         TextureRegion frame = animation.getKeyFrame(stateTime, true);
 
@@ -44,9 +52,6 @@ public class PlayerRenderer {
             frame.flip(true, false);
         }
         float scale = 2.8f; // Ph�ng to nh�n v?t g?p 2 l?n
-        // Vẽ frame tại vị trí nhân vật quy đổi từ mê cung → pixel
-        float drawX = offsetX + x * tileSize;
-        float drawY = offsetY + y * tileSize;
 
         float drawWidth = tileSize * scale;
         float drawHeight = tileSize * scale;
@@ -56,6 +61,7 @@ public class PlayerRenderer {
         float offsetDrawY = drawY - (drawHeight - tileSize) / 2f + 40;
 
         batch.draw(frame, offsetDrawX, offsetDrawY, drawWidth, drawHeight);
+        batch.draw(frame, drawX, drawY, tileSize, tileSize);
     }
 
     // ================= Getter / Setter =================
