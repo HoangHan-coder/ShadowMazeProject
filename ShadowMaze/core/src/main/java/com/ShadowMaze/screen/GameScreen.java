@@ -2,19 +2,22 @@ package com.ShadowMaze.screen;
 
 import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Player;
+import com.ShadowMaze.render.MazeRenderer;
 import com.ShadowMaze.render.MirrorRenderer;
 import com.ShadowMaze.render.PlayerRenderer;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameScreen implements Screen {
 
-    private final Game game;
+    protected final Game game;
     private final SpriteBatch batch;
 
     private int[][] maze;
@@ -31,6 +34,9 @@ public class GameScreen implements Screen {
     private Texture wallTexture;
     private Texture floorTexture;
     private MirrorRenderer mirrorRenderer;
+    private Stage stage;
+    private boolean isPaused = false;
+    private MazeRenderer mazeRenderer;
 
     public GameScreen(Game game) {
         this.game = game;
@@ -46,6 +52,8 @@ public class GameScreen implements Screen {
      * Khởi tạo mê cung và các thành phần game
      */
     private void initGame() {
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage); // ?? nh?n input
         // 1. Tạo mê cung
         mazeGenerator = new MazeGenerator(21, 21); // Có thể thay đổi tùy ý
         maze = mazeGenerator.generate(1, 1);
@@ -91,6 +99,8 @@ public class GameScreen implements Screen {
         }
 
         mirrorRenderer = new MirrorRenderer(mirrorAnim, mirrorPositions);
+        mazeRenderer = new MazeRenderer(maze, TILE_SIZE,game);
+        mazeRenderer.createButtons(stage); // ? gi? s? ho?t ??ng
 
     }
 
@@ -171,31 +181,35 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        handleInput();
-        playerRenderer.update(delta);
-
         ScreenUtils.clear(0, 0, 0, 1);
-        batch.begin();
-        drawMaze();
-        playerRenderer.render(batch, TILE_SIZE, offsetX, offsetY);
-        batch.end();
 
-        // Kiểm tra chiến thắng
-        if (player.getPositionX() == mazeGenerator.getEndX()
-                && player.getPositionY() == mazeGenerator.getEndY()) {
-            System.out.println("🎉 YOU WIN!");
+        // N?u game KH�NG b? t?m d?ng th� m?i update v� render logic
+        if (!mazeRenderer.isPaused()) {
+            handleInput();
+            playerRenderer.update(delta);
+            mirrorRenderer.update(delta);
+
+            batch.begin();
+            drawMaze();
+            mirrorRenderer.render(batch, TILE_SIZE, offsetX, offsetY);
+            playerRenderer.render(batch, TILE_SIZE, offsetX, offsetY);
+            batch.end();
+
+            // Ki?m tra chi?n th?ng
+            if (player.getPositionX() == mazeGenerator.getEndX()
+                    && player.getPositionY() == mazeGenerator.getEndY()) {
+                System.out.println("? YOU WIN!");
+            }
+        } else {
+            // N?u pause: ch? v? n?n t?m d?ng n?u mu?n
+            batch.begin();
+            drawMaze(); // ho?c v? n?n, ho?c ?? tr?ng
+            batch.end();
         }
-        handleInput();
-        playerRenderer.update(delta);
-        mirrorRenderer.update(delta);
 
-        ScreenUtils.clear(0, 0, 0, 1);
-        batch.begin();
-        drawMaze();
-        mirrorRenderer.render(batch, TILE_SIZE, offsetX, offsetY); // v? g??ng tr??c
-        playerRenderer.render(batch, TILE_SIZE, offsetX, offsetY); // v? nh�n v?t
-        batch.end();
-
+        // Giao di?n lu�n ch?y
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override

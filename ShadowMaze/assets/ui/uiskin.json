@@ -218,15 +218,14 @@ com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
         handle: split
     }
 }
-com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-    default: {
-        font: font
-        up: button-normal
-        down: button-normal-pressed
-        over: button-normal-over
-        focused: button-normal-over
+"com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+    "rounded": {
+      "up": "button_up",
+      "down": "button_down",
+      "font": "default",
+      "fontColor": "white"
     }
-}
+  }
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
     default: {
         font: font

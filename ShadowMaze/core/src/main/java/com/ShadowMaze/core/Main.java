@@ -1,6 +1,7 @@
 package com.ShadowMaze.core;
 
 import com.ShadowMaze.screen.GameScreen;
+import com.ShadowMaze.screen.MainMenuScreen;
 import com.badlogic.gdx.Game;
 
 /**
@@ -11,7 +12,7 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        setScreen(new GameScreen(this)); // Bắt đầu ở GameScreen
+        setScreen(new MainMenuScreen(this)); // Bắt đầu ở GameScreen
     }
 
 }

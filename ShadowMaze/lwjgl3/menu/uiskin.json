@@ -1,0 +1,14 @@
+{
+  "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+    "default": {
+      "up": "buttonup",
+      "down": "buttondown",
+      "font": "default-font"
+    }
+  },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": {
+    "default-font": {
+      "file": "default.fnt"
+    }
+  }
+}

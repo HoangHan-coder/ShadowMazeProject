@@ -13,31 +13,29 @@ public class Lwjgl3Launcher {
         if (StartupHelper.startNewJvmIfRequired()) {
             return; // This handles macOS support and helps on Windows.
         }
-        createApplication();
-    }
 
-    private static Lwjgl3Application createApplication() {
-        return new Lwjgl3Application(new Main(), getDefaultConfiguration());
+
+        new Lwjgl3Application(new Main(), getDefaultConfiguration());
     }
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
-    Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
-    configuration.setTitle("ShadowMaze");
-    configuration.useVsync(true);
-    configuration.setForegroundFPS(60);
+        Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
+        configuration.setTitle("ShadowMaze");
+        configuration.useVsync(true);
+        configuration.setForegroundFPS(60);
 
-    // Maze size (đồng bộ với MazeGenerator trong GameScreen)
-    final int TILE_SIZE = 42;
-    final int MAZE_COLS = 21;
-    final int MAZE_ROWS = 21;
+        // Maze size (??ng b? v?i MazeGenerator trong GameScreen)
+        final int TILE_SIZE = 42;
+        final int MAZE_COLS = 21;
+        final int MAZE_ROWS = 21;
 
-    int screenWidth = MAZE_COLS * TILE_SIZE;
-    int screenHeight = MAZE_ROWS * TILE_SIZE;
+        int screenWidth = MAZE_COLS * TILE_SIZE;
+        int screenHeight = MAZE_ROWS * TILE_SIZE;
 
-    configuration.setWindowedMode(screenWidth, screenHeight);
+        configuration.setWindowedMode(screenWidth, screenHeight);
 
-    configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
-    return configuration;
-}
-
+        // ??m b?o icon c� trong th? m?c assets
+        configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
+        return configuration;
+    }
 }

@@ -1,0 +1,15 @@
+buttonup
+  rotate: false
+  xy: 0, 0
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
+
+buttondown
+  rotate: false
+  xy: 0, 0
+  size: 256, 64
+  orig: 256, 64
+  offset: 0, 0
+  index: -1
