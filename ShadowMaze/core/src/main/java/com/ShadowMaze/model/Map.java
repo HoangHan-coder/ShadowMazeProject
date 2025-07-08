@@ -17,7 +17,7 @@ import java.io.IOException;
 public class Map {
 
     GameScreen gs;
-    Tile[] tiles;
+    public Tile[] tiles;
     public int[][] tileNum;
 
     public Map(GameScreen gs) {
@@ -33,10 +33,10 @@ public class Map {
         try (BufferedReader reader = new BufferedReader(new FileReader("maps\\map_03.txt"))) {
             String line;
             int row = 0;
-            while ((line = reader.readLine()) != null && row <GameScreen.MAP_X) {
+            while ((line = reader.readLine()) != null && row <GameScreen.MAP_Y) {
                 String[] tokens = line.trim().split(" ");
                 for (int col = 0; col < tokens.length && col <GameScreen.MAP_X; col++) {
-                    tileNum[row][col] = Integer.parseInt(tokens[col]);
+                    tileNum[GameScreen.MAP_Y - 1 - row][col] = Integer.parseInt(tokens[col]);
                 }
                 row++;
             }
@@ -50,7 +50,8 @@ public class Map {
         
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
-
+        tiles[0].collision = true;
+        
         tiles[1] = new Tile();
         tiles[1].image = new Texture("tiles/soil.png");
         

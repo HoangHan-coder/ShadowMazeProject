@@ -1,5 +1,6 @@
 package com.ShadowMaze.screen;
 
+import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
@@ -33,7 +34,8 @@ public class GameScreen implements Screen {
 //    private int[][] maze = new int[MAX_SCREEN_ROW][MAX_SCREEN_COL];
 //    private int offsetX, offsetY;
     
-    Map map;
+    public Map map;
+    public CollisionChecker cCheck;
     public Knight knight;
     private Player player;
 //    private PlayerRenderer playerRender;
@@ -70,6 +72,9 @@ public class GameScreen implements Screen {
 //            }
 //            System.out.println();
 //        }
+
+        cCheck = new CollisionChecker(this);
+        
         // Initialize player
         knight = new Knight(this);
         player = new Player(1, "Hero", 100, 0, 1, 1, 1);

@@ -5,16 +5,27 @@
 package com.ShadowMaze.model;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  *
  * @author NgKaitou
  */
 public class Entity {
-    int positionX; // position x in map
-    int positionY; // position y in map
+    public int positionX; // position x in map
+    public int positionY; // position y in map
+    public int speed;
+    
     Texture image;
-
+    
+    public Rectangle solidArea;
+    
+    public static enum Direction {
+        UP, DOWN, LEFT, RIGHT, IDLE
+    }
+    public Direction currentDirection = Direction.IDLE;
+    public boolean collisionOn = false;
+    
     public int getPositionX() {
         return positionX;
     }
