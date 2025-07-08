@@ -3,6 +3,7 @@ package com.ShadowMaze.lwjgl3;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.ShadowMaze.core.Main;
+import com.ShadowMaze.screen.GameScreen;
 
 /**
  * Launches the desktop (LWJGL3) application.
@@ -26,15 +27,8 @@ public class Lwjgl3Launcher {
     configuration.useVsync(true);
     configuration.setForegroundFPS(60);
 
-    // Maze size (đồng bộ với MazeGenerator trong GameScreen)
-    final int TILE_SIZE = 42;
-    final int MAZE_COLS = 31;
-    final int MAZE_ROWS = 21;
 
-    int screenWidth = MAZE_COLS * TILE_SIZE;
-    int screenHeight = MAZE_ROWS * TILE_SIZE;
-
-    configuration.setWindowedMode(screenWidth, screenHeight);
+    configuration.setWindowedMode(GameScreen.SCREEN_WIDTH, GameScreen.SCREEN_HEIGHT);
 
     configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
     return configuration;
