@@ -143,7 +143,6 @@ public class Knight extends Entity {
                 speed = 4;
             }
         }
-        System.out.println("move: " + currentDirection + ", collision: " + collisionOn);
     }
 
     private Animation<TextureRegion> loadUpAnimation() {

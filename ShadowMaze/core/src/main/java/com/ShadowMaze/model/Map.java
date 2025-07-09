@@ -92,12 +92,12 @@ public class Map {
                 int screenX = mapX - gs.knight.positionX + gs.knight.renderX;
                 int screenY = mapY - gs.knight.positionY + gs.knight.renderY;
                 
-                if (mapX + GameScreen.TILE_SIZE > gs.knight.positionX - gs.knight.renderX
-                        && mapX - GameScreen.TILE_SIZE < gs.knight.positionX + gs.knight.renderX
-                        && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
-                        && mapY - GameScreen.TILE_SIZE < gs.knight.positionY + gs.knight.renderY ) {
+//                if (mapX + GameScreen.TILE_SIZE > gs.knight.positionX - gs.knight.renderX
+//                        && mapX - GameScreen.TILE_SIZE < gs.knight.positionX + gs.knight.renderX
+//                        && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
+//                        && mapY - GameScreen.TILE_SIZE < gs.knight.positionY + gs.knight.renderY ) {
                     gs.batch.draw(tiles[tile].image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-                }
+//                }
             }
         }
     }

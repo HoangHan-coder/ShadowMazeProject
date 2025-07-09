@@ -1,10 +1,12 @@
 package com.ShadowMaze.screen;
 
+import com.ShadowMaze.core.AssetSetter;
 import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
 import com.ShadowMaze.model.Player;
+import com.ShadowMaze.model.SuperObject;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -23,7 +25,6 @@ public class GameScreen implements Screen {
     public static final int SCREEN_HEIGHT = MAX_SCREEN_ROW * TILE_SIZE;
 
     // Map setting
-    
     public static final int MAP_X = 73;
     public static final int MAP_Y = 53;
     public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
@@ -36,6 +37,8 @@ public class GameScreen implements Screen {
     
     public Map map;
     public CollisionChecker cCheck;
+    public SuperObject[] obj = new SuperObject[10];
+    public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
     private Player player;
 <<<<<<< Updated upstream
@@ -61,7 +64,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
+        setUpGame();
         initGame();
+    }
+    
+    public void setUpGame() {
+        aSetter.setObject();
     }
     
     /**
@@ -102,7 +110,7 @@ public class GameScreen implements Screen {
 >>>>>>> Stashed changes
         knight = new Knight(this);
         player = new Player(1, "Hero", 100, 0, 1, 1, 1);
-        System.out.println("Player at: (" + player.getPositionX() + ", " + player.getPositionY() + ")");
+        
 
 <<<<<<< Updated upstream
         // Center the maze if needed
@@ -181,7 +189,16 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0, 1);
         batch.begin();
         map.drawMap();
+        
+        // render object
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) {
+                obj[i].drawObject(this);
+            }
+        }
+        
         knight.knightRender(delta);
+        System.out.println("Player at: (" + knight.getPositionX()/TILE_SIZE + ", " + knight.getPositionY()/TILE_SIZE + ")");
         batch.end();
     }
 
