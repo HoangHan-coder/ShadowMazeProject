@@ -24,8 +24,8 @@ public class GameScreen implements Screen {
     public static final int SCREEN_HEIGHT = MAX_SCREEN_ROW * TILE_SIZE;
 
     // Map setting
-    public static final int MAP_X = 73;
-    public static final int MAP_Y = 53;
+    public static final int MAP_X = 121;
+    public static final int MAP_Y = 83;
     public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
     

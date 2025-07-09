@@ -51,8 +51,8 @@ public class Knight extends Entity {
         solidArea.width = 32;
         solidArea.height = 32;
         
-        positionX = 36 * GameScreen.TILE_SIZE;
-        positionY = 24 * GameScreen.TILE_SIZE;
+        positionX = 60 * GameScreen.TILE_SIZE;
+        positionY = 39 * GameScreen.TILE_SIZE;
         
         renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
         renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
