@@ -14,4 +14,5 @@ public class Tile {
     
     public Texture image;
     
+    public boolean collision = false;
 }

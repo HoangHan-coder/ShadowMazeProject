@@ -17,26 +17,40 @@ import java.io.IOException;
 public class Map {
 
     GameScreen gs;
-    Tile[] tiles;
+    public Tile[] tiles;
     public int[][] tileNum;
+<<<<<<< Updated upstream
 
     public Map(GameScreen gs) {
+=======
+    private Texture resumeUp, resumeDown;
+    private Texture optionsUp, optionsDown;
+    private Texture quitUp, quitDown, quitDisabled;
+    private Texture how;
+    private Table pauseMenuTable;
+    private boolean isPauseMenuVisible = false;
+    private boolean isPaused = false;
+    private MainMenuScreen screen;
+    private Game game;
+    private String name;
+    public Map(GameScreen gs, Game game, String name) {
+>>>>>>> Stashed changes
         this.gs = gs;
         tiles = new Tile[10];
         tileNum = new int[GameScreen.MAP_Y][GameScreen.MAP_X];
         getImageTiles();
-        loadMap();
+        loadMap(name);
     }
 
-    private void loadMap() {
+    private void loadMap(String name) {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("maps\\map_03.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(name))) { // "maps\\map_03.txt"
             String line;
             int row = 0;
-            while ((line = reader.readLine()) != null && row <GameScreen.MAP_X) {
+            while ((line = reader.readLine()) != null && row <GameScreen.MAP_Y) {
                 String[] tokens = line.trim().split(" ");
                 for (int col = 0; col < tokens.length && col <GameScreen.MAP_X; col++) {
-                    tileNum[row][col] = Integer.parseInt(tokens[col]);
+                    tileNum[GameScreen.MAP_Y - 1 - row][col] = Integer.parseInt(tokens[col]);
                 }
                 row++;
             }
@@ -50,7 +64,8 @@ public class Map {
         
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
-
+        tiles[0].collision = true;
+        
         tiles[1] = new Tile();
         tiles[1].image = new Texture("tiles/soil.png");
         

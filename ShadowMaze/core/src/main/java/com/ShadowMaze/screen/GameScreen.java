@@ -1,33 +1,16 @@
 package com.ShadowMaze.screen;
 
+import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
 import com.ShadowMaze.model.Player;
-import com.ShadowMaze.render.MazeRenderer;
-import com.ShadowMaze.render.MirrorRenderer;
-import com.ShadowMaze.render.PlayerRenderer;
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameScreen implements Screen {
 
-    protected final Game game;
-    public final SpriteBatch batch;
-
-    private int[][] maze;
-    private int offsetX, offsetY;
-    private Player npc; // nh�n v?t ph?
-    private PlayerRenderer npcRenderer;
     // Screen setting 
     public static final int ORIGINAL_TILE_SIZE = 16;
     public static final int SCALE = 3;
@@ -40,14 +23,26 @@ public class GameScreen implements Screen {
     public static final int SCREEN_HEIGHT = MAX_SCREEN_ROW * TILE_SIZE;
 
     // Map setting
+    
     public static final int MAP_X = 73;
     public static final int MAP_Y = 53;
     public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
-
-    Map map;
+    
+    // Maze and rendering
+    public final SpriteBatch batch;
+//    private int[][] maze = new int[MAX_SCREEN_ROW][MAX_SCREEN_COL];
+//    private int offsetX, offsetY;
+    
+    public Map map;
+    public CollisionChecker cCheck;
     public Knight knight;
     private Player player;
+<<<<<<< Updated upstream
+//    private PlayerRenderer playerRender;
+
+    public GameScreen() {
+=======
     private PlayerRenderer playerRenderer;
     private long lastMoveTime = 0;
     private final long moveDelay = 150_000_000; // 150ms delay khi gi? ph�m
@@ -56,55 +51,64 @@ public class GameScreen implements Screen {
     private MirrorRenderer mirrorRenderer;
     private Stage stage;
     private boolean isPaused = false;
-    private MazeRenderer mazeRenderer;
-
+    String mapPath;
+    private int currentLevel;
     public GameScreen(Game game) {
         this.game = game;
+>>>>>>> Stashed changes
         this.batch = new SpriteBatch();
     }
-//    private PlayerRenderer playerRender;
 
     @Override
     public void show() {
-        initGame(); // G�?i ở đây để Gdx.graphics hoạt động ổn định
+        initGame();
     }
-
+    
     /**
      * Initialize the game state, player, map, textures
      */
+<<<<<<< Updated upstream
+    public void initGame() {     
+        // khoi tao me cung
+//        int pathWidth = 1; // ví dụ 3
+//        mazeGenerator = new MazeGenerator(MAX_SCREEN_COL, MAX_SCREEN_ROW, pathWidth);
+//        maze = mazeGenerator.generate(1, 1);
+          map = new Map(this);
+        // print me cung random
+//        for (int x = 0; x < maze.length; x++) {
+//            for (int y = 0; y < maze[0].length; y++) {
+//                System.out.print(maze[x][y] + " ");
+//            }
+//            System.out.println();
+//        }
+        // print me cung tu file
+//           for (int x = 0; x < map.tileNum.length; x++) {
+//            for (int y = 0; y < map.tileNum[0].length; y++) {
+//                System.out.print(map.tileNum[x][y]+" ");
+//            }
+//            System.out.println();
+//        }
+
+        cCheck = new CollisionChecker(this);
+        
+        // Initialize player
+=======
     private void initGame() {
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage); // ?? nh?n input
-        map = new Map(this);
+        Gdx.input.setInputProcessor(stage);
+        String mapPath = "maps\\map_0" + currentLevel + ".txt";
+        map = new Map(this, game, mapPath); // "maps\\map_03.txt"
+        map.createButtons(stage);
+>>>>>>> Stashed changes
         knight = new Knight(this);
         player = new Player(1, "Hero", 100, 0, 1, 1, 1);
         System.out.println("Player at: (" + player.getPositionX() + ", " + player.getPositionY() + ")");
 
+<<<<<<< Updated upstream
         // Center the maze if needed
 //        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
 //        offsetY = 0;
-        mazeRenderer = new MazeRenderer(maze, TILE_SIZE, game);
-        mazeRenderer.createButtons(stage); // ? gi? s? ho?t ??ng
-
-    }
-
-    /**
-     * Load các frame nhân vật từ file frame_0.png đến frame_3.png
-     */
-    private Animation<TextureRegion> loadPlayerAnimation() {
-        TextureRegion[] frames = new TextureRegion[4];
-        for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("Avatar\\frame_" + i + ".png"));
-        }
-        return new Animation<>(0.2f, frames);
-    }
-
-    private Animation<TextureRegion> loadPlayerItemCheast() {
-        TextureRegion[] frames = new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
-            frames[i] = new TextureRegion(new Texture("Character\\framee" + i + ".png"));
-        }
-        return new Animation<>(0.2f, frames);
+=======
     }
 
     /**
@@ -161,11 +165,18 @@ public class GameScreen implements Screen {
                 }
             }
         }
+>>>>>>> Stashed changes
     }
-
+    public void setIndex(int index) {
+        this.currentLevel = index;
+    }
     @Override
     public void render(float delta) {
         knight.inputHandle();
+        
+//        float speed = 5f;
+//        player.setRenderX(MathUtils.lerp(player.getRenderX(), player.getPositionX(), speed * delta));
+//        player.setRenderY(MathUtils.lerp(player.getRenderY(), player.getPositionY(), speed * delta));
         // Clear screen
         ScreenUtils.clear(0, 0, 0, 1);
         batch.begin();
