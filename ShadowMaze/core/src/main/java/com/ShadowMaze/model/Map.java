@@ -69,6 +69,7 @@ public class Map {
 
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
+        tiles[0].collision = true;
 
         tiles[1] = new Tile();
         tiles[1].image = new Texture("tiles/soil.png");
@@ -108,7 +109,7 @@ public class Map {
     }
 
     public void createButtons(Stage stage) {
-        // Nút nh? góc trái
+        // Nï¿½t nh? gï¿½c trï¿½i
         resumeUp = new Texture(Gdx.files.internal("menu/function/pause.png"));
         ImageButton pauseButton = new ImageButton(new TextureRegionDrawable(resumeUp));
 
@@ -117,12 +118,12 @@ public class Map {
         pauseMenuTable.setFillParent(true);
         pauseMenuTable.center();
 
-        // T?o các nút trong b?ng menu
+        // T?o cï¿½c nï¿½t trong b?ng menu
         ImageButton resumeButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type1.png"))));
         ImageButton optionsButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type3.png"))));
         ImageButton quitButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type4.png"))));
 
-        // Thêm các nút vào b?ng menu
+        // Thï¿½m cï¿½c nï¿½t vï¿½o b?ng menu
         pauseMenuTable.add(resumeButton).size(200, 60).pad(10).row();
         pauseMenuTable.add(optionsButton).size(200, 60).pad(10).row();
         pauseMenuTable.add(quitButton).size(200, 60).pad(10);
@@ -142,7 +143,7 @@ public class Map {
             }
         });
 
-        // Gán s? ki?n cho nút resume trong menu popup
+        // Gï¿½n s? ki?n cho nï¿½t resume trong menu popup
         quitButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 Screen current = game.getScreen();
@@ -151,14 +152,14 @@ public class Map {
             }
         });
 
-        // Table ch?a nút pause
+        // Table ch?a nï¿½t pause
         Table topLeftTable = new Table();
         topLeftTable.bottom().left().padBottom(20).padLeft(20);
         topLeftTable.setFillParent(true);
         topLeftTable.add(pauseButton).size(100, 40);
 
-        // Thêm m?i th? vào stage
-        stage.addActor(topLeftTable);       // nút pause nh?
+        // Thï¿½m m?i th? vï¿½o stage
+        stage.addActor(topLeftTable);       // nï¿½t pause nh?
         stage.addActor(pauseMenuTable);     // b?ng menu hi?n ra
     }
 

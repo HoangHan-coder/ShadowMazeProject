@@ -63,17 +63,17 @@ public class Knight extends Entity {
 
     public void knightRender(float delta) {
     if (gs.map.isPaused()) {
-        // N?u ?ang t?m d?ng thì không update animation
-        TextureRegion frame = moveDown.getKeyFrame(0); // frame ??ng yên
+        // N?u ?ang t?m d?ng thï¿½ khï¿½ng update animation
+        TextureRegion frame = moveDown.getKeyFrame(0); // frame ??ng yï¿½n
         gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
         return;
     }
 
-    update(delta); // <- ch? ch?y khi KHÔNG pause
+    update(delta); // <- ch? ch?y khi KHï¿½NG pause
 
     Animation<TextureRegion> currentAnim = switch (currentDirection) {
-        case UP -> moveUp;
-        case DOWN -> moveDown;
+        case UP -> moveDown; 
+        case DOWN -> moveUp;
         case LEFT -> moveLeft;
         case RIGHT -> moveRight;
         default -> moveDown;
@@ -85,19 +85,14 @@ public class Knight extends Entity {
 
 
     public void inputHandle() {
-        int speed = 8; // di chuyá»ƒn 1 Ã´ má»—i láº§n nháº¥n
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            setDirection(Direction.UP);
-            positionY += speed;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             setDirection(Direction.DOWN);
-            positionY -= speed;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            setDirection(Direction.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             setDirection(Direction.LEFT);
-            positionX -= speed;
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             setDirection(Direction.RIGHT);
-            positionX += speed;
         } else {
             setDirection(Direction.IDLE);
         }
