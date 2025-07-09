@@ -119,7 +119,7 @@ public class Knight extends Entity {
         
         // check tile collision
         collisionOn = false;
-        gs.cCheck.checkTile(this);
+//        gs.cCheck.checkTile(this);
         
         // if collision is false, knight can move
         if (collisionOn == false) {

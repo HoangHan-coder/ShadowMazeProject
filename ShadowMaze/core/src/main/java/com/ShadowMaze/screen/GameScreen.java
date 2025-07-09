@@ -5,7 +5,6 @@ import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
-import com.ShadowMaze.model.Player;
 import com.ShadowMaze.model.SuperObject;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -40,9 +39,6 @@ public class GameScreen implements Screen {
     public SuperObject[] obj = new SuperObject[10];
     public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
-    private Player player;
-//    private PlayerRenderer playerRender;
-
     public GameScreen() {
         this.batch = new SpriteBatch();
     }
@@ -81,11 +77,10 @@ public class GameScreen implements Screen {
 //            System.out.println();
 //        }
 
-        cCheck = new CollisionChecker(this);
+//        cCheck = new CollisionChecker(this);
         
         // Initialize player
         knight = new Knight(this);
-        player = new Player(1, "Hero", 100, 0, 1, 1, 1);
         
 
         // Center the maze if needed

@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
  */
 public class OBJ_Chest extends SuperObject{
     public OBJ_Chest() {
-        name = "Chest";
-        image = new Texture("Object/SilverKey.png");
+        name = "BigTreasureChest";
+        image = new Texture("Object/BigTreasureChest.png");
     }
 }
