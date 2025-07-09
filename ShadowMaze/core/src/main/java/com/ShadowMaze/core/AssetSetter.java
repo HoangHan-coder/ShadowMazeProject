@@ -4,6 +4,7 @@
  */
 package com.ShadowMaze.core;
 
+import com.ShadowMaze.model.OBJ_Chest;
 import com.ShadowMaze.model.OBJ_Key;
 import com.ShadowMaze.screen.GameScreen;
 
@@ -24,6 +25,10 @@ public class AssetSetter {
         gs.obj[0] = new OBJ_Key();
         gs.obj[0].mapX = 11 * GameScreen.TILE_SIZE;
         gs.obj[0].mapY = 47 * GameScreen.TILE_SIZE;
+        
+        gs.obj[1] = new OBJ_Chest();
+        gs.obj[1].mapX = 64 * GameScreen.TILE_SIZE;
+        gs.obj[1].mapY = 6 * GameScreen.TILE_SIZE;
     }
         
 }

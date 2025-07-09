@@ -4,9 +4,7 @@ import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
-import com.ShadowMaze.model.Player;
 import com.ShadowMaze.render.MirrorRenderer;
-import com.ShadowMaze.render.PlayerRenderer;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -27,8 +25,6 @@ public class GameScreen implements Screen {
 
     private int[][] maze;
     private int offsetX, offsetY;
-    private Player npc; // nh�n v?t ph?
-    private PlayerRenderer npcRenderer;
     // Screen setting 
     public static final int ORIGINAL_TILE_SIZE = 16;
     public static final int SCALE = 3;
@@ -51,7 +47,6 @@ public class GameScreen implements Screen {
     public SuperObject[] obj = new SuperObject[10];
     public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
-    private Player player;
     private long lastMoveTime = 0;
     private final long moveDelay = 150_000_000; // 150ms delay khi gi? ph�m
     private Texture wallTexture;
@@ -65,7 +60,6 @@ public class GameScreen implements Screen {
         this.batch = new SpriteBatch();
         cCheck = new CollisionChecker(this);
     }
-
 
     @Override
     public void show() {
@@ -86,8 +80,6 @@ public class GameScreen implements Screen {
         map = new Map(this, game);
         map.createButtons(stage);
         knight = new Knight(this);
-        
-
     }
 
 

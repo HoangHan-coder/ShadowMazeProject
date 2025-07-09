@@ -74,8 +74,10 @@ public class Map {
         tiles[1] = new Tile();
         tiles[1].image = new Texture("tiles/soil.png");
 
+        tiles[1].image = new Texture("tiles/grass.png");
+        
         tiles[2] = new Tile();
-        tiles[2].image = new Texture("tiles/background_01.png");
+        tiles[2].image = new Texture("tiles/background_tree.png");
     }
 
     public void drawMap() {
