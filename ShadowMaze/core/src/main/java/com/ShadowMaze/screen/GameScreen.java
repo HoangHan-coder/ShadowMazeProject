@@ -38,9 +38,24 @@ public class GameScreen implements Screen {
     public CollisionChecker cCheck;
     public Knight knight;
     private Player player;
+<<<<<<< Updated upstream
 //    private PlayerRenderer playerRender;
 
     public GameScreen() {
+=======
+    private PlayerRenderer playerRenderer;
+    private long lastMoveTime = 0;
+    private final long moveDelay = 150_000_000; // 150ms delay khi gi? ph�m
+    private Texture wallTexture;
+    private Texture floorTexture;
+    private MirrorRenderer mirrorRenderer;
+    private Stage stage;
+    private boolean isPaused = false;
+    String mapPath;
+    private int currentLevel;
+    public GameScreen(Game game) {
+        this.game = game;
+>>>>>>> Stashed changes
         this.batch = new SpriteBatch();
     }
 
@@ -52,6 +67,7 @@ public class GameScreen implements Screen {
     /**
      * Initialize the game state, player, map, textures
      */
+<<<<<<< Updated upstream
     public void initGame() {     
         // khoi tao me cung
 //        int pathWidth = 1; // ví dụ 3
@@ -76,15 +92,84 @@ public class GameScreen implements Screen {
         cCheck = new CollisionChecker(this);
         
         // Initialize player
+=======
+    private void initGame() {
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage);
+        String mapPath = "maps\\map_0" + currentLevel + ".txt";
+        map = new Map(this, game, mapPath); // "maps\\map_03.txt"
+        map.createButtons(stage);
+>>>>>>> Stashed changes
         knight = new Knight(this);
         player = new Player(1, "Hero", 100, 0, 1, 1, 1);
         System.out.println("Player at: (" + player.getPositionX() + ", " + player.getPositionY() + ")");
 
+<<<<<<< Updated upstream
         // Center the maze if needed
 //        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
 //        offsetY = 0;
+=======
     }
 
+    /**
+     * Xử lý phím di chuyển
+     */
+    private void handleInput() {
+        long currentTime = TimeUtils.nanoTime();
+        if (currentTime - lastMoveTime < moveDelay) {
+            return;
+        }
+
+        int x = player.getPositionX();
+        int y = player.getPositionY();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && maze[y + 1][x] == 1) {
+            player.setPositionY(y + 1);
+            lastMoveTime = currentTime;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && maze[y - 1][x] == 1) {
+            player.setPositionY(y - 1);
+            lastMoveTime = currentTime;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && maze[y][x - 1] == 1) {
+            player.setPositionX(x - 1);
+            lastMoveTime = currentTime;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && maze[y][x + 1] == 1) {
+            player.setPositionX(x + 1);
+            lastMoveTime = currentTime;
+        }
+    }
+
+    /**
+     * Vẽ mê cung với texture
+     */
+    private void drawMaze() {
+        for (int y = 0; y < maze.length; y++) {
+            for (int x = 0; x < maze[0].length; x++) {
+                float drawX = offsetX + x * TILE_SIZE;
+                float drawY = offsetY + y * TILE_SIZE;
+
+                // 1. Vẽ n�?n đen trước (vi�?n và khoảng cách)
+                batch.setColor(Color.BLUE);
+                batch.draw(floorTexture, drawX, drawY, TILE_SIZE, TILE_SIZE);
+                batch.setColor(Color.WHITE); // reset v�? mặc định
+
+                // 2. Vẽ floor phủ lên (mê cung thông)
+                if (maze[y][x] == 1) {
+                    batch.draw(floorTexture, drawX, drawY, TILE_SIZE, TILE_SIZE);
+                } // 3. Vẽ wall nh�? hơn chính giữa
+                else if (maze[y][x] == 0) {
+                    float shrink = 0.9f; // shrink 50% wall
+                    float wallSize = TILE_SIZE * shrink;
+                    float offset = (TILE_SIZE - wallSize) / 2;
+
+                    batch.draw(wallTexture, drawX + offset, drawY + offset, wallSize, wallSize);
+                }
+            }
+        }
+>>>>>>> Stashed changes
+    }
+    public void setIndex(int index) {
+        this.currentLevel = index;
+    }
     @Override
     public void render(float delta) {
         knight.inputHandle();

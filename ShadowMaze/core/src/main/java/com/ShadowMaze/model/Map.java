@@ -19,18 +19,32 @@ public class Map {
     GameScreen gs;
     public Tile[] tiles;
     public int[][] tileNum;
+<<<<<<< Updated upstream
 
     public Map(GameScreen gs) {
+=======
+    private Texture resumeUp, resumeDown;
+    private Texture optionsUp, optionsDown;
+    private Texture quitUp, quitDown, quitDisabled;
+    private Texture how;
+    private Table pauseMenuTable;
+    private boolean isPauseMenuVisible = false;
+    private boolean isPaused = false;
+    private MainMenuScreen screen;
+    private Game game;
+    private String name;
+    public Map(GameScreen gs, Game game, String name) {
+>>>>>>> Stashed changes
         this.gs = gs;
         tiles = new Tile[10];
         tileNum = new int[GameScreen.MAP_Y][GameScreen.MAP_X];
         getImageTiles();
-        loadMap();
+        loadMap(name);
     }
 
-    private void loadMap() {
+    private void loadMap(String name) {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("maps\\map_03.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(name))) { // "maps\\map_03.txt"
             String line;
             int row = 0;
             while ((line = reader.readLine()) != null && row <GameScreen.MAP_Y) {
