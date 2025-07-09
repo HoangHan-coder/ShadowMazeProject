@@ -1,5 +1,6 @@
 package com.ShadowMaze.screen;
-
+import com.ShadowMaze.core.AssetSetter;
+import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.ShadowMaze.model.SuperObject;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -45,6 +47,9 @@ public class GameScreen implements Screen {
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
 
     public Map map;
+    public CollisionChecker cCheck;
+    public SuperObject[] obj = new SuperObject[10];
+    public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
     private Player player;
     private PlayerRenderer playerRenderer;
@@ -59,15 +64,20 @@ public class GameScreen implements Screen {
     public GameScreen(Game game) {
         this.game = game;
         this.batch = new SpriteBatch();
+        cCheck = new CollisionChecker(this);
     }
 //    private PlayerRenderer playerRender;
 
     @Override
     public void show() {
-        initGame(); // G�?i ở đây để Gdx.graphics hoạt động ổn định
-
+        setUpGame();
+        initGame();
     }
-
+    
+    public void setUpGame() {
+        aSetter.setObject();
+    }
+    
     /**
      * Initialize the game state, player, map, textures
      */
@@ -78,7 +88,7 @@ public class GameScreen implements Screen {
         map.createButtons(stage);
         knight = new Knight(this);
         player = new Player(1, "Hero", 100, 0, 1, 1, 1);
-        System.out.println("Player at: (" + player.getPositionX() + ", " + player.getPositionY() + ")");
+        
 
     }
 
@@ -178,6 +188,17 @@ public class GameScreen implements Screen {
         map.drawMap();                        // v? b?n ??
         map.createButtons(stage);
         knight.knightRender(delta);          // v? nh�n v?t
+        map.drawMap();
+        
+        // render object
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) {
+                obj[i].drawObject(this);
+            }
+        }
+        
+        knight.knightRender(delta);
+        System.out.println("Player at: (" + knight.getPositionX()/TILE_SIZE + ", " + knight.getPositionY()/TILE_SIZE + ")");
         batch.end();
         stage.act(Gdx.graphics.getDeltaTime());
         stage.act(delta);

@@ -101,6 +101,35 @@ public class Knight extends Entity {
         } else {
             setDirection(Direction.IDLE);
         }
+        
+        
+        
+        // check tile collision
+        collisionOn = false;
+        gs.cCheck.checkTile(this);
+        
+        // if collision is false, knight can move
+        if (collisionOn == false) {
+            switch (currentDirection) {
+                case UP -> {
+                    positionY -= speed;
+                }
+                case DOWN -> {
+                    positionY += speed;
+                }
+                case LEFT -> {
+                    positionX -= speed;
+                }
+                case RIGHT -> {
+                    positionX += speed;
+                }
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                speed = 8;
+            } else {
+                speed = 4;
+            }
+        }
     }
 
     private Animation<TextureRegion> loadUpAnimation() {

@@ -27,7 +27,7 @@ import java.io.IOException;
 public class Map {
 
     GameScreen gs;
-    Tile[] tiles;
+    public Tile[] tiles;
     public int[][] tileNum;
     private Texture resumeUp, resumeDown;
     private Texture optionsUp, optionsDown;
@@ -101,6 +101,7 @@ public class Map {
                         && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
                         && mapY - GameScreen.TILE_SIZE < gs.knight.positionY + gs.knight.renderY) {
                     gs.batch.draw(tiles[tile].image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+//                }
                 }
             }
         }

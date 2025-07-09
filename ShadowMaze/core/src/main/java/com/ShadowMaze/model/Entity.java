@@ -18,7 +18,7 @@ public class Entity {
     
     Texture image;
     
-    public Rectangle solidArea;
+    public Rectangle solidArea = new Rectangle();
     
     public static enum Direction {
         UP, DOWN, LEFT, RIGHT, IDLE
