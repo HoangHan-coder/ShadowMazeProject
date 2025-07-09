@@ -72,7 +72,6 @@ public class Map {
         tiles[0].collision = true;
 
         tiles[1] = new Tile();
-        tiles[1].image = new Texture("tiles/soil.png");
 
         tiles[1].image = new Texture("tiles/grass.png");
         
