@@ -29,7 +29,7 @@ import java.io.IOException;
  * @author NgKaitou
  */
 public class Map {
-
+    // init map
     GameScreen gs;
 <<<<<<< HEAD
     Tile[] tiles;
