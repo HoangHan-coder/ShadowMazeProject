@@ -88,6 +88,11 @@ public class GameScreen implements Screen {
         hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
         knight = new Knight(this, staminaBar, hpBar);
 
+        cCheck = new CollisionChecker(this);
+        
+        // Initialize player
+        knight = new Knight(this);
+        
 
     }
     // hello
