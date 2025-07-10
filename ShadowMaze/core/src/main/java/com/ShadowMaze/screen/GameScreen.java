@@ -88,14 +88,10 @@ public class GameScreen implements Screen {
         hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
         cCheck = new CollisionChecker(this);
         knight = new Knight(this, staminaBar, hpBar);
-<<<<<<< Updated upstream
 
         cCheck = new CollisionChecker(this);
         
         // Initialize player
-        knight = new Knight(this);
-=======
->>>>>>> Stashed changes
         
 
     }
