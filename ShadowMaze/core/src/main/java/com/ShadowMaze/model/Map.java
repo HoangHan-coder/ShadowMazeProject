@@ -74,7 +74,7 @@ public class Map {
         tiles[1] = new Tile();
 
         tiles[1].image = new Texture("tiles/grass.png");
-        
+
         tiles[2] = new Tile();
         tiles[2].image = new Texture("tiles/background_tree.png");
     }
@@ -106,6 +106,22 @@ public class Map {
 //                }
                 }
             }
+        }
+    }
+
+    public void changeMap(String mapFilePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(mapFilePath))) {
+            String line;
+            int row = 0;
+            while ((line = reader.readLine()) != null && row < GameScreen.MAP_Y) {
+                String[] tokens = line.trim().split(" ");
+                for (int col = 0; col < tokens.length && col < GameScreen.MAP_X; col++) {
+                    tileNum[row][col] = Integer.parseInt(tokens[col]);
+                }
+                row++;
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to read map file: " + e.getMessage());
         }
     }
 

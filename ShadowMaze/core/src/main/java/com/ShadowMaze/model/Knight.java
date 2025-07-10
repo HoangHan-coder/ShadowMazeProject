@@ -5,6 +5,8 @@
 package com.ShadowMaze.model;
 
 import com.ShadowMaze.screen.GameScreen;
+import com.ShadowMaze.ui.HpBar;
+import com.ShadowMaze.ui.StaminaBar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,11 +18,19 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * @author NgKaitou
  */
 public class Knight extends Entity {
+
     int renderX;
     int renderY;
     GameScreen gs;
     float stateTime;
     Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
+    public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
+    public int baseSpeed = 1;          // T?c ?? ?i b?
+    private StaminaBar staminaBar; // Thêm thanh stamina+
+    public int runSpeed = 8;   // t?c ?? khi ch?y (Shift)
+    private float staminaDrainRate = 30f;   // gi?m m?i giây
+    private float staminaRegenRate = 15f;   // h?i m?i giây
+    private HpBar hpBar; // Thêm dòng này vào class Knight
 
     public enum Direction {
         UP, DOWN, LEFT, RIGHT, IDLE
@@ -29,21 +39,30 @@ public class Knight extends Entity {
 
     public Knight(GameScreen gs) {
         this.gs = gs;
+        this.speed = baseSpeed;
 
         setDefaultValue();
-        
+
     }
-    
+
+    public Knight(GameScreen gs, StaminaBar staminaBar, HpBar hpBar) {
+        this.gs = gs;
+        this.staminaBar = staminaBar;
+        this.speed = baseSpeed;
+        this.hpBar = hpBar; // Gán HpBar
+        setDefaultValue();
+    }
+
     private void setDefaultValue() {
-        
+
         stateTime = 0f;
-                
+
         positionX = 36 * GameScreen.TILE_SIZE;
         positionY = 28 * GameScreen.TILE_SIZE;
-        
+
         renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
         renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
-        
+
         moveUp = loadUpAnimation();
         moveDown = loadDownAnimation();
         moveLeft = loadLeftAnimation();
@@ -62,29 +81,22 @@ public class Knight extends Entity {
     }
 
     public void knightRender(float delta) {
-    if (gs.map.isPaused()) {
-        // N?u ?ang t?m d?ng thï¿½ khï¿½ng update animation
-        TextureRegion frame = moveDown.getKeyFrame(0); // frame ??ng yï¿½n
-        gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-        return;
-    }
+        stateTime += delta;
 
-    update(delta); // <- ch? ch?y khi KHï¿½NG pause
+        // Gi?m HP khi gi? Shift
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            if (hpBar.getCurrentHp() > 0) {
+                hpBar.setCurrentHp(hpBar.getCurrentHp() - 30 * delta);
+            }
+        } else {
+            // H?i HP khi không gi? Shift
+            if (hpBar.getCurrentHp() < hpBar.getMaxHp()) {
+                hpBar.setCurrentHp(hpBar.getCurrentHp() + 10 * delta);
+            }
+        }
 
-    Animation<TextureRegion> currentAnim = switch (currentDirection) {
-        case UP -> moveDown; 
-        case DOWN -> moveUp;
-        case LEFT -> moveLeft;
-        case RIGHT -> moveRight;
-        default -> moveDown;
-    };
-
-    TextureRegion frame = currentAnim.getKeyFrame(stateTime, true);
-    gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-}
-
-
-    public void inputHandle() {
+        update(delta); // C?p nh?t stateTime, animation
+// Di chuy?n
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             setDirection(Direction.DOWN);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -96,33 +108,76 @@ public class Knight extends Entity {
         } else {
             setDirection(Direction.IDLE);
         }
-        
-        
-        
+        Animation<TextureRegion> currentAnim = switch (currentDirection) {
+            case UP ->
+                moveDown;
+            case DOWN ->
+                moveUp;
+            case LEFT ->
+                moveLeft;
+            case RIGHT ->
+                moveRight;
+            default ->
+                moveDown;
+        };
+
+        TextureRegion frame = currentAnim.getKeyFrame(stateTime, true);
+        gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+    }
+
+    public void inputHandle(float delta) {
+        float currentStamina = staminaBar.getCurrentStamina();
+        float currentHp = hpBar.getCurrentHp();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && currentStamina > 10f && currentHp > 1f) {
+            isRunning = true;
+            speed = runSpeed;
+
+            float newStamina = currentStamina - staminaDrainRate * delta;
+            if (newStamina < 0) {
+                newStamina = 0;
+            }
+            staminaBar.setCurrentStamina(newStamina);
+
+            // Tr? máu ? ?ây n?u mu?n
+            hpBar.setCurrentHp(currentHp - 30 * delta);
+        } else {
+            isRunning = false;
+            speed = baseSpeed;
+
+            // H?i l?i máu và stamina
+            if (currentHp < hpBar.getMaxHp()) {
+                hpBar.setCurrentHp(currentHp + 10 * delta);
+            }
+            staminaBar.regenerate(delta);
+        }
+        // Sau khi ?ã di chuy?n
+        int tileX = (positionX + GameScreen.TILE_SIZE / 2) / GameScreen.TILE_SIZE;
+        int tileY = (positionY + GameScreen.TILE_SIZE / 2) / GameScreen.TILE_SIZE;
+        // Gi? s? tile có ID = 3 là c?ng chuy?n màn
+        if (gs.map.tileNum[tileY][tileX] == 0) {
+            // Chuy?n sang map m?i
+            gs.map.changeMap("maps/map_02.txt");
+
+            // ??t l?i v? trí ng??i ch?i
+            positionX = 10 * GameScreen.TILE_SIZE;
+            positionY = 10 * GameScreen.TILE_SIZE;
+        }
+       
+
         // check tile collision
         collisionOn = false;
-//        gs.cCheck.checkTile(this);
-        
-        // if collision is false, knight can move
-        if (collisionOn == false) {
+
+        if (!collisionOn) {
             switch (currentDirection) {
-                case UP -> {
+                case UP ->
                     positionY -= speed;
-                }
-                case DOWN -> {
+                case DOWN ->
                     positionY += speed;
-                }
-                case LEFT -> {
+                case LEFT ->
                     positionX -= speed;
-                }
-                case RIGHT -> {
+                case RIGHT ->
                     positionX += speed;
-                }
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                speed = 8;
-            } else {
-                speed = 4;
             }
         }
     }
@@ -130,7 +185,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadUpAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("knight/knight_up_" + (i+1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_up_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -138,7 +193,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadDownAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("knight/knight_down_" + (i+1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_down_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -146,7 +201,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadLeftAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("knight/knight_left_" + (i+1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_left_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -154,7 +209,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadRightAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("knight/knight_right_" + (i+1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_right_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -185,4 +240,3 @@ public class Knight extends Entity {
     }
 
 }
-

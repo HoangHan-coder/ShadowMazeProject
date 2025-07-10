@@ -1,4 +1,5 @@
 package com.ShadowMaze.screen;
+
 import com.ShadowMaze.core.AssetSetter;
 import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
@@ -10,8 +11,11 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.ShadowMaze.model.SuperObject;
+import com.ShadowMaze.ui.HpBar;
+import com.ShadowMaze.ui.StaminaBar;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -29,7 +33,8 @@ public class GameScreen implements Screen {
     public static final int ORIGINAL_TILE_SIZE = 16;
     public static final int SCALE = 3;
     public static final int TILE_SIZE = ORIGINAL_TILE_SIZE * SCALE;
-
+    private StaminaBar staminaBar;
+    private ShapeRenderer shapeRenderer;
     public static final int MAX_SCREEN_COL = 27; // 73 colums
     public static final int MAX_SCREEN_ROW = 19; // 53 rows
 
@@ -54,6 +59,7 @@ public class GameScreen implements Screen {
     private MirrorRenderer mirrorRenderer;
     private Stage stage;
     private boolean isPaused = false;
+    private HpBar hpBar;
 
     public GameScreen(Game game) {
         this.game = game;
@@ -66,11 +72,11 @@ public class GameScreen implements Screen {
         setUpGame();
         initGame();
     }
-    
+
     public void setUpGame() {
         aSetter.setObject();
     }
-    
+
     /**
      * Initialize the game state, player, map, textures
      */
@@ -79,44 +85,60 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         map = new Map(this, game);
         map.createButtons(stage);
-        knight = new Knight(this);
-    }
+        shapeRenderer = new ShapeRenderer();
+        Texture staminaIcon = new Texture(Gdx.files.internal("menu/function/dragon.png"));
+        staminaBar = new StaminaBar(140, 30, 200, 20, 100, staminaIcon);
+        Texture hpBg = new Texture(Gdx.files.internal("menu/function/type5.png"));
+        Texture hpFill = new Texture(Gdx.files.internal("menu/function/type6.png"));
+        hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
+        knight = new Knight(this, staminaBar, hpBar);
 
+
+    }
 
     @Override
     public void render(float delta) {
         if (map.isPaused()) {
             ScreenUtils.clear(0, 0, 0, 1);
             batch.begin();
-            map.drawMap();                        // v? b?n ??
+            map.drawMap();
             batch.end();
             stage.act(delta);
             stage.draw();
             return;
         }
 
-        // Ch? ch?y n?u KHï¿½NG pause
-        knight.inputHandle();                 // x? lï¿½ phï¿½m
-        knight.update(delta);                 // (n?u b?n cï¿½ update riï¿½ng)
+        // C?p nh?t logic
+        knight.inputHandle(Gdx.graphics.getDeltaTime());
+        knight.update(delta);
+
+        // Clear màn hình
         ScreenUtils.clear(0, 0, 0, 1);
 
+        // === V? game b?ng batch ===
         batch.begin();
-        map.drawMap();                        // v? b?n ??
-        map.createButtons(stage);
-        knight.knightRender(delta);          // v? nhï¿½n v?t
         map.drawMap();
-        
-        // render object
+        knight.knightRender(delta);
+
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) {
                 obj[i].drawObject(this);
             }
         }
-        
-        knight.knightRender(delta);
-        System.out.println("Player at: (" + knight.getPositionX()/TILE_SIZE + ", " + knight.getPositionY()/TILE_SIZE + ")");
-        batch.end();
-        stage.act(Gdx.graphics.getDeltaTime());
+
+        batch.end(); // <--- PH?I k?t thúc batch tr??c khi dùng ShapeRenderer
+
+        // === V? thanh th? l?c ===
+        // V? thanh stamina
+        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+//        staminaBar.render(shapeRenderer);
+        hpBar.update(delta);
+        hpBar.render(batch);
+
+// V? ?nh icon bên trái
+        staminaBar.renderIcon(batch);
+
+        // === V? giao di?n UI b?ng Stage ===
         stage.act(delta);
         stage.draw();
     }
@@ -139,7 +161,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        shapeRenderer.dispose();
+
         batch.dispose();
         knight.dispose();
+
     }
 }

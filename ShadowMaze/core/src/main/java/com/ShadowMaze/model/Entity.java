@@ -15,7 +15,6 @@ public class Entity {
     public int positionX; // position x in map
     public int positionY; // position y in map
     public int speed;
-    
     Texture image;
     
     public Rectangle solidArea = new Rectangle();
