@@ -57,7 +57,11 @@ public class Knight extends Entity {
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
     public int baseSpeed = 1;          // T?c ?? ?i b?
     private StaminaBar staminaBar; // Th�m thanh stamina+
+    private StaminaBar staminaBar; // Th�m thanh stamina+
     public int runSpeed = 8;   // t?c ?? khi ch?y (Shift)
+    private float staminaDrainRate = 30f;   // gi?m m?i gi�y
+    private float staminaRegenRate = 15f;   // h?i m?i gi�y
+    private HpBar hpBar; // Th�m d�ng n�y v�o class Knight
     private float staminaDrainRate = 30f;   // gi?m m?i gi�y
     private float staminaRegenRate = 15f;   // h?i m?i gi�y
     private HpBar hpBar; // Th�m d�ng n�y v�o class Knight
@@ -79,6 +83,7 @@ public class Knight extends Entity {
         this.gs = gs;
         this.staminaBar = staminaBar;
         this.speed = baseSpeed;
+        this.hpBar = hpBar; // G�n HpBar
         this.hpBar = hpBar; // G�n HpBar
         setDefaultValue();
     }
@@ -160,6 +165,8 @@ public class Knight extends Entity {
                 moveDown;
         };
 
+>>>>>>> cdb984c22c4c47711bb36fdef5bf83223f1d7b33
+>>>>>>> Stashed changes
         TextureRegion frame = currentAnim.getKeyFrame(stateTime, true);
         gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
         
