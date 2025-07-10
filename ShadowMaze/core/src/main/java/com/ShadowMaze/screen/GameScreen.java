@@ -59,7 +59,7 @@ public class GameScreen implements Screen {
     public GameScreen(Game game) {
         this.game = game;
         this.batch = new SpriteBatch();
-        cCheck = new CollisionChecker(this);
+        
     }
 
     @Override
@@ -86,12 +86,16 @@ public class GameScreen implements Screen {
         Texture hpBg = new Texture(Gdx.files.internal("menu/function/type5.png"));
         Texture hpFill = new Texture(Gdx.files.internal("menu/function/type6.png"));
         hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
+        cCheck = new CollisionChecker(this);
         knight = new Knight(this, staminaBar, hpBar);
+<<<<<<< Updated upstream
 
         cCheck = new CollisionChecker(this);
         
         // Initialize player
         knight = new Knight(this);
+=======
+>>>>>>> Stashed changes
         
 
     }
@@ -124,6 +128,7 @@ public class GameScreen implements Screen {
             }
         }
         knight.knightRender(delta);
+        System.out.println("Player at: (" + knight.getPositionX()/TILE_SIZE + ", " + knight.getPositionY()/TILE_SIZE + ")");
         batch.end(); // 
 
 

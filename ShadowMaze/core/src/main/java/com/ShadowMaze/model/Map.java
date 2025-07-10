@@ -56,7 +56,7 @@ public class Map {
             while ((line = reader.readLine()) != null && row < GameScreen.MAP_X) {
                 String[] tokens = line.trim().split(" ");
                 for (int col = 0; col < tokens.length && col < GameScreen.MAP_X; col++) {
-                    tileNum[row][col] = Integer.parseInt(tokens[col]);
+                    tileNum[GameScreen.MAP_Y - 1 - row][col] = Integer.parseInt(tokens[col]);
                 }
                 row++;
             }
@@ -70,7 +70,11 @@ public class Map {
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
         tiles[0].collision = true;
+<<<<<<< Updated upstream
 
+=======
+        
+>>>>>>> Stashed changes
         tiles[1] = new Tile();
 
         tiles[1].image = new Texture("tiles/grass.png");

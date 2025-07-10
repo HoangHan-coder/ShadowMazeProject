@@ -8,9 +8,6 @@ import static com.ShadowMaze.model.Entity.Direction.RIGHT;
 import com.ShadowMaze.model.Entity;
 import com.ShadowMaze.screen.GameScreen;
 
-/**
- * Ki?m tra va ch?m c?a th?c th? (Entity) v?i tile map.
- */
 public class CollisionChecker {
 
     GameScreen gs;
@@ -41,7 +38,7 @@ public class CollisionChecker {
                 tileNum1 = gs.map.tileNum[nextTopRow][entityLeftCol];
                 tileNum2 = gs.map.tileNum[nextTopRow][entityRightCol];
 
-                if (gs.map.tiles[tileNum1].collision || gs.map.tiles[tileNum2].collision) {
+                if (gs.map.tiles[tileNum1].collision == true || gs.map.tiles[tileNum2].collision == true) {
                     entity.collisionOn = true;
                 }
             }

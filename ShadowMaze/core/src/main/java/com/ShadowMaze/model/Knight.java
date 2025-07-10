@@ -43,19 +43,12 @@ public class Knight extends Entity {
     float stateTime;
     Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
 
-    
-    private Direction currentDirection = Direction.IDLE;
-
     public Knight(GameScreen gs) {
         this.gs = gs;
         this.speed = baseSpeed;
 
         setDefaultValue();
 
-    }
-
-    public enum Direction {
-        UP, DOWN, LEFT, RIGHT, IDLE
     }
 
     public Knight(GameScreen gs, StaminaBar staminaBar, HpBar hpBar) {
@@ -189,6 +182,7 @@ public class Knight extends Entity {
         int tileX = (positionX + GameScreen.TILE_SIZE / 2) / GameScreen.TILE_SIZE;
         int tileY = (positionY + GameScreen.TILE_SIZE / 2) / GameScreen.TILE_SIZE;
         // Gi? s? tile c� ID = 3 l� c?ng chuy?n m�n
+<<<<<<< Updated upstream
         if (gs.map.tileNum[tileY][tileX] == 0) {
             // Chuy?n sang map m?i
             gs.map.changeMap("maps/map_03.txt");
@@ -202,6 +196,20 @@ public class Knight extends Entity {
         // check tile collision
         collisionOn = false;
 //        gs.cCheck.checkTile(this);
+=======
+//        if (gs.map.tileNum[tileY][tileX] == 0) {
+//            // Chuy?n sang map m?i
+////            gs.map.changeMap("maps/map_03.txt");
+//
+//            // ??t l?i v? tr� ng??i ch?i
+//            positionX = 10 * GameScreen.TILE_SIZE;
+//            positionY = 10 * GameScreen.TILE_SIZE;
+//        }
+//       
+
+        // check tile collision
+        collisionOn = false;
+>>>>>>> Stashed changes
         gs.cCheck.checkTile(this);
         
         // if collision is false, knight can move
@@ -220,11 +228,7 @@ public class Knight extends Entity {
                     positionX += speed;
                 }
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                speed = 8;
-            } else {
-                speed = 4;
-            }
+
         }
     }
 
