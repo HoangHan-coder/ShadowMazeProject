@@ -86,7 +86,7 @@ public class GameScreen implements Screen {
         Texture hpBg = new Texture(Gdx.files.internal("menu/function/type5.png"));
         Texture hpFill = new Texture(Gdx.files.internal("menu/function/type6.png"));
         hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
-        knight = new Knight(this);
+        knight = new Knight(this, staminaBar, hpBar);
 
 
     }
@@ -104,7 +104,7 @@ public class GameScreen implements Screen {
         }
 
 
-        knight.inputHandle();
+        knight.inputHandle(delta);
         knight.update(delta);
 
         ScreenUtils.clear(0, 0, 0, 1);
