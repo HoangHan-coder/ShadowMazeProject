@@ -1,14 +1,21 @@
 package com.ShadowMaze.screen;
 
+import com.ShadowMaze.core.AssetSetter;
+import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
-import com.ShadowMaze.model.Player;
-import com.ShadowMaze.render.MazeRenderer;
+import com.ShadowMaze.model.Knight;
+import com.ShadowMaze.model.Map;
 import com.ShadowMaze.render.MirrorRenderer;
-import com.ShadowMaze.render.PlayerRenderer;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.ShadowMaze.model.SuperObject;
+import com.ShadowMaze.ui.HpBar;
+import com.ShadowMaze.ui.StaminaBar;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -18,196 +25,120 @@ import java.util.List;
 public class GameScreen implements Screen {
 
     protected final Game game;
-    private final SpriteBatch batch;
+    public final SpriteBatch batch;
 
     private int[][] maze;
-    private int TILE_SIZE;
     private int offsetX, offsetY;
-    private Player npc; // nh�n v?t ph?
-    private PlayerRenderer npcRenderer;
+    // Screen setting 
+    public static final int ORIGINAL_TILE_SIZE = 16;
+    public static final int SCALE = 3;
+    public static final int TILE_SIZE = ORIGINAL_TILE_SIZE * SCALE;
+    private StaminaBar staminaBar;
+    private ShapeRenderer shapeRenderer;
+    public static final int MAX_SCREEN_COL = 27; // 73 colums
+    public static final int MAX_SCREEN_ROW = 19; // 53 rows
 
-    private MazeGenerator mazeGenerator;
-    private Player player;
-    private PlayerRenderer playerRenderer;
+    public static final int SCREEN_WIDTH = MAX_SCREEN_COL * TILE_SIZE;
+    public static final int SCREEN_HEIGHT = MAX_SCREEN_ROW * TILE_SIZE;
+
+    // Map setting
+    public static final int MAP_X = 73;
+    public static final int MAP_Y = 53;
+    public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
+    public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
+
+    public Map map;
+    public CollisionChecker cCheck;
+    public SuperObject[] obj = new SuperObject[10];
+    public AssetSetter aSetter = new AssetSetter(this);
+    public Knight knight;
     private long lastMoveTime = 0;
-    private final long moveDelay = 150_000_000; // 150ms delay khi gi? ph�m
+    private final long moveDelay = 150_000_000; // 150ms delay khi gi? ph�m
     private Texture wallTexture;
     private Texture floorTexture;
     private MirrorRenderer mirrorRenderer;
     private Stage stage;
     private boolean isPaused = false;
-    private MazeRenderer mazeRenderer;
+    private HpBar hpBar;
 
     public GameScreen(Game game) {
         this.game = game;
         this.batch = new SpriteBatch();
+        cCheck = new CollisionChecker(this);
     }
 
     @Override
     public void show() {
-        initGame(); // G�?i ở đây để Gdx.graphics hoạt động ổn định
+        setUpGame();
+        initGame();
+    }
+
+    public void setUpGame() {
+        aSetter.setObject();
     }
 
     /**
-     * Khởi tạo mê cung và các thành phần game
+     * Initialize the game state, player, map, textures
      */
     private void initGame() {
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage); // ?? nh?n input
-        // 1. Tạo mê cung
-        mazeGenerator = new MazeGenerator(21, 21); // Có thể thay đổi tùy ý
-        maze = mazeGenerator.generate(1, 1);
+        Gdx.input.setInputProcessor(stage);
+        map = new Map(this, game);
+        map.createButtons(stage);
+        shapeRenderer = new ShapeRenderer();
+        Texture staminaIcon = new Texture(Gdx.files.internal("menu/function/dragon.png"));
+        staminaBar = new StaminaBar(140, 30, 200, 20, 100, staminaIcon);
+        Texture hpBg = new Texture(Gdx.files.internal("menu/function/type5.png"));
+        Texture hpFill = new Texture(Gdx.files.internal("menu/function/type6.png"));
+        hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
+        knight = new Knight(this, staminaBar, hpBar);
 
-        // 2. Lấy kích thước màn hình
-        int screenWidth = Gdx.graphics.getWidth();
-        int screenHeight = Gdx.graphics.getHeight();
-
-        // 3. Tính TILE_SIZE tự động để maze vừa khít
-        int tileSizeX = screenWidth / maze[0].length;
-        int tileSizeY = screenHeight / maze.length;
-        TILE_SIZE = Math.max(32, Math.min(tileSizeX, tileSizeY));
-
-        // 4. Tính offset để canh giữa mê cung
-        int mazePixelWidth = maze[0].length * TILE_SIZE;
-        int mazePixelHeight = maze.length * TILE_SIZE;
-        offsetX = (screenWidth - mazePixelWidth) / 2;
-        offsetY = (screenHeight - mazePixelHeight) / 2;
-
-        // 5. Load texture
-        wallTexture = new Texture("wall.png");
-        floorTexture = new Texture("floor.png");
-
-        // 6. Tạo ngư�?i chơi
-        player = new Player(1, "Hero", 100, 0,
-                mazeGenerator.getStartX(), mazeGenerator.getStartY(), 1);
-
-        // 7. Load animation
-        Animation<TextureRegion> anim = loadPlayerAnimation();
-        playerRenderer = new PlayerRenderer(player, anim);
-        // Load animation cho g??ng (ho?c v?t trang tr�)
-        Animation<TextureRegion> mirrorAnim = loadPlayerItemCheast();
-
-        // T?o danh s�ch v? tr� g??ng (v� d? ng?u nhi�n)
-        List<int[]> mirrorPositions = new ArrayList<>();
-        for (int i = 0; i < 5; i++) { // t?o 5 g??ng
-            int x, y;
-            do {
-                x = (int) (Math.random() * maze[0].length);
-                y = (int) (Math.random() * maze.length);
-            } while (maze[y][x] != 1 || (x == player.getPositionX() && y == player.getPositionY()));
-            mirrorPositions.add(new int[]{x, y});
-        }
-
-        mirrorRenderer = new MirrorRenderer(mirrorAnim, mirrorPositions);
-        mazeRenderer = new MazeRenderer(maze, TILE_SIZE,game);
-        mazeRenderer.createButtons(stage); // ? gi? s? ho?t ??ng
 
     }
-
-    /**
-     * Load các frame nhân vật từ file frame_0.png đến frame_3.png
-     */
-    private Animation<TextureRegion> loadPlayerAnimation() {
-        TextureRegion[] frames = new TextureRegion[4];
-        for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("Avatar\\frame_" + i + ".png"));
-        }
-        return new Animation<>(0.2f, frames);
-    }
-
-    private Animation<TextureRegion> loadPlayerItemCheast() {
-        TextureRegion[] frames = new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
-            frames[i] = new TextureRegion(new Texture("Character\\framee" + i + ".png"));
-        }
-        return new Animation<>(0.2f, frames);
-    }
-
-    /**
-     * Xử lý phím di chuyển
-     */
-    private void handleInput() {
-        long currentTime = TimeUtils.nanoTime();
-        if (currentTime - lastMoveTime < moveDelay) {
+    // hello
+    @Override
+    public void render(float delta) {
+        if (map.isPaused()) {
+            ScreenUtils.clear(0, 0, 0, 1);
+            batch.begin();
+            map.drawMap();
+            batch.end();
+            stage.act(delta);
+            stage.draw();
             return;
         }
 
-        int x = player.getPositionX();
-        int y = player.getPositionY();
+        // C?p nh?t logic
+        knight.inputHandle(Gdx.graphics.getDeltaTime());
+        knight.update(delta);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) && maze[y + 1][x] == 1) {
-            player.setPositionY(y + 1);
-            lastMoveTime = currentTime;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && maze[y - 1][x] == 1) {
-            player.setPositionY(y - 1);
-            lastMoveTime = currentTime;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && maze[y][x - 1] == 1) {
-            player.setPositionX(x - 1);
-            lastMoveTime = currentTime;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && maze[y][x + 1] == 1) {
-            player.setPositionX(x + 1);
-            lastMoveTime = currentTime;
-        }
-    }
-
-    /**
-     * Vẽ mê cung với texture
-     */
-    private void drawMaze() {
-        for (int y = 0; y < maze.length; y++) {
-            for (int x = 0; x < maze[0].length; x++) {
-                float drawX = offsetX + x * TILE_SIZE;
-                float drawY = offsetY + y * TILE_SIZE;
-
-                // 1. Vẽ n�?n đen trước (vi�?n và khoảng cách)
-                batch.setColor(Color.BLUE);
-                batch.draw(floorTexture, drawX, drawY, TILE_SIZE, TILE_SIZE);
-                batch.setColor(Color.WHITE); // reset v�? mặc định
-
-                // 2. Vẽ floor phủ lên (mê cung thông)
-                if (maze[y][x] == 1) {
-                    batch.draw(floorTexture, drawX, drawY, TILE_SIZE, TILE_SIZE);
-                } // 3. Vẽ wall nh�? hơn chính giữa
-                else if (maze[y][x] == 0) {
-                    float shrink = 0.9f; // shrink 50% wall
-                    float wallSize = TILE_SIZE * shrink;
-                    float offset = (TILE_SIZE - wallSize) / 2;
-
-                    batch.draw(wallTexture, drawX + offset, drawY + offset, wallSize, wallSize);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void render(float delta) {
+        // Clear m�n h�nh
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // N?u game KH�NG b? t?m d?ng th� m?i update v� render logic
-        if (!mazeRenderer.isPaused()) {
-            handleInput();
-            playerRenderer.update(delta);
-            mirrorRenderer.update(delta);
+        // === V? game b?ng batch ===
+        batch.begin();
+        map.drawMap();
+        knight.knightRender(delta);
 
-            batch.begin();
-            drawMaze();
-            mirrorRenderer.render(batch, TILE_SIZE, offsetX, offsetY);
-            playerRenderer.render(batch, TILE_SIZE, offsetX, offsetY);
-            batch.end();
-
-            // Ki?m tra chi?n th?ng
-            if (player.getPositionX() == mazeGenerator.getEndX()
-                    && player.getPositionY() == mazeGenerator.getEndY()) {
-                System.out.println("? YOU WIN!");
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) {
+                obj[i].drawObject(this);
             }
-        } else {
-            // N?u pause: ch? v? n?n t?m d?ng n?u mu?n
-            batch.begin();
-            drawMaze(); // ho?c v? n?n, ho?c ?? tr?ng
-            batch.end();
         }
 
-        // Giao di?n lu�n ch?y
+        batch.end(); // <--- PH?I k?t th�c batch tr??c khi d�ng ShapeRenderer
+
+        // === V? thanh th? l?c ===
+        // V? thanh stamina
+        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+//        staminaBar.render(shapeRenderer);
+        hpBar.update(delta);
+        hpBar.render(batch);
+
+// V? ?nh icon b�n tr�i
+        staminaBar.renderIcon(batch);
+
+        // === V? giao di?n UI b?ng Stage ===
         stage.act(delta);
         stage.draw();
     }
@@ -230,11 +161,10 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        shapeRenderer.dispose();
+
         batch.dispose();
-        wallTexture.dispose();
-        floorTexture.dispose();
-        for (TextureRegion f : playerRenderer.getAnimation().getKeyFrames()) {
-            f.getTexture().dispose();
-        }
+        knight.dispose();
+
     }
 }

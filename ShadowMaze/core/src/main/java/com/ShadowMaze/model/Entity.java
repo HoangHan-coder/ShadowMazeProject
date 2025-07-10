@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Rectangle;
 public class Entity {
     public int positionX; // position x in map
     public int positionY; // position y in map
+<<<<<<< HEAD
     Texture image;
     public Rectangle solidArea;
     public enum Direction {
@@ -21,6 +22,18 @@ public class Entity {
     }
 
     public Direction currentDirection = Direction.IDLE;
+=======
+    public int speed;
+    Texture image;
+    
+    public Rectangle solidArea = new Rectangle();
+    
+    public static enum Direction {
+        UP, DOWN, LEFT, RIGHT, IDLE
+    }
+    public Direction currentDirection = Direction.IDLE;
+    public boolean collisionOn = false;
+>>>>>>> cdb984c22c4c47711bb36fdef5bf83223f1d7b33
     
     public int getPositionX() {
         return positionX;
