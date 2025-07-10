@@ -28,7 +28,7 @@ import java.io.IOException;
 public class Map {
     // init map
     GameScreen gs;
-    Tile[] tiles;
+    public Tile[] tiles;
     public int[][] tileNum;
     private Texture resumeUp, resumeDown;
     private Texture optionsUp, optionsDown;
