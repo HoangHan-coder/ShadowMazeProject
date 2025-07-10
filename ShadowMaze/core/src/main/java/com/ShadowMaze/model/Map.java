@@ -26,6 +26,7 @@ import java.io.IOException;
  * @author NgKaitou
  */
 public class Map {
+
     // init map
     GameScreen gs;
     public Tile[] tiles;
@@ -70,13 +71,14 @@ public class Map {
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
         tiles[0].collision = true;
-
+        tiles[1] = new Tile();
+        tiles[1].image = new Texture("tiles/grass.png");
 
         tiles[2] = new Tile();
         tiles[2].image = new Texture("tiles/background_tree.png");
     }
 
-   public void drawMap() {
+    public void drawMap() {
 
         // draw background
         for (int y = 0; y < GameScreen.SCREEN_HEIGHT / GameScreen.TILE_SIZE; y++) {

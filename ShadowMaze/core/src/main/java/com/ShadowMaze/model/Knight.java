@@ -83,8 +83,8 @@ public class Knight extends Entity {
         solidArea.width = 32;
         solidArea.height = 32;
         
-        positionX = 60 * GameScreen.TILE_SIZE;
-        positionY = 39 * GameScreen.TILE_SIZE;
+        positionX = 36 * GameScreen.TILE_SIZE;
+        positionY = 28 * GameScreen.TILE_SIZE;
         
         moveUp = loadUpAnimation();
         moveDown = loadDownAnimation();
