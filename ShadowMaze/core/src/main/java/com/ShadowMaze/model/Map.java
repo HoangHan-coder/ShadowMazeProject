@@ -5,6 +5,7 @@
 package com.ShadowMaze.model;
 
 import com.ShadowMaze.screen.GameScreen;
+import com.badlogic.gdx.graphics.Texture;
 import com.ShadowMaze.screen.MainMenuScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -26,6 +27,7 @@ import java.io.IOException;
  */
 public class Map {
 
+    // init map
     GameScreen gs;
     public Tile[] tiles;
     public int[][] tileNum;
@@ -66,12 +68,10 @@ public class Map {
     }
 
     private void getImageTiles() {
-
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
         tiles[0].collision = true;
         tiles[1] = new Tile();
-
         tiles[1].image = new Texture("tiles/grass.png");
 
         tiles[2] = new Tile();
@@ -135,7 +135,7 @@ public class Map {
         pauseMenuTable.center();
 
         // T?o c�c n�t trong b?ng menu
-        ImageButton resumeButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type1.png"))));
+        ImageButton resumeButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type7.png"))));
         ImageButton optionsButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type3.png"))));
         ImageButton quitButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type4.png"))));
 

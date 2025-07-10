@@ -1,6 +1,6 @@
 package com.ShadowMaze.core;
 
-import com.ShadowMaze.screen.GameScreen;
+
 import com.ShadowMaze.screen.MainMenuScreen;
 import com.badlogic.gdx.Game;
 

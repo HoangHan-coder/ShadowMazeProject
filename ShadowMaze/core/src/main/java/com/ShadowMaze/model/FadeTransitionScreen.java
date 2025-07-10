@@ -32,10 +32,10 @@ public class FadeTransitionScreen implements Screen {
     @Override
     public void render(float delta) {
         if (transitioning) {
-            alpha += delta; // t?ng ?? m? d?n
+            alpha += delta; 
             if (alpha >= 1f) {
                 transitioning = false;
-                game.setScreen(toScreen); // chuy?n sang màn chính
+                game.setScreen(toScreen);
             } else {
                 fromScreen.render(delta);
                 Gdx.gl.glEnable(GL20.GL_BLEND);
