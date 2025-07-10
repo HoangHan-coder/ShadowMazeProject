@@ -32,7 +32,7 @@ public class Knight extends Entity {
     int offsetY;
     
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
-    public int baseSpeed = 1;          // T?c ?? ?i b?
+    public int baseSpeed = 4;          // T?c ?? ?i b?
 
     private StaminaBar staminaBar; // Th�m thanh stamina+
     public int runSpeed = 8;   // t?c ?? khi ch?y (Shift)
@@ -191,7 +191,7 @@ public class Knight extends Entity {
         // Gi? s? tile c� ID = 3 l� c?ng chuy?n m�n
         if (gs.map.tileNum[tileY][tileX] == 0) {
             // Chuy?n sang map m?i
-            gs.map.changeMap("maps/map_03.txt");
+//            gs.map.changeMap("maps/map_03.txt");
 
             // ??t l?i v? tr� ng??i ch?i
             positionX = 10 * GameScreen.TILE_SIZE;
