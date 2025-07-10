@@ -62,7 +62,7 @@ public class Map {
 
     private void loadMap() {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("maps\\map_03.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("maps\\map_02.txt"))) {
             String line;
             int row = 0;
 <<<<<<< HEAD

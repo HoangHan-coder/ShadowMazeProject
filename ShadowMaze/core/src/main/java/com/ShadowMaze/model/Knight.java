@@ -4,76 +4,46 @@
  */
 package com.ShadowMaze.model;
 
+import static com.ShadowMaze.model.Entity.Direction.DOWN;
+import static com.ShadowMaze.model.Entity.Direction.LEFT;
+import static com.ShadowMaze.model.Entity.Direction.RIGHT;
+import static com.ShadowMaze.model.Entity.Direction.UP;
 import com.ShadowMaze.screen.GameScreen;
-<<<<<<< HEAD
-=======
-import com.ShadowMaze.ui.HpBar;
-import com.ShadowMaze.ui.StaminaBar;
->>>>>>> cdb984c22c4c47711bb36fdef5bf83223f1d7b33
+import com.ShadowMaze.uis.HpBar;
+import com.ShadowMaze.uis.StaminaBar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-<<<<<<< HEAD
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-=======
->>>>>>> cdb984c22c4c47711bb36fdef5bf83223f1d7b33
 
 /**
  *
  * @author NgKaitou
  */
 public class Knight extends Entity {
-<<<<<<< HEAD
-=======
-
->>>>>>> cdb984c22c4c47711bb36fdef5bf83223f1d7b33
     int renderX;
     int renderY;
-    GameScreen gs;
-    float stateTime;
-    Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
-<<<<<<< HEAD
-
-    public Knight(GameScreen gs) {
-        this.gs = gs;
-        solidArea = new Rectangle();
-        setDefaultValue();
-        
-    }
     
-    private void setDefaultValue() {
-        
-        stateTime = 0f;
-                
-        positionX = 36 * GameScreen.TILE_SIZE;
-        positionY = 28 * GameScreen.TILE_SIZE;
-        
-        renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
-        renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
-        
-        solidArea.x = 8;
-        solidArea.y = 16;
-        solidArea.width = 32;
-        solidArea.height = 32;
-        
-=======
+    int offsetX;
+    int offsetY;
+    
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
     public int baseSpeed = 1;          // T?c ?? ?i b?
-    private StaminaBar staminaBar; // Th�m thanh stamina+
+
     private StaminaBar staminaBar; // Th�m thanh stamina+
     public int runSpeed = 8;   // t?c ?? khi ch?y (Shift)
     private float staminaDrainRate = 30f;   // gi?m m?i gi�y
     private float staminaRegenRate = 15f;   // h?i m?i gi�y
     private HpBar hpBar; // Th�m d�ng n�y v�o class Knight
-    private float staminaDrainRate = 30f;   // gi?m m?i gi�y
-    private float staminaRegenRate = 15f;   // h?i m?i gi�y
-    private HpBar hpBar; // Th�m d�ng n�y v�o class Knight
+    GameScreen gs;
+    float stateTime;
+    Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
 
-    public enum Direction {
-        UP, DOWN, LEFT, RIGHT, IDLE
-    }
+    
     private Direction currentDirection = Direction.IDLE;
 
     public Knight(GameScreen gs) {
@@ -82,6 +52,10 @@ public class Knight extends Entity {
 
         setDefaultValue();
 
+    }
+
+    public enum Direction {
+        UP, DOWN, LEFT, RIGHT, IDLE
     }
 
     public Knight(GameScreen gs, StaminaBar staminaBar, HpBar hpBar) {
@@ -94,16 +68,24 @@ public class Knight extends Entity {
     }
 
     private void setDefaultValue() {
-
+        speed = 4; // di chuyển 1 ô mỗi lần nhấn
         stateTime = 0f;
-
-        positionX = 36 * GameScreen.TILE_SIZE;
-        positionY = 28 * GameScreen.TILE_SIZE;
-
+        
         renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
         renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
-
->>>>>>> cdb984c22c4c47711bb36fdef5bf83223f1d7b33
+        
+         // set hitbox knight
+        offsetX = 8;
+        offsetY = 4;
+        solidArea = new Rectangle();
+        solidArea.x = offsetX;
+        solidArea.y = offsetY;
+        solidArea.width = 32;
+        solidArea.height = 32;
+        
+        positionX = 60 * GameScreen.TILE_SIZE;
+        positionY = 39 * GameScreen.TILE_SIZE;
+        
         moveUp = loadUpAnimation();
         moveDown = loadDownAnimation();
         moveLeft = loadLeftAnimation();
@@ -124,14 +106,50 @@ public class Knight extends Entity {
     public void knightRender(float delta) {
         update(delta);
         Animation<TextureRegion> currentAnim = switch (currentDirection) {
-        case UP -> moveUp;
-        case DOWN -> moveDown;
+        case UP -> moveDown;
+        case DOWN -> moveUp;
         case LEFT -> moveLeft;
         case RIGHT -> moveRight;
         default -> moveDown; // fallback frame
         };
         
-        stateTime += delta;
+        TextureRegion frame = currentAnim.getKeyFrame(stateTime, true);
+        gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+        
+         //debug hit box
+//        ShapeRenderer shapeRenderer = new ShapeRenderer();
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setColor(Color.RED);
+//        shapeRenderer.rect(
+//                renderX + solidArea.x,
+//                renderY + solidArea.y,
+//                solidArea.width,
+//                solidArea.height
+//        );
+//       
+//        shapeRenderer.end();
+    }
+
+    private void dicrectionHandle() {
+
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            setDirection(Direction.UP);           
+        } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            setDirection(Direction.DOWN);            
+        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            setDirection(Direction.LEFT);            
+        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            setDirection(Direction.RIGHT);            
+        } else {
+            setDirection(Direction.IDLE);
+        }
+        
+    }   
+        
+    public void inputHandle(float delta) {
+        dicrectionHandle();
+        float currentStamina = staminaBar.getCurrentStamina();
+        float currentHp = hpBar.getCurrentHp();
 
         // Gi?m HP khi gi? Shift
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
@@ -144,58 +162,7 @@ public class Knight extends Entity {
                 hpBar.setCurrentHp(hpBar.getCurrentHp() + 10 * delta);
             }
         }
-
-        update(delta); // C?p nh?t stateTime, animation
-// Di chuy?n
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            setDirection(Direction.DOWN);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            setDirection(Direction.UP);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            setDirection(Direction.LEFT);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            setDirection(Direction.RIGHT);
-        } else {
-            setDirection(Direction.IDLE);
-        }
-        Animation<TextureRegion> currentAnim = switch (currentDirection) {
-            case UP ->
-                moveDown;
-            case DOWN ->
-                moveUp;
-            case LEFT ->
-                moveLeft;
-            case RIGHT ->
-                moveRight;
-            default ->
-                moveDown;
-        };
-
-        TextureRegion frame = currentAnim.getKeyFrame(stateTime, true);
-        gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-    }
-
-    public void inputHandle() {
-        int speed = 8; // di chuyển 1 ô mỗi lần nhấn
-
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            setDirection(Direction.UP);
-            positionY += speed;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            setDirection(Direction.DOWN);
-            positionY -= speed;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            setDirection(Direction.LEFT);
-            positionX -= speed;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            setDirection(Direction.RIGHT);
-            positionX += speed;
-        } else {
-            setDirection(Direction.IDLE);
-    public void inputHandle(float delta) {
-        float currentStamina = staminaBar.getCurrentStamina();
-        float currentHp = hpBar.getCurrentHp();
-
+        
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && currentStamina > 10f && currentHp > 1f) {
             isRunning = true;
             speed = runSpeed;
@@ -224,7 +191,7 @@ public class Knight extends Entity {
         // Gi? s? tile c� ID = 3 l� c?ng chuy?n m�n
         if (gs.map.tileNum[tileY][tileX] == 0) {
             // Chuy?n sang map m?i
-            gs.map.changeMap("maps/map_02.txt");
+            gs.map.changeMap("maps/map_03.txt");
 
             // ??t l?i v? tr� ng??i ch?i
             positionX = 10 * GameScreen.TILE_SIZE;
@@ -234,17 +201,28 @@ public class Knight extends Entity {
 
         // check tile collision
         collisionOn = false;
-
-        if (!collisionOn) {
+//        gs.cCheck.checkTile(this);
+        
+        // if collision is false, knight can move
+        if (collisionOn == false) {
             switch (currentDirection) {
-                case UP ->
+                case UP -> {
                     positionY -= speed;
-                case DOWN ->
+                }
+                case DOWN -> {
                     positionY += speed;
-                case LEFT ->
+                }
+                case LEFT -> {
                     positionX -= speed;
-                case RIGHT ->
+                }
+                case RIGHT -> {
                     positionX += speed;
+                }
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                speed = 8;
+            } else {
+                speed = 4;
             }
         }
     }

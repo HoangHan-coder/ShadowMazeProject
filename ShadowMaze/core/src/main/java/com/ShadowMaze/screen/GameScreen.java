@@ -11,8 +11,8 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.ShadowMaze.model.SuperObject;
-import com.ShadowMaze.ui.HpBar;
-import com.ShadowMaze.ui.StaminaBar;
+import com.ShadowMaze.uis.HpBar;
+import com.ShadowMaze.uis.StaminaBar;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -27,14 +27,11 @@ public class GameScreen implements Screen {
     protected final Game game;
     public final SpriteBatch batch;
 
-    private int[][] maze;
-    private int offsetX, offsetY;
     // Screen setting 
     public static final int ORIGINAL_TILE_SIZE = 16;
     public static final int SCALE = 3;
     public static final int TILE_SIZE = ORIGINAL_TILE_SIZE * SCALE;
-    private StaminaBar staminaBar;
-    private ShapeRenderer shapeRenderer;
+    
     public static final int MAX_SCREEN_COL = 27; // 73 colums
     public static final int MAX_SCREEN_ROW = 19; // 53 rows
 
@@ -42,8 +39,8 @@ public class GameScreen implements Screen {
     public static final int SCREEN_HEIGHT = MAX_SCREEN_ROW * TILE_SIZE;
 
     // Map setting
-    public static final int MAP_X = 73;
-    public static final int MAP_Y = 53;
+    public static final int MAP_X = 121;
+    public static final int MAP_Y = 83;
     public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
 
@@ -52,10 +49,8 @@ public class GameScreen implements Screen {
     public SuperObject[] obj = new SuperObject[10];
     public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
-    private long lastMoveTime = 0;
-    private final long moveDelay = 150_000_000; // 150ms delay khi gi? phï¿½m
-    private Texture wallTexture;
-    private Texture floorTexture;
+    private StaminaBar staminaBar;
+    private ShapeRenderer shapeRenderer;
     private MirrorRenderer mirrorRenderer;
     private Stage stage;
     private boolean isPaused = false;
@@ -108,37 +103,33 @@ public class GameScreen implements Screen {
             return;
         }
 
-        // C?p nh?t logic
-        knight.inputHandle(Gdx.graphics.getDeltaTime());
+
+        knight.inputHandle(delta);
         knight.update(delta);
 
-        // Clear màn hình
         ScreenUtils.clear(0, 0, 0, 1);
 
-        // === V? game b?ng batch ===
         batch.begin();
         map.drawMap();
-        knight.knightRender(delta);
+        
 
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) {
                 obj[i].drawObject(this);
             }
         }
+        knight.knightRender(delta);
+        batch.end(); // 
 
-        batch.end(); // <--- PH?I k?t thúc batch tr??c khi dùng ShapeRenderer
 
-        // === V? thanh th? l?c ===
-        // V? thanh stamina
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
 //        staminaBar.render(shapeRenderer);
         hpBar.update(delta);
         hpBar.render(batch);
 
-// V? ?nh icon bên trái
+
         staminaBar.renderIcon(batch);
 
-        // === V? giao di?n UI b?ng Stage ===
         stage.act(delta);
         stage.draw();
     }

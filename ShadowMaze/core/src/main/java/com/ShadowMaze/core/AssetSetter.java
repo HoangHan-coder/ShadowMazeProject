@@ -23,12 +23,12 @@ public class AssetSetter {
     public void setObject() {
         
         gs.obj[0] = new OBJ_Key();
-        gs.obj[0].mapX = 11 * GameScreen.TILE_SIZE;
-        gs.obj[0].mapY = 47 * GameScreen.TILE_SIZE;
+        gs.obj[0].mapX = 35 * GameScreen.TILE_SIZE; // 35 62
+        gs.obj[0].mapY = 62 * GameScreen.TILE_SIZE;
         
         gs.obj[1] = new OBJ_Chest();
-        gs.obj[1].mapX = 64 * GameScreen.TILE_SIZE;
-        gs.obj[1].mapY = 6 * GameScreen.TILE_SIZE;
+        gs.obj[1].mapX = 88 * GameScreen.TILE_SIZE;
+        gs.obj[1].mapY = 21 * GameScreen.TILE_SIZE;
     }
         
 }

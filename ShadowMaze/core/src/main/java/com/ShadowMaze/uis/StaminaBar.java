@@ -1,5 +1,5 @@
 // File: StaminaBar.java
-package com.ShadowMaze.ui;
+package com.ShadowMaze.uis;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -11,13 +11,13 @@ public class StaminaBar {
 
     private float maxStamina;
     private float currentStamina;
-    private float regenRate = 20f; // t?c ?? h?i stamina m?i giây
+    private float regenRate = 20f; // t?c ?? h?i stamina m?i giï¿½y
     private int x, y, width, height;
     private float displayStamina = 0f;
-    private float displaySpeed = 60f; // t?c ?? hi?n th? m??t (??n v?: stamina/giây)
+    private float displaySpeed = 60f; // t?c ?? hi?n th? m??t (??n v?: stamina/giï¿½y)
     private Texture icon;
-    private int iconSize = 24; // kích th??c vuông c?a icon
-    private int iconPadding = 6; // kho?ng cách t? icon ??n thanh
+    private int iconSize = 24; // kï¿½ch th??c vuï¿½ng c?a icon
+    private int iconPadding = 6; // kho?ng cï¿½ch t? icon ??n thanh
 
     public void regenerate(float delta) {
         if (currentStamina < maxStamina) {
