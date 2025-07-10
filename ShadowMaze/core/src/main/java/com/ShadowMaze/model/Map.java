@@ -28,7 +28,7 @@ import java.io.IOException;
  * @author NgKaitou
  */
 public class Map {
-
+    // init map
     GameScreen gs;
     Tile[] tiles;
     public int[][] tileNum;
