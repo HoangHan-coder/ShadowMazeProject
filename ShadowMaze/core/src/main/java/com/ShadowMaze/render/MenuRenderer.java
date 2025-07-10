@@ -80,7 +80,7 @@ public class MenuRenderer implements Screen {
         table.add(quitButton).size(200, 60).pad(5);
         stage.addActor(table);
 
-        // ? T?o animation t? nhi?u ?nh riêng
+
         FileHandle folder = Gdx.files.internal("menu/nv1");
         Array<TextureRegion> frames = new Array<>();
         for (FileHandle file : folder.list()) {
@@ -91,21 +91,21 @@ public class MenuRenderer implements Screen {
             }
         }
 
-        // ? T?o animation l?p l?i m?i 0.1 giây
+
         walkAnimation = new Animation<TextureRegion>(0.1f, frames);
-        // ? T?o animation th? hai t? folder menu/nv2
+
         FileHandle folder2 = Gdx.files.internal("menu/nv2");
         Array<TextureRegion> idleFrames = new Array<>();
 
         for (FileHandle file : folder2.list()) {
             if (file.extension().equalsIgnoreCase("png")) {
                 Texture tex = new Texture(file);
-                idleTextures.add(tex);                  // l?u ?? dispose
-                idleFrames.add(new TextureRegion(tex)); // thêm frame
+                idleTextures.add(tex);                  
+                idleFrames.add(new TextureRegion(tex)); 
             }
         }
 
-        idleAnimation = new Animation<TextureRegion>(0.15f, idleFrames);  // 0.15 giây m?i frame
+        idleAnimation = new Animation<TextureRegion>(0.15f, idleFrames);  
 
     }
 
@@ -120,16 +120,15 @@ public class MenuRenderer implements Screen {
         stage.act(delta);
         stage.draw();
 
-        // ? C?p nh?t animation
         stateTime += delta;
         TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
 
         batch.begin();
-        batch.draw(currentFrame, 500, 200); // v? nhân v?t
+        batch.draw(currentFrame, 500, 200); 
         batch.end();
         TextureRegion idleFrame = idleAnimation.getKeyFrame(stateTime, true);
         batch.begin();
-        batch.draw(idleFrame, 100, 100); // v? idle nhân v?t bên ph?i
+        batch.draw(idleFrame, 100, 100); 
         batch.end();
 
     }

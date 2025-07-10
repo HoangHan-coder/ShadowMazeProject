@@ -1,4 +1,4 @@
-package com.ShadowMaze.ui;
+package com.ShadowMaze.uis;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
@@ -25,7 +25,6 @@ public class HpBar {
         this.maxHp = maxHp;
         this.currentHp = maxHp;
 
-        // ?? Kh?i t?o NinePatch: C?t vi?n 5 pixel (tu? vào ?nh b?n)
         this.bgPatch = new NinePatch(bg, 5, 5, 5, 5);
         this.fillPatch = new NinePatch(fill, 5, 5, 5, 5);
     }
@@ -52,8 +51,8 @@ public class HpBar {
         float ratio = displayHp / maxHp;
 
         batch.begin();
-        bgPatch.draw(batch, x, y, width, height);                     // N?n HP
-        fillPatch.draw(batch, x, y, width * ratio, height);          // Thanh ??
+        bgPatch.draw(batch, x, y, width, height);                 
+        fillPatch.draw(batch, x, y, width * ratio, height);          
         batch.end();
     }
 
