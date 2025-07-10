@@ -17,8 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-
->>>>>>> cdb984c22c4c47711bb36fdef5bf83223f1d7b33
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,8 +29,6 @@ public class Map {
     // init map
     GameScreen gs;
     Tile[] tiles;
-    public int[][] tileNum;
-    public Tile[] tiles;
     public int[][] tileNum;
     private Texture resumeUp, resumeDown;
     private Texture optionsUp, optionsDown;
@@ -71,39 +67,26 @@ public class Map {
     }
 
     private void getImageTiles() {
-         << << << < HEAD
-                == == ==
-                =  >>> >>> > cdb984c22c4c47711bb36fdef5bf83223f1d7b33
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
         tiles[0].collision = true;
 
         tiles[1] = new Tile();
-         << << << < HEAD
         tiles[1].image = new Texture("tiles/soil.png");
 
         tiles[2] = new Tile();
         tiles[2].image = new Texture("tiles/background_01.png");
     }
 
-    public void drawMap() {
+   public void drawMap() {
 
-         == == ==
-                = tiles[1].image = new Texture("tiles/grass.png");
-
-        tiles[2] = new Tile();
-        tiles[2].image = new Texture("tiles/background_tree.png");
-    }
-
-    public void drawMap() {
-         >>> >>> > cdb984c22c4c47711bb36fdef5bf83223f1d7b33 // draw background
+        // draw background
         for (int y = 0; y < GameScreen.SCREEN_HEIGHT / GameScreen.TILE_SIZE; y++) {
             for (int x = 0; x < GameScreen.SCREEN_WIDTH / GameScreen.TILE_SIZE; x++) {
                 gs.batch.draw(tiles[2].image, x * 48, y * 48);
             }
         }
-         << << << < HEAD
-        
+
         // draw maze
         for (int mapRow = 0; mapRow < GameScreen.MAP_Y; mapRow++) {
             for (int mapCol = 0; mapCol < GameScreen.MAP_X; mapCol++) {
@@ -119,30 +102,11 @@ public class Map {
                         && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
                         && mapY - GameScreen.TILE_SIZE < gs.knight.positionY + gs.knight.renderY) {
                     gs.batch.draw(tiles[tile].image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-                     == == ==
-                            = // draw maze
-                    for (int mapRow = 0; mapRow < GameScreen.MAP_Y; mapRow++) {
-                        for (int mapCol = 0; mapCol < GameScreen.MAP_X; mapCol++) {
-                            int tile = tileNum[mapRow][mapCol];
-                            int mapX = mapCol * GameScreen.TILE_SIZE;
-                            int mapY = mapRow * GameScreen.TILE_SIZE;
-
-                            int screenX = mapX - gs.knight.positionX + gs.knight.renderX;
-                            int screenY = mapY - gs.knight.positionY + gs.knight.renderY;
-
-                            if (mapX + GameScreen.TILE_SIZE > gs.knight.positionX - gs.knight.renderX
-                                    && mapX - GameScreen.TILE_SIZE < gs.knight.positionX + gs.knight.renderX
-                                    && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
-                                    && mapY - GameScreen.TILE_SIZE < gs.knight.positionY + gs.knight.renderY) {
-                                gs.batch.draw(tiles[tile].image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-                                //                }
-                                 >>> >>> > cdb984c22c4c47711bb36fdef5bf83223f1d7b33
-                            }
-                        }
-                    }
+//                }
                 }
-                 << << << < HEAD
-                        == == == =
+            }
+        }
+    }
 
     public void changeMap(String mapFilePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(mapFilePath))) {
@@ -222,5 +186,4 @@ public class Map {
     public boolean isPaused() {
         return isPaused;
     }
-    >>>>>>> cdb984c22c4c47711bb36fdef5bf83223f1d7b33
 }
