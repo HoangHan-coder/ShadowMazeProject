@@ -71,11 +71,9 @@ public class Map {
         tiles[0].image = new Texture("tiles/stone.png");
         tiles[0].collision = true;
 
-        tiles[1] = new Tile();
-        tiles[1].image = new Texture("tiles/soil.png");
 
         tiles[2] = new Tile();
-        tiles[2].image = new Texture("tiles/background_01.png");
+        tiles[2].image = new Texture("tiles/background_tree.png");
     }
 
    public void drawMap() {
