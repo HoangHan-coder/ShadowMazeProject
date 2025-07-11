@@ -18,12 +18,9 @@ public class Entity {
     
     Texture image;
     
-<<<<<<< Updated upstream
-    public Rectangle solidArea;
-=======
     public Rectangle solidArea = new Rectangle();
     public float solidAreaDefaultX, solidAreaDefaultY;
->>>>>>> Stashed changes
+
     
     public static enum Direction {
         UP, DOWN, LEFT, RIGHT, IDLE

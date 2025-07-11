@@ -2,24 +2,20 @@ package com.ShadowMaze.screen;
 
 import com.ShadowMaze.core.AssetSetter;
 import com.ShadowMaze.core.CollisionChecker;
-import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
-<<<<<<< Updated upstream
-import com.ShadowMaze.model.SuperObject;
-=======
 import com.ShadowMaze.render.MirrorRenderer;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import object.SuperObject;
 import com.ShadowMaze.uis.HpBar;
 import com.ShadowMaze.uis.StaminaBar;
->>>>>>> Stashed changes
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class GameScreen implements Screen {
 
@@ -41,6 +37,7 @@ public class GameScreen implements Screen {
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
     
     // Maze and rendering
+    protected final Game game;
     public final SpriteBatch batch;
 //    private int[][] maze = new int[MAX_SCREEN_ROW][MAX_SCREEN_COL];
 //    private int offsetX, offsetY;
@@ -50,8 +47,16 @@ public class GameScreen implements Screen {
     public SuperObject[] obj = new SuperObject[10];
     public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
-    public GameScreen() {
+    private StaminaBar staminaBar;
+    private ShapeRenderer shapeRenderer;
+    private MirrorRenderer mirrorRenderer;
+    private Stage stage;
+    private boolean isPaused = false;
+    private HpBar hpBar;
+    
+    public GameScreen(Game game) {
         this.batch = new SpriteBatch();
+        this.game = game;
     }
 
     @Override
@@ -72,7 +77,7 @@ public class GameScreen implements Screen {
 //        int pathWidth = 1; // ví dụ 3
 //        mazeGenerator = new MazeGenerator(MAX_SCREEN_COL, MAX_SCREEN_ROW, pathWidth);
 //        maze = mazeGenerator.generate(1, 1);
-          map = new Map(this);
+          map = new Map(this, game);
         // print me cung random
 //        for (int x = 0; x < maze.length; x++) {
 //            for (int y = 0; y < maze[0].length; y++) {
@@ -91,7 +96,21 @@ public class GameScreen implements Screen {
 //        cCheck = new CollisionChecker(this);
         
         // Initialize player
-        knight = new Knight(this);
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage);
+        map = new Map(this, game);
+        map.createButtons(stage);
+        shapeRenderer = new ShapeRenderer();
+        Texture staminaIcon = new Texture(Gdx.files.internal("menu/function/dragon.png"));
+        staminaBar = new StaminaBar(140, 30, 200, 20, 100, staminaIcon);
+        Texture hpBg = new Texture(Gdx.files.internal("menu/function/type5.png"));
+        Texture hpFill = new Texture(Gdx.files.internal("menu/function/type6.png"));
+        hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
+        cCheck = new CollisionChecker(this);
+        knight = new Knight(this, staminaBar, hpBar);
+
+        cCheck = new CollisionChecker(this);
+        
         
 
         // Center the maze if needed
@@ -101,7 +120,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        knight.inputHandle();
+        knight.inputHandle(delta);
         
 //        float speed = 5f;
 //        player.setRenderX(MathUtils.lerp(player.getRenderX(), player.getPositionX(), speed * delta));
@@ -120,9 +139,6 @@ public class GameScreen implements Screen {
         
         knight.knightRender(delta);
         System.out.println("Player at: (" + knight.getPositionX()/TILE_SIZE + ", " + knight.getPositionY()/TILE_SIZE + ")");
-<<<<<<< Updated upstream
-        batch.end();
-=======
         batch.end(); 
 
 
@@ -136,7 +152,7 @@ public class GameScreen implements Screen {
 
         stage.act(delta);
         stage.draw();
->>>>>>> Stashed changes
+
     }
 
     @Override

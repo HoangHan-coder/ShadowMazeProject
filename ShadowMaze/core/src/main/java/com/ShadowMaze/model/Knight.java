@@ -9,13 +9,13 @@ import static com.ShadowMaze.model.Entity.Direction.LEFT;
 import static com.ShadowMaze.model.Entity.Direction.RIGHT;
 import static com.ShadowMaze.model.Entity.Direction.UP;
 import com.ShadowMaze.screen.GameScreen;
+import com.ShadowMaze.uis.HpBar;
+import com.ShadowMaze.uis.StaminaBar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 /**
@@ -23,14 +23,7 @@ import com.badlogic.gdx.math.Rectangle;
  * @author NgKaitou
  */
 public class Knight extends Entity {
-<<<<<<< Updated upstream
-    int renderX;
-    int renderY;
-    
-    int offsetX;
-    int offsetY;
-    
-=======
+
     public int renderX;
     public int renderY;
     boolean hasKey;
@@ -43,32 +36,28 @@ public class Knight extends Entity {
     private float staminaDrainRate;   // gi?m m?i gi�y
     private float staminaRegenRate;   // h?i m?i gi�y
     private HpBar hpBar; // Th�m d�ng n�y v�o class Knight
->>>>>>> Stashed changes
     GameScreen gs;
     float stateTime;
     Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
 
-    public Knight(GameScreen gs) {
+    public Knight(GameScreen gs, StaminaBar staminaBar, HpBar hpBar) {
         this.gs = gs;
-
+        this.staminaBar = staminaBar;
+        this.speed = baseSpeed;
+        this.hpBar = hpBar; // G�n HpBar
+        this.hpBar = hpBar; // G�n HpBar
         setDefaultValue();
-        
     }
-    
+
     private void setDefaultValue() {
         speed = 4; // di chuyển 1 ô mỗi lần nhấn
         stateTime = 0f;
-<<<<<<< Updated upstream
-        offsetX = 8;
-        offsetY = 4;
-=======
         hasKey = false;
-        
+
         renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
         renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
-        
-         // set hitbox knight
->>>>>>> Stashed changes
+
+        // set hitbox knight
         solidArea = new Rectangle();
         solidArea.x = 4;
         solidArea.y = 8;
@@ -76,26 +65,17 @@ public class Knight extends Entity {
         solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 32;
-        
-<<<<<<< Updated upstream
-        positionX = 60 * GameScreen.TILE_SIZE;
-        positionY = 39 * GameScreen.TILE_SIZE;
-        
-        renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
-        renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
-=======
+
         // set position default of knight default
 //        positionX = 60 * GameScreen.TILE_SIZE;
 //        positionY = 39 * GameScreen.TILE_SIZE;
->>>>>>> Stashed changes
-        
         positionX = 87 * GameScreen.TILE_SIZE;
         positionY = 16 * GameScreen.TILE_SIZE;
-        
+
         //set stamina bar
         staminaDrainRate = 30f;
         staminaRegenRate = 15f;
-        
+
         // set direction of knight 
         moveUp = loadUpAnimation();
         moveDown = loadDownAnimation();
@@ -117,17 +97,22 @@ public class Knight extends Entity {
     public void knightRender(float delta) {
         update(delta);
         Animation<TextureRegion> currentAnim = switch (currentDirection) {
-        case UP -> moveDown;
-        case DOWN -> moveUp;
-        case LEFT -> moveLeft;
-        case RIGHT -> moveRight;
-        default -> moveDown; // fallback frame
+            case UP ->
+                moveDown;
+            case DOWN ->
+                moveUp;
+            case LEFT ->
+                moveLeft;
+            case RIGHT ->
+                moveRight;
+            default ->
+                moveDown; // fallback frame
         };
-        
+
         TextureRegion frame = currentAnim.getKeyFrame(stateTime, true);
         gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-        
-         //debug hit box
+
+        //debug hit box
 //        ShapeRenderer shapeRenderer = new ShapeRenderer();
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 //        shapeRenderer.setColor(Color.RED);
@@ -141,27 +126,34 @@ public class Knight extends Entity {
 //        shapeRenderer.end();
     }
 
-    public void inputHandle() { 
+    public void inputHandle(float delta) {
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            setDirection(Direction.UP);           
+            setDirection(Direction.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            setDirection(Direction.DOWN);            
+            setDirection(Direction.DOWN);
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            setDirection(Direction.LEFT);            
+            setDirection(Direction.LEFT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            setDirection(Direction.RIGHT);            
+            setDirection(Direction.RIGHT);
         } else {
             setDirection(Direction.IDLE);
         }
-        
-        
-        
-<<<<<<< Updated upstream
-        // check tile collision
-        collisionOn = false;
-//        gs.cCheck.checkTile(this);
-=======
+
+        float currentStamina = staminaBar.getCurrentStamina();
+        float currentHp = hpBar.getCurrentHp();
+
+        // Gi?m HP khi gi? Shift
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            if (hpBar.getCurrentHp() > 0) {
+                hpBar.setCurrentHp(hpBar.getCurrentHp() - 30 * delta);
+            }
+        } else {
+            // H?i HP khi kh�ng gi? Shift
+            if (hpBar.getCurrentHp() < hpBar.getMaxHp()) {
+                hpBar.setCurrentHp(hpBar.getCurrentHp() + 10 * delta);
+            }
+        }
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && currentStamina > 10f && currentHp > 1f) {
             isRunning = true;
             speed = runSpeed;
@@ -196,13 +188,10 @@ public class Knight extends Entity {
 //            positionX = 10 * GameScreen.TILE_SIZE;
 //            positionY = 10 * GameScreen.TILE_SIZE;
         }
-       
-
-
 
 //        if (gs.map.tileNum[tileY][tileX] == 0) {
 //            // Chuy?n sang map m?i
-////            gs.map.changeMap("maps/map_03.txt");
+        ////            gs.map.changeMap("maps/map_03.txt");
 //
 //            // ??t l?i v? tr� ng??i ch?i
 //            positionX = 10 * GameScreen.TILE_SIZE;
@@ -213,13 +202,12 @@ public class Knight extends Entity {
         // check tile collision
         collisionOn = false;
         gs.cCheck.checkTile(this);
->>>>>>> Stashed changes
-        
+
         // check object collision
         int indexObject = gs.cCheck.checkObject(this, true);
         pickUpObject(indexObject);
 //        System.out.println("collisionOn: " + collisionOn);
-        
+
         // if collision is false, knight can move
         if (collisionOn == false) {
             switch (currentDirection) {
@@ -256,7 +244,7 @@ public class Knight extends Entity {
                     if (hasKey == true) {
                         collisionOn = false;
                         gs.obj[indexOfObject].image = new Texture("Object/gate_open.png");
-                        
+
                     }
                 }
                 case "Cave" -> {
@@ -267,11 +255,11 @@ public class Knight extends Entity {
             }
         }
     }
-    
+
     private Animation<TextureRegion> loadUpAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("knight/knight_up_" + (i+1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_up_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -279,7 +267,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadDownAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("knight/knight_down_" + (i+1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_down_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -287,7 +275,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadLeftAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("knight/knight_left_" + (i+1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_left_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -295,7 +283,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadRightAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = new TextureRegion(new Texture("knight/knight_right_" + (i+1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_right_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -326,4 +314,3 @@ public class Knight extends Entity {
     }
 
 }
-

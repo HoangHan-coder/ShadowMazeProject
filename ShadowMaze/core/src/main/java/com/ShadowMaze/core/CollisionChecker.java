@@ -22,16 +22,6 @@ public class CollisionChecker {
     public CollisionChecker(GameScreen gs) {
         this.gs = gs;
     }
-<<<<<<< Updated upstream
-    
-    public void checkTile(Entity entity){
-        
-        int entityLeftMapX = entity.positionX + (int)entity.solidArea.x;
-        int entityRightMapX = entityLeftMapX + (int)entity.solidArea.width;
-        int entityTopMapY = entity.positionY + (int)entity.solidArea.y;
-        int entityBottomMapY = entityTopMapY + (int)entity.solidArea.height;
-        
-=======
 
     public void checkTile(Entity entity) {
 
@@ -40,7 +30,7 @@ public class CollisionChecker {
         int entityTopMapY = entity.positionY + (int) entity.solidAreaDefaultY;
         int entityBottomMapY = entityTopMapY + (int) entity.solidArea.height;
 
->>>>>>> Stashed changes
+
         int entityLeftCol = entityLeftMapX / GameScreen.TILE_SIZE;
         int entityRightCol = entityRightMapX / GameScreen.TILE_SIZE;
         int entityTopRow = entityTopMapY / GameScreen.TILE_SIZE;
@@ -94,14 +84,12 @@ public class CollisionChecker {
         }      
     }
     
-<<<<<<< Updated upstream
-=======
+
     public int checkObject(Entity entity, boolean player) {
     int index = -1;
 
     for (int i = 0; i < gs.obj.length; i++) {
         if (gs.obj[i] != null) {
-            // Tạo hitbox tạm của entity và object
             Rectangle entityRect = new Rectangle(
                 entity.positionX + entity.solidAreaDefaultX,
                 entity.positionY + entity.solidAreaDefaultY,
@@ -116,7 +104,6 @@ public class CollisionChecker {
                 gs.obj[i].solidArea.height
             );
 
-            // Dịch chuyển hitbox theo hướng di chuyển
             switch (entity.currentDirection) {
                 case UP -> entityRect.y -= entity.speed;
                 case DOWN -> entityRect.y += entity.speed;
@@ -124,7 +111,6 @@ public class CollisionChecker {
                 case RIGHT -> entityRect.x += entity.speed;
             }
 
-            // Kiểm tra va chạm
             if (entityRect.overlaps(objectRect)) {
                 if (gs.obj[i].collision) {
                     entity.collisionOn = true;
@@ -138,5 +124,5 @@ public class CollisionChecker {
 
     return index;
 }
->>>>>>> Stashed changes
+
 }
