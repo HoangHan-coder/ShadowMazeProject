@@ -5,7 +5,18 @@ import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.generator.MazeGenerator;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
+<<<<<<< Updated upstream
 import com.ShadowMaze.model.SuperObject;
+=======
+import com.ShadowMaze.render.MirrorRenderer;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import object.SuperObject;
+import com.ShadowMaze.uis.HpBar;
+import com.ShadowMaze.uis.StaminaBar;
+>>>>>>> Stashed changes
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -109,7 +120,23 @@ public class GameScreen implements Screen {
         
         knight.knightRender(delta);
         System.out.println("Player at: (" + knight.getPositionX()/TILE_SIZE + ", " + knight.getPositionY()/TILE_SIZE + ")");
+<<<<<<< Updated upstream
         batch.end();
+=======
+        batch.end(); 
+
+
+        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+//        staminaBar.render(shapeRenderer);
+        hpBar.update(delta);
+        hpBar.render(batch);
+
+
+        staminaBar.renderIcon(batch);
+
+        stage.act(delta);
+        stage.draw();
+>>>>>>> Stashed changes
     }
 
     @Override
