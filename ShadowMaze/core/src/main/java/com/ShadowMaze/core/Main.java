@@ -12,7 +12,7 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        setScreen(new MainMenuScreen(this)); // Bắt đầu ở GameScreen
+        setScreen(new MainMenuScreen(this)); // start in GameScreen
     }
 
 }
