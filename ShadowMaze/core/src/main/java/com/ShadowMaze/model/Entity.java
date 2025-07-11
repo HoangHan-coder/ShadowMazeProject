@@ -15,9 +15,15 @@ public class Entity {
     public int positionX; // position x in map
     public int positionY; // position y in map
     public int speed;
+    
     Texture image;
     
+<<<<<<< Updated upstream
+    public Rectangle solidArea;
+=======
     public Rectangle solidArea = new Rectangle();
+    public float solidAreaDefaultX, solidAreaDefaultY;
+>>>>>>> Stashed changes
     
     public static enum Direction {
         UP, DOWN, LEFT, RIGHT, IDLE

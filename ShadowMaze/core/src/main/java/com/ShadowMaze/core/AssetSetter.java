@@ -4,9 +4,10 @@
  */
 package com.ShadowMaze.core;
 
-import com.ShadowMaze.model.OBJ_Chest;
-import com.ShadowMaze.model.OBJ_Key;
+import object.OBJ_CaveExit;
+import object.OBJ_Key;
 import com.ShadowMaze.screen.GameScreen;
+import object.OBJ_Gate;
 
 /**
  *
@@ -26,9 +27,13 @@ public class AssetSetter {
         gs.obj[0].mapX = 35 * GameScreen.TILE_SIZE; // 35 62
         gs.obj[0].mapY = 62 * GameScreen.TILE_SIZE;
         
-        gs.obj[1] = new OBJ_Chest();
+        gs.obj[1] = new OBJ_CaveExit();
         gs.obj[1].mapX = 88 * GameScreen.TILE_SIZE;
         gs.obj[1].mapY = 21 * GameScreen.TILE_SIZE;
+        
+        gs.obj[2] = new OBJ_Gate();
+        gs.obj[2].mapX = 88 * GameScreen.TILE_SIZE;
+        gs.obj[2].mapY = 19 * GameScreen.TILE_SIZE;
     }
         
 }

@@ -2,10 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.ShadowMaze.model;
+package object;
 
 import com.ShadowMaze.screen.GameScreen;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  *
@@ -16,6 +17,10 @@ public class SuperObject {
     public String name;
     public Texture image;
     public boolean collision = false;
+    public Rectangle solidArea = new Rectangle(0, 0, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+    public float solidAreaDefaultX = 0;
+    public float solidAreaDefaultY = 0;
+    
     public int mapX;
     public int mapY;
     
