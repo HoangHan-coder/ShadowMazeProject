@@ -27,6 +27,7 @@ public class AssetSetter {
         gs.obj[0] = new OBJ_Key();
         gs.obj[0].mapX = 35 * GameScreen.TILE_SIZE; // 35 62
         gs.obj[0].mapY = 62 * GameScreen.TILE_SIZE;
+        
         gs.obj[1] = new OBJ_CaveExit();
         gs.obj[1].mapX = 88 * GameScreen.TILE_SIZE;
         gs.obj[1].mapY = 21 * GameScreen.TILE_SIZE;
@@ -35,7 +36,7 @@ public class AssetSetter {
         gs.obj[2].mapX = 88 * GameScreen.TILE_SIZE;
         gs.obj[2].mapY = 19 * GameScreen.TILE_SIZE;
 
-        gs.obj[3] = new OBJ_Enemy();  // Thêm enemy dùng gi?ng h?t
+        gs.obj[3] = new OBJ_Enemy();  
         gs.obj[3].mapX = 33 * GameScreen.TILE_SIZE;
         gs.obj[3].mapY = 24 * GameScreen.TILE_SIZE;
     }

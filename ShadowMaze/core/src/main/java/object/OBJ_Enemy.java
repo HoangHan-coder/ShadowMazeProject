@@ -11,7 +11,7 @@ public class OBJ_Enemy extends SuperObject {
     private Animation<TextureRegion> animation;
     private float stateTime = 0f;
     private Array<Texture> frames = new Array<>();
-    private float scale = 3f; // h? s? phóng to
+    private float scale = 3f; 
 
     public OBJ_Enemy() {
         name = "Enemy";
@@ -41,11 +41,10 @@ public class OBJ_Enemy extends SuperObject {
                 && mapY + GameScreen.TILE_SIZE > screen.knight.positionY - screen.knight.renderY
                 && mapY - GameScreen.TILE_SIZE < screen.knight.positionY + screen.knight.renderY) {
 
-            // L?y kích th??c frame g?c
             float frameWidth = currentFrame.getRegionWidth();
             float frameHeight = currentFrame.getRegionHeight();
 
-            // V? ?nh ?ã scale
+
             screen.batch.draw(currentFrame,
                     screenX, screenY,
                     frameWidth * scale,

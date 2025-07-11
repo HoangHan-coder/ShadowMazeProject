@@ -56,12 +56,12 @@ public class StaminaBar {
         float percent = currentStamina / maxStamina;
         float barWidth = width * percent;
 
-        // V? n?n thanh (xám ??m)
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.DARK_GRAY);
         shapeRenderer.rect(x, y, width, height);
 
-        // V? ph?n th? l?c (cam)
+
         shapeRenderer.setColor(Color.ORANGE);
         shapeRenderer.rect(x, y, barWidth, height);
         shapeRenderer.end();

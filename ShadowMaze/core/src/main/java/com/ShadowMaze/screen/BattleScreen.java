@@ -39,7 +39,7 @@ public class BattleScreen implements Screen {
 
         // Load frame t? th? m?c
         playerAnimation = loadAnimationFromFolder("batte/2", 0.2f, false);
-        enemyAnimation = loadAnimationFromFolder("batte/1", 0.2f, true); // l?t sang trái
+        enemyAnimation = loadAnimationFromFolder("batte/1", 0.2f, true); 
 
         stateTime = 0f;
         shapeRenderer = new ShapeRenderer();
@@ -55,18 +55,17 @@ public class BattleScreen implements Screen {
         FileHandle[] files = folder.list();
         Array<TextureRegion> frames = new Array<>();
 
-        // S?p x?p file theo tên ?? ??m b?o ?úng th? t?
         Arrays.sort(files, (f1, f2) -> f1.name().compareTo(f2.name()));
 
         for (FileHandle file : files) {
             if (file.name().startsWith("frame_") && file.extension().equals("png")) {
                 Texture tex = new Texture(file);
-                tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear); // làm m??t
+                tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear); 
                 animationTextures.add(tex);
                 TextureRegion region = new TextureRegion(tex);
 
                 if (flipX && !region.isFlipX()) {
-                    region.flip(true, false); // l?t ngang n?u c?n
+                    region.flip(true, false); 
                 }
 
                 frames.add(region);
@@ -84,16 +83,16 @@ public class BattleScreen implements Screen {
         TextureRegion currentPlayer = playerAnimation.getKeyFrame(stateTime, true);
         TextureRegion currentEnemy = enemyAnimation.getKeyFrame(stateTime, true);
 
-        // C?p nh?t logic thanh máu
+      
         hpBar.update(delta);
-        hpBar1.update(delta); // ? B?t bu?c có n?u mu?n thanh 2 c?ng ho?t ??ng
+        hpBar1.update(delta);
 
-        batch.begin(); // ?? CH? BEGIN 1 L?N
+        batch.begin(); 
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.draw(currentPlayer, 100, 100);
         batch.draw(currentEnemy, 600, -60);
-        hpBar.render(batch); // ?? PH?I N?M TRONG begin-end
-        hpBar1.render(batch); // ?? PH?I N?M TRONG begin-end
+        hpBar.render(batch); 
+        hpBar1.render(batch); 
 
         batch.end(); // ?? CH? END 1 L?N
 

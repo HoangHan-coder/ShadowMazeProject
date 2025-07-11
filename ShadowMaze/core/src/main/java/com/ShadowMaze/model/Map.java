@@ -106,9 +106,9 @@ public class Map {
     public void drawMap() {
         if (showBackground && backgroundImage != null) {
             gs.batch.draw(backgroundImage, 0, 0, GameScreen.SCREEN_WIDTH, GameScreen.SCREEN_HEIGHT);
-            return; // Không v? map n?a
+            return; 
         }
-        // draw background
+
         for (int y = 0; y < GameScreen.SCREEN_HEIGHT / GameScreen.TILE_SIZE; y++) {
             for (int x = 0; x < GameScreen.SCREEN_WIDTH / GameScreen.TILE_SIZE; x++) {
                 gs.batch.draw(tiles[2].image, x * 48, y * 48);
@@ -219,7 +219,7 @@ public class Map {
             for (int col = 0; col < GameScreen.MAP_X; col++) {
                 int tileIndex = tileNum[row][col];
 
-                // N?u tile không có va ch?m, coi nh? là h?p l?
+
                 if (!tiles[tileIndex].collision) {
                     float worldX = col * GameScreen.TILE_SIZE;
                     float worldY = row * GameScreen.TILE_SIZE;
