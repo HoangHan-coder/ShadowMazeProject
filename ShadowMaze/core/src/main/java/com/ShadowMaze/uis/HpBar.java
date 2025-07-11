@@ -37,24 +37,27 @@ public class HpBar {
         if (Math.abs(displayHp - currentHp) > 0.5f) {
             if (displayHp < currentHp) {
                 displayHp += displaySpeed * delta;
-                if (displayHp > currentHp) displayHp = currentHp;
+                if (displayHp > currentHp) {
+                    displayHp = currentHp;
+                }
             } else {
                 displayHp -= displaySpeed * delta;
-                if (displayHp < currentHp) displayHp = currentHp;
+                if (displayHp < currentHp) {
+                    displayHp = currentHp;
+                }
             }
         } else {
             displayHp = currentHp;
         }
     }
 
-    public void render(SpriteBatch batch) {
-        float ratio = displayHp / maxHp;
+   public void render(SpriteBatch batch) {
+    float ratio = displayHp / maxHp;
 
-        batch.begin();
-        bgPatch.draw(batch, x, y, width, height);                 
-        fillPatch.draw(batch, x, y, width * ratio, height);          
-        batch.end();
-    }
+    bgPatch.draw(batch, x, y, width, height);                 
+    fillPatch.draw(batch, x, y, width * ratio, height);          
+}
+
 
     public float getCurrentHp() {
         return currentHp;

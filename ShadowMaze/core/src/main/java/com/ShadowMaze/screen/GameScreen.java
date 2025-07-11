@@ -11,16 +11,19 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.ShadowMaze.model.SuperObject;
+import com.ShadowMaze.object.OBJ_Enemy;
 import com.ShadowMaze.uis.HpBar;
 import com.ShadowMaze.uis.StaminaBar;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameScreen implements Screen {
 
@@ -31,7 +34,7 @@ public class GameScreen implements Screen {
     public static final int ORIGINAL_TILE_SIZE = 16;
     public static final int SCALE = 3;
     public static final int TILE_SIZE = ORIGINAL_TILE_SIZE * SCALE;
-    
+
     public static final int MAX_SCREEN_COL = 27; // 73 colums
     public static final int MAX_SCREEN_ROW = 19; // 53 rows
 
@@ -59,7 +62,7 @@ public class GameScreen implements Screen {
     public GameScreen(Game game) {
         this.game = game;
         this.batch = new SpriteBatch();
-        
+
     }
 
     @Override
@@ -90,11 +93,25 @@ public class GameScreen implements Screen {
         knight = new Knight(this, staminaBar, hpBar);
 
         cCheck = new CollisionChecker(this);
-        
-        // Initialize player
-        
 
+        // Initialize player
     }
+
+    private void checkEnemyCollisionAndSwitchMap() {
+        for (SuperObject object : obj) {
+            if (object != null && object instanceof OBJ_Enemy) {
+                float dx = knight.getPositionX() - object.mapX;
+                float dy = knight.getPositionY() - object.mapY;
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < GameScreen.TILE_SIZE / 2f) {
+                    game.setScreen(new BattleScreen(game));
+                    break;
+                }
+            }
+        }
+    }
+
     // hello
     @Override
     public void render(float delta) {
@@ -108,32 +125,31 @@ public class GameScreen implements Screen {
             return;
         }
 
-
         knight.inputHandle(delta);
         knight.update(delta);
-
+        checkEnemyCollisionAndSwitchMap();
         ScreenUtils.clear(0, 0, 0, 1);
 
         batch.begin();
         map.drawMap();
-        
+        if (!map.isBackgroundOnly()) {
+            knight.knightRender(delta);
+        }
 
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) {
                 obj[i].drawObject(this);
             }
         }
-        knight.knightRender(delta);
-        System.out.println("Player at: (" + knight.getPositionX()/TILE_SIZE + ", " + knight.getPositionY()/TILE_SIZE + ")");
+        System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
         batch.end(); // 
-
 
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
 //        staminaBar.render(shapeRenderer);
         hpBar.update(delta);
+        batch.begin();
         hpBar.render(batch);
-
-
+        batch.end();
         staminaBar.renderIcon(batch);
 
         stage.act(delta);
