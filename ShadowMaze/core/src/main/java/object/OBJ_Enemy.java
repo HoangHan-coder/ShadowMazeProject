@@ -1,6 +1,4 @@
-package com.ShadowMaze.object;
-
-import com.ShadowMaze.model.SuperObject;
+package object;
 import com.ShadowMaze.screen.GameScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
