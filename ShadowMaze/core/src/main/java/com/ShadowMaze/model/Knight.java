@@ -28,6 +28,9 @@ public class Knight extends Entity {
     public int renderY;
     boolean hasKey;
 
+    int offsetX;
+    int offsetY;
+
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
     public int baseSpeed = 4;          // T?c ?? ?i b?
 
@@ -58,6 +61,8 @@ public class Knight extends Entity {
         renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
 
         // set hitbox knight
+        offsetX = 8;
+        offsetY = 4;
         solidArea = new Rectangle();
         solidArea.x = 4;
         solidArea.y = 8;
@@ -65,7 +70,6 @@ public class Knight extends Entity {
         solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 32;
-
         // set position default of knight default
 //        positionX = 60 * GameScreen.TILE_SIZE;
 //        positionY = 39 * GameScreen.TILE_SIZE;
@@ -77,6 +81,8 @@ public class Knight extends Entity {
         staminaRegenRate = 15f;
 
         // set direction of knight 
+        positionX = 36 * GameScreen.TILE_SIZE;
+        positionY = 28 * GameScreen.TILE_SIZE;
         moveUp = loadUpAnimation();
         moveDown = loadDownAnimation();
         moveLeft = loadLeftAnimation();
@@ -92,6 +98,11 @@ public class Knight extends Entity {
 
     public void update(float delta) {
         stateTime += delta;
+    }
+
+    public void setPosition(int x, int y) {
+        this.positionX = x;
+        this.positionY = y;
     }
 
     public void knightRender(float delta) {
@@ -127,7 +138,6 @@ public class Knight extends Entity {
     }
 
     public void inputHandle(float delta) {
-
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             setDirection(Direction.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -139,7 +149,7 @@ public class Knight extends Entity {
         } else {
             setDirection(Direction.IDLE);
         }
-
+//        dicrectionHandle();
         float currentStamina = staminaBar.getCurrentStamina();
         float currentHp = hpBar.getCurrentHp();
 
@@ -202,12 +212,10 @@ public class Knight extends Entity {
         // check tile collision
         collisionOn = false;
         gs.cCheck.checkTile(this);
-
         // check object collision
         int indexObject = gs.cCheck.checkObject(this, true);
         pickUpObject(indexObject);
 //        System.out.println("collisionOn: " + collisionOn);
-
         // if collision is false, knight can move
         if (collisionOn == false) {
             switch (currentDirection) {
@@ -260,6 +268,7 @@ public class Knight extends Entity {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
             frames[i] = new TextureRegion(new Texture("knight/knight_up_" + (i + 1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_up_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -267,6 +276,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadDownAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
+            frames[i] = new TextureRegion(new Texture("knight/knight_down_" + (i + 1) + ".png"));
             frames[i] = new TextureRegion(new Texture("knight/knight_down_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
@@ -276,6 +286,7 @@ public class Knight extends Entity {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
             frames[i] = new TextureRegion(new Texture("knight/knight_left_" + (i + 1) + ".png"));
+            frames[i] = new TextureRegion(new Texture("knight/knight_left_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);
     }
@@ -283,6 +294,7 @@ public class Knight extends Entity {
     private Animation<TextureRegion> loadRightAnimation() {
         TextureRegion[] frames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
+            frames[i] = new TextureRegion(new Texture("knight/knight_right_" + (i + 1) + ".png"));
             frames[i] = new TextureRegion(new Texture("knight/knight_right_" + (i + 1) + ".png"));
         }
         return new Animation<>(0.2f, frames);

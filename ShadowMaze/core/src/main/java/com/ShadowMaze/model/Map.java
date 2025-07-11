@@ -11,6 +11,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -20,6 +21,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -40,6 +43,8 @@ public class Map {
     private boolean isPaused = false;
     private MainMenuScreen screen;
     private Game game;
+    private Texture backgroundImage;
+    private boolean showBackground = false;
 
     public Map(GameScreen gs, Game game) {
         this.gs = gs;
@@ -77,9 +82,32 @@ public class Map {
         tiles[2] = new Tile();
         tiles[2].image = new Texture("tiles/background_tree.png");
     }
+// Trong Map.java
+
+    public List<Vector2> getValidSpawnsNearKnight(int centerX, int centerY, int radiusTiles) {
+        List<Vector2> positions = new ArrayList<>();
+
+        for (int row = centerY - radiusTiles; row <= centerY + radiusTiles; row++) {
+            for (int col = centerX - radiusTiles; col <= centerX + radiusTiles; col++) {
+                if (row >= 0 && row < GameScreen.MAP_Y && col >= 0 && col < GameScreen.MAP_X) {
+                    int tile = tileNum[row][col];
+                    if (!tiles[tile].collision) {
+                        float worldX = col * GameScreen.TILE_SIZE;
+                        float worldY = row * GameScreen.TILE_SIZE;
+                        positions.add(new Vector2(33, 24));
+                    }
+                }
+            }
+        }
+
+        return positions;
+    }
 
     public void drawMap() {
-
+        if (showBackground && backgroundImage != null) {
+            gs.batch.draw(backgroundImage, 0, 0, GameScreen.SCREEN_WIDTH, GameScreen.SCREEN_HEIGHT);
+            return; // Không v? map n?a
+        }
         // draw background
         for (int y = 0; y < GameScreen.SCREEN_HEIGHT / GameScreen.TILE_SIZE; y++) {
             for (int x = 0; x < GameScreen.SCREEN_WIDTH / GameScreen.TILE_SIZE; x++) {
@@ -122,6 +150,11 @@ public class Map {
         } catch (IOException e) {
             System.out.println("Failed to read map file: " + e.getMessage());
         }
+    }
+
+    public void setBackground(String imagePath) {
+        backgroundImage = new Texture(Gdx.files.internal(imagePath));
+        showBackground = true;
     }
 
     public void createButtons(Stage stage) {
@@ -179,11 +212,34 @@ public class Map {
         stage.addActor(pauseMenuTable);     // b?ng menu hi?n ra
     }
 
+    public List<Vector2> getValidEnemySpawnPositions() {
+        List<Vector2> validPositions = new ArrayList<>();
+
+        for (int row = 0; row < GameScreen.MAP_Y; row++) {
+            for (int col = 0; col < GameScreen.MAP_X; col++) {
+                int tileIndex = tileNum[row][col];
+
+                // N?u tile không có va ch?m, coi nh? là h?p l?
+                if (!tiles[tileIndex].collision) {
+                    float worldX = col * GameScreen.TILE_SIZE;
+                    float worldY = row * GameScreen.TILE_SIZE;
+                    validPositions.add(new Vector2(worldX, worldY));
+                }
+            }
+        }
+
+        return validPositions;
+    }
+
     public void setPaused(boolean paused) {
         this.isPaused = paused;
     }
 
     public boolean isPaused() {
         return isPaused;
+    }
+
+    public boolean isBackgroundOnly() {
+        return showBackground;
     }
 }

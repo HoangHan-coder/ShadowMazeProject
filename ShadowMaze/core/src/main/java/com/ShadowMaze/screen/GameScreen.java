@@ -7,6 +7,10 @@ import com.ShadowMaze.model.Map;
 import com.ShadowMaze.render.MirrorRenderer;
 import com.badlogic.gdx.*;
 import object.SuperObject;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import object.OBJ_Enemy;
 import com.ShadowMaze.uis.HpBar;
 import com.ShadowMaze.uis.StaminaBar;
 import com.badlogic.gdx.Screen;
@@ -14,8 +18,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class GameScreen implements Screen {
 
@@ -37,7 +45,7 @@ public class GameScreen implements Screen {
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
     
     // Maze and rendering
-    protected final Game game;
+    protected Game game;
     public final SpriteBatch batch;
 //    private int[][] maze = new int[MAX_SCREEN_ROW][MAX_SCREEN_COL];
 //    private int offsetX, offsetY;
@@ -118,36 +126,59 @@ public class GameScreen implements Screen {
 //        offsetY = 0;
     }
 
+    private void checkEnemyCollisionAndSwitchMap() {
+        for (SuperObject object : obj) {
+            if (object != null && object instanceof OBJ_Enemy) {
+                float dx = knight.getPositionX() - object.mapX;
+                float dy = knight.getPositionY() - object.mapY;
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < GameScreen.TILE_SIZE / 2f) {
+                    game.setScreen(new BattleScreen(game));
+                    break;
+                }
+            }
+        }
+    }
+
+    // hello
     @Override
     public void render(float delta) {
+        if (map.isPaused()) {
+            ScreenUtils.clear(0, 0, 0, 1);
+            batch.begin();
+            map.drawMap();
+            batch.end();
+            stage.act(delta);
+            stage.draw();
+            return;
+        }
+
         knight.inputHandle(delta);
-        
-//        float speed = 5f;
-//        player.setRenderX(MathUtils.lerp(player.getRenderX(), player.getPositionX(), speed * delta));
-//        player.setRenderY(MathUtils.lerp(player.getRenderY(), player.getPositionY(), speed * delta));
-        // Clear screen
+        knight.update(delta);
+        checkEnemyCollisionAndSwitchMap();
         ScreenUtils.clear(0, 0, 0, 1);
         batch.begin();
         map.drawMap();
-        
-        // render object
+        if (!map.isBackgroundOnly()) {
+            knight.knightRender(delta);
+        }
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) {
                 obj[i].drawObject(this);
             }
         }
-        
         knight.knightRender(delta);
         System.out.println("Player at: (" + knight.getPositionX()/TILE_SIZE + ", " + knight.getPositionY()/TILE_SIZE + ")");
         batch.end(); 
-
+        System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
 
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
 //        staminaBar.render(shapeRenderer);
         hpBar.update(delta);
+        batch.begin();
         hpBar.render(batch);
-
-
+        batch.end();
         staminaBar.renderIcon(batch);
 
         stage.act(delta);
