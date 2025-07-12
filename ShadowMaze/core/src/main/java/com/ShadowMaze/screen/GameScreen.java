@@ -162,14 +162,14 @@ public class GameScreen implements Screen {
         int mapWidth = map.tileNum[0].length;
 
         Array<int[]> walkableTiles = new Array<>();
-
+        cCheck = new CollisionChecker(this);      // Create collision checker
+        knight = new Knight(this, staminaBar, hpBar);  // Create player knight
         // ? Duy?t toàn b? b?n ?? và l?u l?i các ô có tileNum == 1
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
                 if (map.tileNum[y][x] == 1) {
                     walkableTiles.add(new int[]{x, y});
-                    cCheck = new CollisionChecker(this);      // Create collision checker
-                    knight = new Knight(this, staminaBar, hpBar);  // Create player knight
+
                 }
             }
         }
@@ -242,9 +242,6 @@ public class GameScreen implements Screen {
             }
         }
 
-        // --- Clear screen ---
-        ScreenUtils.clear(0, 0, 0, 1);
-
         // --- DRAW ---
         batch.begin();
         knight.inputHandle(delta);
@@ -297,24 +294,19 @@ public class GameScreen implements Screen {
                 obj[i].drawObject(this);
             }
         }
-        hpBar.render(batch);
+        
 
         batch.end();
-
+hpBar.render(batch);
         // Draw UI (stamina icon)
         staminaBar.renderIcon(batch);
 
         // Draw stage UI
         checkEnemyCollisionAndSwitchMap();
 
-        // Clear the screen to black
-        ScreenUtils.clear(0, 0, 0, 1);
-
         batch.begin();
 
         // Draw tile-based game map relative to player's position
-        map.drawMap();
-
         // Only render player if the map is not in "background only" mode
         // (e.g., when paused for dialog or event)
         if (!map.isBackgroundOnly()) {
@@ -345,12 +337,10 @@ public class GameScreen implements Screen {
         hpBar.update(delta);
 
         // Begin new batch for UI rendering
-        batch.begin();
         hpBar.render(batch);               // Draw HP bar
 
         staminaBar.renderIcon(batch);     // Draw stamina icon
 
-        batch.end(); // Finish UI drawing
 
         // Update and draw UI stage (includes buttons, overlays, etc.)
         stage.act(delta);

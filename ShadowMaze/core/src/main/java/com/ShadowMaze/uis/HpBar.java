@@ -88,8 +88,11 @@ public class HpBar {
     public void render(SpriteBatch batch) {
         float ratio = displayHp / maxHp; // Compute how much of the bar to fill
 
+        batch.begin();
         bgPatch.draw(batch, x, y, width, height);                   // Draw background bar
         fillPatch.draw(batch, x, y, width * ratio, height);         // Draw filled HP portion
+        batch.end();
+        
     }
 
     /**

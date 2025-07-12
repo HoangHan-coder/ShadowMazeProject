@@ -80,7 +80,9 @@ public class StaminaBar {
      */
     public void renderIcon(SpriteBatch batch) {
         if (icon != null) {
+            batch.begin();
             batch.draw(icon, 130, 15, 50, 50); // Draw icon at a fixed screen location
+            batch.end();
         }
     }
 
