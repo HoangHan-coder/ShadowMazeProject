@@ -9,10 +9,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
 /**
- * Represents an animated enemy object on the map.
- * The enemy uses multiple textures as animation frames and is drawn relative to the player's position.
+ * Represents an animated enemy object on the map. The enemy uses multiple
+ * textures as animation frames and is drawn relative to the player's position.
  */
 public class OBJ_Enemy extends SuperObject {
+
     private Animation<TextureRegion> animation;
     private float stateTime = 0f;
     private Array<Texture> frames = new Array<>();
@@ -24,25 +25,36 @@ public class OBJ_Enemy extends SuperObject {
     public float mapX, mapY;
 
     /**
-     * Constructor initializes the enemy name and loads animation frames from disk.
+     * Constructor initializes the enemy name and loads animation frames from
+     * disk.
      */
     public OBJ_Enemy() {
         name = "Enemy";
-        mapX = 500; // G?n v? trí knight
-        mapY = 500;
-        // Load all frames in folder
-        // Load all animation frames from the "icons" folder
+
+        // Kh?i t?o tile ban ??u (VD: ? tile hàng 5, c?t 5)
+        int tileX = 5;
+        int tileY = 5;
+
+        // Load t?t c? frame animation
         Array<TextureRegion> regions = new Array<>();
         for (int i = 0; i < 4; i++) {
-            // Load image as texture
             Texture tex = new Texture(Gdx.files.internal("icons/Special" + i + ".png"));
-            frames.add(tex);                     // Store texture for later disposal
-            regions.add(new TextureRegion(tex)); // Convert texture to region for animation
+            frames.add(tex);
+            regions.add(new TextureRegion(tex));
         }
 
-        // Create animation using 0.15s per frame
+        // T?o animation
         animation = new Animation<>(0.15f, regions);
+
+        // Tính kích th??c enemy d?a trên frame ??u tiên
+        float enemyWidth = animation.getKeyFrame(0).getRegionWidth() * scale;
+        float enemyHeight = animation.getKeyFrame(0).getRegionHeight() * scale;
+
+        // Gán t?a ?? mapX/mapY ?? canh gi?a tile
+        mapX = tileX * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyWidth / 2f;
+        mapY = tileY * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyHeight / 2f;
     }
+
     private boolean isWalkable(Map map, float x, float y) {
         int tileX = (int) (x / GameScreen.TILE_SIZE);
         int tileY = (int) (y / GameScreen.TILE_SIZE);
@@ -53,8 +65,11 @@ public class OBJ_Enemy extends SuperObject {
     }
 
     /**
-     * Draws the animated enemy on the screen if it's within the visible camera bounds.
-     * @param screen Reference to the current GameScreen for accessing batch and camera offsets
+     * Draws the animated enemy on the screen if it's within the visible camera
+     * bounds.
+     *
+     * @param screen Reference to the current GameScreen for accessing batch and
+     * camera offsets
      */
     @Override
     public void drawObject(GameScreen screen) {
@@ -80,36 +95,51 @@ public class OBJ_Enemy extends SuperObject {
                     frameHeight * scale);
         }
     }
-    public void update(float delta, Map map) {
-        moveTimer += delta;
 
-        float dx = 0, dy = 0;
+    /**
+     * Updates the enemy's movement and direction based on the current map. The
+     * enemy attempts to move in the current direction. If blocked by a wall, it
+     * changes to a random valid direction after a short delay.
+     *
+     * @param delta The time elapsed since the last frame (in seconds)
+     * @param map The current game map used to check collisions
+     */
+    public void update(float delta, Map map) {
+        moveTimer += delta; // Accumulate time since last direction change
+
+        float dx = 0, dy = 0; // Movement deltas
+
+        // Determine direction: 0 = left, 1 = down, 2 = right, 3 = up
         switch (direction) {
             case 0:
                 dx = -1;
-                break; // trái
+                break; // Move left
             case 1:
                 dy = 1;
-                break;  // xu?ng
+                break; // Move down
             case 2:
                 dx = 1;
-                break;  // ph?i
+                break; // Move right
             case 3:
                 dy = -1;
-                break; // lên
+                break; // Move up
         }
 
+        // Calculate next potential position
         float nextX = mapX + dx * speed * delta;
         float nextY = mapY + dy * speed * delta;
 
+        // Get enemy dimensions (scaled)
         float enemyWidth = animation.getKeyFrame(0).getRegionWidth() * scale;
         float enemyHeight = animation.getKeyFrame(0).getRegionHeight() * scale;
 
+        // Compute bounding box of the enemy at next position
         float left = nextX;
         float right = nextX + enemyWidth;
         float top = nextY + enemyHeight;
         float bottom = nextY;
 
+        // Check if all four corners are walkable
         boolean canMove
                 = isWalkable(map, left, bottom)
                 && isWalkable(map, right - 1, bottom)
@@ -117,34 +147,41 @@ public class OBJ_Enemy extends SuperObject {
                 && isWalkable(map, right - 1, top - 1);
 
         if (canMove) {
-            mapX = nextX;
-            mapY = nextY;
+            mapX = nextX; // Move enemy to new X
+            mapY = nextY; // Move enemy to new Y
         } else {
-            // G?p t??ng ? ??i h??ng sau moveInterval
+            // Blocked by wall: consider changing direction after interval
             if (moveTimer >= moveInterval) {
-                moveTimer = 0f;
+                moveTimer = 0f; // Reset timer
 
-                int curTileX = (int) (mapX / GameScreen.TILE_SIZE);
-                int curTileY = (int) (mapY / GameScreen.TILE_SIZE);
+                // Recalculate current tile (using center of enemy)
+                float enemyWidth1 = animation.getKeyFrame(0).getRegionWidth() * scale;
+                float enemyHeight1 = animation.getKeyFrame(0).getRegionHeight() * scale;
+
+                int curTileX = (int) ((mapX + enemyWidth1 / 2f) / GameScreen.TILE_SIZE);
+                int curTileY = (int) ((mapY + enemyHeight1 / 2f) / GameScreen.TILE_SIZE);
 
                 Array<Integer> possibleDirections = new Array<>();
+
+                // Check all 4 directions for valid tiles
                 for (int i = 0; i < 4; i++) {
                     int nx = curTileX, ny = curTileY;
                     switch (i) {
                         case 0:
                             nx--;
-                            break;
+                            break; // Left
                         case 1:
                             ny++;
-                            break;
+                            break; // Down
                         case 2:
                             nx++;
-                            break;
+                            break; // Right
                         case 3:
                             ny--;
-                            break;
+                            break; // Up
                     }
 
+                    // If the neighbor tile is walkable, add it to options
                     if (ny >= 0 && ny < map.tileNum.length
                             && nx >= 0 && nx < map.tileNum[0].length
                             && map.tileNum[ny][nx] == 1) {
@@ -152,6 +189,7 @@ public class OBJ_Enemy extends SuperObject {
                     }
                 }
 
+                // Randomly pick a new direction if there are valid options
                 if (possibleDirections.size > 0) {
                     direction = possibleDirections.random();
                 }
@@ -160,8 +198,8 @@ public class OBJ_Enemy extends SuperObject {
     }
 
     /**
-     * Disposes all texture resources used by the enemy to free memory.
-     * Must be called when the object is no longer needed.
+     * Disposes all texture resources used by the enemy to free memory. Must be
+     * called when the object is no longer needed.
      */
     public void dispose() {
         for (Texture tex : frames) {

@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Map class handles tile-based rendering, pause menu buttons, background overlays,
- * enemy spawn positioning, and map switching logic.
- * It connects closely with GameScreen and Knight for rendering and positioning.
+ * The Map class handles tile-based rendering, pause menu buttons, background
+ * overlays, enemy spawn positioning, and map switching logic. It connects
+ * closely with GameScreen and Knight for rendering and positioning.
  */
 public class Map {
 
@@ -52,11 +52,12 @@ public class Map {
     // Optional background overlay
     private Texture backgroundImage;
     private boolean showBackground = false;
+    private String mapPath = "maps/map_02.txt"; // Default current map path (used to track which map is active)
+
 
     /**
-     * Constructor for Map.
-     * Initializes tiles and loads map from file.
-     * 
+     * Constructor for Map. Initializes tiles and loads map from file.
+     *
      * @param gs Reference to GameScreen
      * @param game Reference to main Game object
      */
@@ -71,10 +72,11 @@ public class Map {
     }
 
     /**
-     * Reads a text-based map layout and populates tileNum[][] with tile indices.
+     * Reads a text-based map layout and populates tileNum[][] with tile
+     * indices.
      */
     private void loadMap() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("maps\\map_02.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("maps/map_02.txt"))) {
             String line;
             int row = 0;
             while ((line = reader.readLine()) != null && row < GameScreen.MAP_X) {
@@ -105,7 +107,8 @@ public class Map {
     }
 
     /**
-     * Returns valid, non-collidable tile positions near the knight within a given radius.
+     * Returns valid, non-collidable tile positions near the knight within a
+     * given radius.
      */
     public List<Vector2> getValidSpawnsNearKnight(int centerX, int centerY, int radiusTiles) {
         List<Vector2> positions = new ArrayList<>();
@@ -166,10 +169,12 @@ public class Map {
 
     /**
      * Loads a new map layout from the given text file path.
+     *
      * @param mapFilePath path to the new map file
      */
     public void changeMap(String mapFilePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(mapFilePath))) {
+            this.mapPath = mapFilePath;
             String line;
             int row = 0;
             while ((line = reader.readLine()) != null && row < GameScreen.MAP_Y) {
@@ -186,6 +191,7 @@ public class Map {
 
     /**
      * Sets the map background image to show instead of tile map.
+     *
      * @param imagePath file path to background texture
      */
     public void setBackground(String imagePath) {
@@ -194,7 +200,9 @@ public class Map {
     }
 
     /**
-     * Creates pause button and in-game menu including Resume, Options, and Quit.
+     * Creates pause button and in-game menu including Resume, Options, and
+     * Quit.
+     *
      * @param stage The UI stage to add buttons to
      */
     public void createButtons(Stage stage) {
@@ -257,7 +265,8 @@ public class Map {
 
     /**
      * Returns a list of all tiles that are valid spawn points for enemies.
-     * @return 
+     *
+     * @return
      */
     public List<Vector2> getValidEnemySpawnPositions() {
         List<Vector2> validPositions = new ArrayList<>();
@@ -275,6 +284,7 @@ public class Map {
 
         return validPositions;
     }
+
     public int getMapWidthPixels() {
         return GameScreen.MAP_X * GameScreen.TILE_SIZE;
     }
@@ -282,8 +292,10 @@ public class Map {
     public int getMapHeightPixels() {
         return GameScreen.MAP_Y * GameScreen.TILE_SIZE;
     }
+
     /**
      * Sets the game's pause state.
+     *
      * @param paused true to pause, false to resume
      */
     public void setPaused(boolean paused) {
@@ -292,7 +304,8 @@ public class Map {
 
     /**
      * Returns whether the game is currently paused.
-     * @return 
+     *
+     * @return
      */
     public boolean isPaused() {
         return isPaused;
@@ -300,9 +313,14 @@ public class Map {
 
     /**
      * Returns whether only background is shown instead of tile map.
-     * @return 
+     *
+     * @return
      */
     public boolean isBackgroundOnly() {
         return showBackground;
+    }
+
+    public String getMapPath() {
+        return this.mapPath;
     }
 }

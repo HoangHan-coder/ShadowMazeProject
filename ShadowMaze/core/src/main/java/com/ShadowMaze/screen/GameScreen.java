@@ -162,15 +162,25 @@ public class GameScreen implements Screen {
         int mapWidth = map.tileNum[0].length;
 
         Array<int[]> walkableTiles = new Array<>();
-        cCheck = new CollisionChecker(this);      // Create collision checker
-        knight = new Knight(this, staminaBar, hpBar);  // Create player knight
-        // ? Duy?t toàn b? b?n ?? và l?u l?i các ô có tileNum == 1
+
+        // L?c ô ?i ???c
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
                 if (map.tileNum[y][x] == 1) {
                     walkableTiles.add(new int[]{x, y});
-
                 }
+            }
+        }
+
+        int placed = 0;
+        for (int i = 0; i < obj.length && placed < numEnemies; i++) {
+            if (obj[i] == null) { // Ch? ??t n?u ch?a có object
+                int[] tile = walkableTiles.random();
+                OBJ_Enemy enemy = new OBJ_Enemy();
+                enemy.mapX = tile[0] * TILE_SIZE;
+                enemy.mapY = tile[1] * TILE_SIZE;
+                obj[i] = enemy;
+                placed++;
             }
         }
     }
@@ -180,38 +190,75 @@ public class GameScreen implements Screen {
      * is detected (within half tile size), the game switches to a battle
      * screen.
      */
-    private void checkEnemyCollisionAndSwitchMap() {
-        // Iterate through all objects in the map
+    private void checkGateCollisionAndChangeMap() {
         for (SuperObject object : obj) {
-            // Check if object is not null and is an instance of OBJ_Enemy
-            if (object != null && object instanceof OBJ_Enemy) {
-                // Calculate distance between knight and enemy
-                float dx = knight.getPositionX() - object.mapX;
-                float dy = knight.getPositionY() - object.mapY;
-                float distance = (float) Math.sqrt(dx * dx + dy * dy);
+            if (object instanceof object.OBJ_CaveExit) {
+                float dx = knight.getPositionX() - object.mapX;                    // Calculate horizontal distance from player to gate
+                float dy = knight.getPositionY() - object.mapY;                    // Calculate vertical distance from player to gate
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);            // Calculate Euclidean distance to gate
 
-                // If knight is close enough to enemy, switch to battle screen
-                if (distance < GameScreen.TILE_SIZE / 2f) {
-                    game.setScreen(new BattleScreen(game));
-                    break; // Exit loop after switching screen
+                if (distance < TILE_SIZE / 1f) {                                   // If player is close enough to the gate
+                    String currentMap = map.getMapPath();                         // Get current map path (must be set in changeMap)
+                    String nextMap = "";                                          // Target map to switch to
+                    int spawnX = 3 * TILE_SIZE;                                   // Default spawn X after switching map
+                    int spawnY = 3 * TILE_SIZE;                                   // Default spawn Y after switching map
+
+                    System.out.println("Current map: " + currentMap);
+                    System.out.println("Knight position: ("
+                            + knight.getPositionX() / TILE_SIZE + ", "
+                            + knight.getPositionY() / TILE_SIZE + ")");
+
+                    // Determine the next map based on current map
+                    if (currentMap.equals("maps/map_01.txt")) {
+                        nextMap = "maps/map_03.txt";                              // From map 1 ? map 3
+                        spawnX = 3 * TILE_SIZE;
+                        spawnY = 3 * TILE_SIZE;
+                    } else if (currentMap.equals("maps/map_02.txt")) {
+                        nextMap = "maps/map_01.txt";                              // From map 2 ? map 1
+                        spawnX = 5 * TILE_SIZE;
+                        spawnY = 5 * TILE_SIZE;
+                    } else if (currentMap.equals("maps/map_03.txt")) {
+                        nextMap = "maps/map_01.txt";                              // From map 3 ? map 1
+                        spawnX = 5 * TILE_SIZE;
+                        spawnY = 5 * TILE_SIZE;
+                    }
+
+                    // Switch to new map if valid
+                    if (!nextMap.isEmpty()) {
+                        System.out.println("Switching to: " + nextMap);
+                        map.changeMap(nextMap);                                   // Change to the new map
+                        knight.setPosition(spawnX, spawnY);                       // Move player to the new spawn location
+                        aSetter.setObject();                                      // Reset objects on the new map
+                        spawnEnemiesFromWalkableTiles(map, 4);                    // Respawn enemies
+                    }
+
+                    break; // Stop checking after the first gate collision
                 }
             }
         }
     }
 
+    /**
+     * Checks if the player (knight) is within a specified range of any enemy.
+     *
+     * @param range The maximum distance to check (in pixels).
+     * @return true if an enemy is within the given range, false otherwise.
+     */
     public boolean isNearEnemy(float range) {
         for (SuperObject object : obj) {
             if (object instanceof OBJ_Enemy) {
                 OBJ_Enemy enemy = (OBJ_Enemy) object;
-                float dx = knight.getPositionX() - enemy.mapX;
-                float dy = knight.getPositionY() - enemy.mapY;
-                float distance = (float) Math.sqrt(dx * dx + dy * dy);
-                if (distance <= range) {
+
+                float dx = knight.getPositionX() - enemy.mapX;          // Horizontal distance between knight and enemy
+                float dy = knight.getPositionY() - enemy.mapY;          // Vertical distance between knight and enemy
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);  // Calculate Euclidean distance
+
+                if (distance <= range) {                                // If enemy is within range, return true
                     return true;
                 }
             }
         }
-        return false;
+        return false;                                                   // No enemy is within range
     }
 
     /**
@@ -248,6 +295,7 @@ public class GameScreen implements Screen {
 
         // Update knight's position, state, and physics (e.g., gravity, animation)
         knight.update(delta);
+        checkGateCollisionAndChangeMap();
         hpBar.update(delta);
         map.drawMap();
 
@@ -294,16 +342,13 @@ public class GameScreen implements Screen {
                 obj[i].drawObject(this);
             }
         }
-        
 
         batch.end();
-hpBar.render(batch);
+        hpBar.render(batch);
         // Draw UI (stamina icon)
         staminaBar.renderIcon(batch);
 
         // Draw stage UI
-        checkEnemyCollisionAndSwitchMap();
-
         batch.begin();
 
         // Draw tile-based game map relative to player's position
@@ -340,7 +385,6 @@ hpBar.render(batch);
         hpBar.render(batch);               // Draw HP bar
 
         staminaBar.renderIcon(batch);     // Draw stamina icon
-
 
         // Update and draw UI stage (includes buttons, overlays, etc.)
         stage.act(delta);

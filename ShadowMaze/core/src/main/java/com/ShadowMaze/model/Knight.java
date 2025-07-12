@@ -35,7 +35,7 @@ public class Knight extends Entity {
     boolean hasKey;
     private Array<Sword> skills = new Array<>();
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
-    public int baseSpeed = 4;          // T?c ?? ?i b?
+    public int baseSpeed = 5;          // T?c ?? ?i b?
     private boolean hasFired = false; // ?ã b?n k? n?ng ch?a?
     // Movement and stamina management
     public final int runSpeed = 8;
