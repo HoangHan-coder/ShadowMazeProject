@@ -20,6 +20,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import static com.badlogic.gdx.math.MathUtils.map;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -37,6 +38,10 @@ public class Fireball {
     private boolean active = false;
     private float lifeTime = 0f;
     private final float maxLifeTime = 2.0f;
+    
+    public Rectangle solidArea = new Rectangle(0, 0, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+    public float solidAreaDefaultX = 0;
+    public float solidAreaDefaultY = 0;
 
     private Animation<TextureRegion> animation;
     private float stateTime = 0f;
@@ -291,6 +296,14 @@ public class Fireball {
      */
     public boolean isActive() {
         return active;
+    }
+
+    public Vector2 getPosition() {
+        return this.position;
+    }
+
+    public void deactivate() {
+        active = false;
     }
 
     /**

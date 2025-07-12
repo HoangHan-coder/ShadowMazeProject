@@ -5,6 +5,7 @@ import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.model.Entity.Direction;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
+import com.ShadowMaze.model.ScoreBoard;
 import com.ShadowMaze.skill.Sword;
 import com.ShadowMaze.render.MirrorRenderer;
 import com.ShadowMaze.skill.Fireball;
@@ -77,6 +78,7 @@ public class GameScreen implements Screen {
     private Fireball currentFireball;
     private boolean wasEPressedLastFrame = false;
     private boolean isSkillAvailable = true;
+    private ScoreBoard scoreBoard;
 
     /**
      * Constructor that sets up the main batch and stores game reference.
@@ -116,13 +118,13 @@ public class GameScreen implements Screen {
 
         // Load textures and create UI bars
         Texture staminaIcon = new Texture(Gdx.files.internal("menu/function/dragon.png"));
-        staminaBar = new StaminaBar(140, 30, 200, 20, 100, staminaIcon);
+        staminaBar = new StaminaBar(300, 30, 200, 20, 100, staminaIcon);
 
         Texture hpBg = new Texture(Gdx.files.internal("menu/function/type5.png"));
         Texture hpFill = new Texture(Gdx.files.internal("menu/function/type6.png"));
         hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
         cCheck = new CollisionChecker(this);
-        knight = new Knight(this, staminaBar, hpBar);
+        knight = new Knight(this, hpBar);
         spawnEnemiesFromWalkableTiles(map, 4); // Spawn 4 enemy
 // khoi tao me cung
 //        int pathWidth = 1; // vÃ­ dá»¥ 3
@@ -154,6 +156,7 @@ public class GameScreen implements Screen {
         // Center the maze if needed
 //        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
 //        offsetY = 0;
+        scoreBoard = new ScoreBoard();
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
@@ -282,12 +285,6 @@ public class GameScreen implements Screen {
             stage.draw();                  // Render the UI stage
             return;                        // Exit render early
         }
-        // --- Update logic ---
-        for (SuperObject object : obj) {
-            if (object instanceof OBJ_Enemy) {
-                ((OBJ_Enemy) object).update(Gdx.graphics.getDeltaTime(), map);
-            }
-        }
 
         // --- DRAW ---
         batch.begin();
@@ -331,8 +328,8 @@ public class GameScreen implements Screen {
             if (fireball.isActive()) {
                 fireball.render(batch, knight.positionX, knight.positionY);
             } else {
-                iterator.remove(); // Xoá n?u không còn active
-                isSkillAvailable = true; // ? Cho phép dùng skill l?i
+                iterator.remove(); // Xo? n?u kh?ng c?n active
+                isSkillAvailable = true; // ? Cho ph?p d?ng skill l?i
             }
         }
 
@@ -370,7 +367,7 @@ public class GameScreen implements Screen {
 
         // Debug output to console showing player's current tile coordinates
         System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
-
+        scoreBoard.render(batch, 30, 650);
         batch.end();  // Finish drawing sprites
 
         // Apply same camera projection to shapeRenderer as SpriteBatch

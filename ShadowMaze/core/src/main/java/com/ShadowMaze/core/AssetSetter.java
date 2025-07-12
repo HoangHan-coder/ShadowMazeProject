@@ -1,5 +1,6 @@
 package com.ShadowMaze.core;
 
+import com.ShadowMaze.model.Entity;
 import object.OBJ_CaveExit;
 import object.OBJ_Key;
 import com.ShadowMaze.screen.GameScreen;
@@ -48,10 +49,5 @@ public class AssetSetter {
         gs.obj[2] = new OBJ_Gate();
         gs.obj[2].mapX = 88 * GameScreen.TILE_SIZE;
         gs.obj[2].mapY = 19 * GameScreen.TILE_SIZE;
-
-        // Place an enemy at tile (33, 24)
-        gs.obj[3] = new OBJ_Enemy();  
-        gs.obj[3].mapX = 33 * GameScreen.TILE_SIZE;
-        gs.obj[3].mapY = 24 * GameScreen.TILE_SIZE;
     }
 }

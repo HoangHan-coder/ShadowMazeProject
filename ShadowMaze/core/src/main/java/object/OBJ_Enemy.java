@@ -17,25 +17,30 @@ public class OBJ_Enemy extends SuperObject {
     private Animation<TextureRegion> animation;
     private float stateTime = 0f;
     private Array<Texture> frames = new Array<>();
-    private float scale = 3f; // h? s? phóng to
-    private int direction = 0; // 0=trái, 1=xu?ng, 2=ph?i, 3=lên
+    private float scale = 3f; 
+    private int direction = 0; // 0=left, 1=down, 2=right,  3=up
     private float speed = 50f;
     private float moveTimer = 0f;
-    private float moveInterval = 0.1f; // th?i gian ki?m tra h??ng ti?p theo
+    private float moveInterval = 0.1f; 
     public float mapX, mapY;
 
+    public int hp = 100; // máu m?c ??nh
+
+    public int HP = 5;
+    
+  
     /**
      * Constructor initializes the enemy name and loads animation frames from
      * disk.
      */
     public OBJ_Enemy() {
         name = "Enemy";
-
-        // Kh?i t?o tile ban ??u (VD: ? tile hàng 5, c?t 5)
+        collision = true;
+        // Kh?i t?o tile ban ??u (VD: ? tile hï¿½ng 5, c?t 5)
         int tileX = 5;
         int tileY = 5;
 
-        // Load t?t c? frame animation
+
         Array<TextureRegion> regions = new Array<>();
         for (int i = 0; i < 4; i++) {
             Texture tex = new Texture(Gdx.files.internal("icons/Special" + i + ".png"));
@@ -43,14 +48,14 @@ public class OBJ_Enemy extends SuperObject {
             regions.add(new TextureRegion(tex));
         }
 
-        // T?o animation
+
         animation = new Animation<>(0.15f, regions);
 
-        // Tính kích th??c enemy d?a trên frame ??u tiên
+
         float enemyWidth = animation.getKeyFrame(0).getRegionWidth() * scale;
         float enemyHeight = animation.getKeyFrame(0).getRegionHeight() * scale;
 
-        // Gán t?a ?? mapX/mapY ?? canh gi?a tile
+
         mapX = tileX * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyWidth / 2f;
         mapY = tileY * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyHeight / 2f;
     }
@@ -106,23 +111,18 @@ public class OBJ_Enemy extends SuperObject {
      */
     public void update(float delta, Map map) {
         moveTimer += delta; // Accumulate time since last direction change
-
         float dx = 0, dy = 0; // Movement deltas
 
         // Determine direction: 0 = left, 1 = down, 2 = right, 3 = up
         switch (direction) {
-            case 0:
-                dx = -1;
-                break; // Move left
-            case 1:
-                dy = 1;
-                break; // Move down
-            case 2:
-                dx = 1;
-                break; // Move right
-            case 3:
-                dy = -1;
-                break; // Move up
+            case 0 -> dx = -1;
+            // Move left
+            case 1 -> dy = 1;
+            // Move down
+            case 2 -> dx = 1;
+            // Move right
+            case 3 -> dy = -1;
+            // Move up
         }
 
         // Calculate next potential position
@@ -167,18 +167,14 @@ public class OBJ_Enemy extends SuperObject {
                 for (int i = 0; i < 4; i++) {
                     int nx = curTileX, ny = curTileY;
                     switch (i) {
-                        case 0:
-                            nx--;
-                            break; // Left
-                        case 1:
-                            ny++;
-                            break; // Down
-                        case 2:
-                            nx++;
-                            break; // Right
-                        case 3:
-                            ny--;
-                            break; // Up
+                        case 0 -> nx--;
+                        // Left
+                        case 1 -> ny++;
+                        // Down
+                        case 2 -> nx++;
+                        // Right
+                        case 3 -> ny--;
+                        // Up
                     }
 
                     // If the neighbor tile is walkable, add it to options
@@ -195,6 +191,10 @@ public class OBJ_Enemy extends SuperObject {
                 }
             }
         }
+    }
+
+    public boolean isDead() {
+        return hp <= 0;  // Ho?c flag nào ?ó n?u b?n có hi?u ?ng ch?t
     }
 
     /**
