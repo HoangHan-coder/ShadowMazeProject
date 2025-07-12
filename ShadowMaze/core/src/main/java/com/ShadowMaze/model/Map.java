@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.ShadowMaze.model;
 
 import com.ShadowMaze.screen.GameScreen;
@@ -10,7 +6,6 @@ import com.ShadowMaze.screen.MainMenuScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,38 +21,59 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author NgKaitou
+ * The Map class handles tile-based rendering, pause menu buttons, background overlays,
+ * enemy spawn positioning, and map switching logic.
+ * It connects closely with GameScreen and Knight for rendering and positioning.
  */
 public class Map {
 
-    // init map
+    // Reference to the current GameScreen
     GameScreen gs;
-    public Tile[] tiles;
-    public int[][] tileNum;
+
+    // Tile image data and map layout
+    public Tile[] tiles;                // Array of tile types
+    public int[][] tileNum;            // 2D array storing tile indices
+
+    // UI elements and textures
     private Texture resumeUp, resumeDown;
     private Texture optionsUp, optionsDown;
     private Texture quitUp, quitDown, quitDisabled;
     private Texture how;
     private Table pauseMenuTable;
+
+    // Pause state and background control
     private boolean isPauseMenuVisible = false;
     private boolean isPaused = false;
+
+    // Reference to main menu screen and game context
     private MainMenuScreen screen;
     private Game game;
+
+    // Optional background overlay
     private Texture backgroundImage;
     private boolean showBackground = false;
 
+    /**
+     * Constructor for Map.
+     * Initializes tiles and loads map from file.
+     * 
+     * @param gs Reference to GameScreen
+     * @param game Reference to main Game object
+     */
     public Map(GameScreen gs, Game game) {
         this.gs = gs;
         this.game = game;
-        tiles = new Tile[10];
-        tileNum = new int[GameScreen.MAP_Y][GameScreen.MAP_X];
-        getImageTiles();
-        loadMap();
+        tiles = new Tile[10]; // Prepare 10 tile slots
+        tileNum = new int[GameScreen.MAP_Y][GameScreen.MAP_X]; // Allocate map grid
+
+        getImageTiles(); // Load tile textures
+        loadMap();       // Load tile layout from file
     }
 
+    /**
+     * Reads a text-based map layout and populates tileNum[][] with tile indices.
+     */
     private void loadMap() {
-
         try (BufferedReader reader = new BufferedReader(new FileReader("maps\\map_02.txt"))) {
             String line;
             int row = 0;
@@ -72,18 +89,24 @@ public class Map {
         }
     }
 
+    /**
+     * Loads textures into the tile array.
+     */
     private void getImageTiles() {
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
-//        tiles[0].collision = true;
+        // tiles[0].collision = true; // You can uncomment this if this tile blocks movement
+
         tiles[1] = new Tile();
         tiles[1].image = new Texture("tiles/grass.png");
 
         tiles[2] = new Tile();
         tiles[2].image = new Texture("tiles/background_tree.png");
     }
-// Trong Map.java
 
+    /**
+     * Returns valid, non-collidable tile positions near the knight within a given radius.
+     */
     public List<Vector2> getValidSpawnsNearKnight(int centerX, int centerY, int radiusTiles) {
         List<Vector2> positions = new ArrayList<>();
 
@@ -94,7 +117,7 @@ public class Map {
                     if (!tiles[tile].collision) {
                         float worldX = col * GameScreen.TILE_SIZE;
                         float worldY = row * GameScreen.TILE_SIZE;
-                        positions.add(new Vector2(33, 24));
+                        positions.add(new Vector2(33, 24)); // May be placeholder? Should be (worldX, worldY)
                     }
                 }
             }
@@ -103,19 +126,24 @@ public class Map {
         return positions;
     }
 
+    /**
+     * Renders the map tiles relative to the player's screen position.
+     */
     public void drawMap() {
+        // Draw a background image if set
         if (showBackground && backgroundImage != null) {
             gs.batch.draw(backgroundImage, 0, 0, GameScreen.SCREEN_WIDTH, GameScreen.SCREEN_HEIGHT);
-            return; // Không v? map n?a
+            return;
         }
-        // draw background
+
+        // Draw static background tiles
         for (int y = 0; y < GameScreen.SCREEN_HEIGHT / GameScreen.TILE_SIZE; y++) {
             for (int x = 0; x < GameScreen.SCREEN_WIDTH / GameScreen.TILE_SIZE; x++) {
                 gs.batch.draw(tiles[2].image, x * 48, y * 48);
             }
         }
 
-        // draw maze
+        // Draw actual maze tiles from map data
         for (int mapRow = 0; mapRow < GameScreen.MAP_Y; mapRow++) {
             for (int mapCol = 0; mapCol < GameScreen.MAP_X; mapCol++) {
                 int tile = tileNum[mapRow][mapCol];
@@ -125,17 +153,21 @@ public class Map {
                 int screenX = mapX - gs.knight.positionX + gs.knight.renderX;
                 int screenY = mapY - gs.knight.positionY + gs.knight.renderY;
 
+                // Only draw if tile is within screen bounds
                 if (mapX + GameScreen.TILE_SIZE > gs.knight.positionX - gs.knight.renderX
                         && mapX - GameScreen.TILE_SIZE < gs.knight.positionX + gs.knight.renderX
                         && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
                         && mapY - GameScreen.TILE_SIZE < gs.knight.positionY + gs.knight.renderY) {
                     gs.batch.draw(tiles[tile].image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-//                }
                 }
             }
         }
     }
 
+    /**
+     * Loads a new map layout from the given text file path.
+     * @param mapFilePath path to the new map file
+     */
     public void changeMap(String mapFilePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(mapFilePath))) {
             String line;
@@ -152,48 +184,60 @@ public class Map {
         }
     }
 
+    /**
+     * Sets the map background image to show instead of tile map.
+     * @param imagePath file path to background texture
+     */
     public void setBackground(String imagePath) {
         backgroundImage = new Texture(Gdx.files.internal(imagePath));
         showBackground = true;
     }
 
+    /**
+     * Creates pause button and in-game menu including Resume, Options, and Quit.
+     * @param stage The UI stage to add buttons to
+     */
     public void createButtons(Stage stage) {
-        // Nï¿½t nh? gï¿½c trï¿½i
         resumeUp = new Texture(Gdx.files.internal("menu/function/pause.png"));
         ImageButton pauseButton = new ImageButton(new TextureRegionDrawable(resumeUp));
 
-        // B?ng menu t?m d?ng
         pauseMenuTable = new Table();
         pauseMenuTable.setFillParent(true);
         pauseMenuTable.center();
 
-        // T?o cï¿½c nï¿½t trong b?ng menu
+        // Create menu buttons
         ImageButton resumeButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type7.png"))));
         ImageButton optionsButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type3.png"))));
         ImageButton quitButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("menu/function/type4.png"))));
 
-        // Thï¿½m cï¿½c nï¿½t vï¿½o b?ng menu
+        // Add buttons to table with padding
         pauseMenuTable.add(resumeButton).size(200, 60).pad(10).row();
         pauseMenuTable.add(optionsButton).size(200, 60).pad(10).row();
         pauseMenuTable.add(quitButton).size(200, 60).pad(10);
 
-        pauseMenuTable.setVisible(false); // ?n ban ??u
+        pauseMenuTable.setVisible(false);
+
+        // Pause button toggles menu visibility
         pauseButton.addListener(new ClickListener() {
+            @Override
             public void clicked(InputEvent event, float x, float y) {
                 setPaused(true);
                 pauseMenuTable.setVisible(true);
             }
         });
 
+        // Resume button hides pause menu
         resumeButton.addListener(new ClickListener() {
+            @Override
             public void clicked(InputEvent event, float x, float y) {
                 setPaused(false);
                 pauseMenuTable.setVisible(false);
             }
         });
 
-        // Gï¿½n s? ki?n cho nï¿½t resume trong menu popup
+        // Quit button transitions to main menu with fade effect
         quitButton.addListener(new ClickListener() {
+            @Override
             public void clicked(InputEvent event, float x, float y) {
                 Screen current = game.getScreen();
                 Screen next = new MainMenuScreen(game);
@@ -201,25 +245,26 @@ public class Map {
             }
         });
 
-        // Table ch?a nï¿½t pause
+        // Add pause button to top-left corner of screen
         Table topLeftTable = new Table();
         topLeftTable.bottom().left().padBottom(20).padLeft(20);
         topLeftTable.setFillParent(true);
         topLeftTable.add(pauseButton).size(100, 40);
 
-        // Thï¿½m m?i th? vï¿½o stage
-        stage.addActor(topLeftTable);       // nï¿½t pause nh?
-        stage.addActor(pauseMenuTable);     // b?ng menu hi?n ra
+        stage.addActor(topLeftTable);
+        stage.addActor(pauseMenuTable);
     }
 
+    /**
+     * Returns a list of all tiles that are valid spawn points for enemies.
+     * @return 
+     */
     public List<Vector2> getValidEnemySpawnPositions() {
         List<Vector2> validPositions = new ArrayList<>();
 
         for (int row = 0; row < GameScreen.MAP_Y; row++) {
             for (int col = 0; col < GameScreen.MAP_X; col++) {
                 int tileIndex = tileNum[row][col];
-
-                // N?u tile không có va ch?m, coi nh? là h?p l?
                 if (!tiles[tileIndex].collision) {
                     float worldX = col * GameScreen.TILE_SIZE;
                     float worldY = row * GameScreen.TILE_SIZE;
@@ -230,7 +275,6 @@ public class Map {
 
         return validPositions;
     }
-
     public int getMapWidthPixels() {
         return GameScreen.MAP_X * GameScreen.TILE_SIZE;
     }
@@ -238,15 +282,26 @@ public class Map {
     public int getMapHeightPixels() {
         return GameScreen.MAP_Y * GameScreen.TILE_SIZE;
     }
-
+    /**
+     * Sets the game's pause state.
+     * @param paused true to pause, false to resume
+     */
     public void setPaused(boolean paused) {
         this.isPaused = paused;
     }
 
+    /**
+     * Returns whether the game is currently paused.
+     * @return 
+     */
     public boolean isPaused() {
         return isPaused;
     }
 
+    /**
+     * Returns whether only background is shown instead of tile map.
+     * @return 
+     */
     public boolean isBackgroundOnly() {
         return showBackground;
     }

@@ -1,6 +1,5 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Base class for all interactable or visible objects on the map (e.g., key, gate, cave exit).
  */
 package object;
 
@@ -9,26 +8,50 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 
 /**
- *
- * @author NgKaitou
+ * The {@code SuperObject} class serves as the base class for all interactive or static objects
+ * in the game world, such as keys, gates, and exits. It contains common properties like name,
+ * texture, collision flag, hitbox, and map position.
+ * 
+ * Author: NgKaitou
  */
 public class SuperObject {
-    
+
+    /** Name of the object (used to identify in logic). */
     public String name;
+
+    /** Texture image used to render the object. */
     public Texture image;
+
+    /** Indicates whether the object blocks movement (e.g., gate = true, key = false). */
     public boolean collision = false;
+
+    /** Collision area of the object (hitbox). */
     public Rectangle solidArea = new Rectangle(0, 0, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+
+    /** Default X offset for the hitbox. */
     public float solidAreaDefaultX = 0;
+
+    /** Default Y offset for the hitbox. */
     public float solidAreaDefaultY = 0;
-    
+
+    /** X position on the map (in pixels). */
     public int mapX;
+
+    /** Y position on the map (in pixels). */
     public int mapY;
-    
+
+    /**
+     * Renders the object to the screen if it is within the current visible area of the player.
+     *
+     * @param gs The current GameScreen instance, which provides access to the player, batch, and tile size.
+     */
     public void drawObject(GameScreen gs) {
-        
+
+        // Calculate on-screen coordinates based on player position
         int screenX = mapX - gs.knight.positionX + gs.knight.renderX;
         int screenY = mapY - gs.knight.positionY + gs.knight.renderY;
 
+        // Check if object is within visible screen area before rendering
         if (mapX + GameScreen.TILE_SIZE > gs.knight.positionX - gs.knight.renderX
                 && mapX - GameScreen.TILE_SIZE < gs.knight.positionX + gs.knight.renderX
                 && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
@@ -36,5 +59,5 @@ public class SuperObject {
             gs.batch.draw(image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
         }
     }
-    
+
 }
