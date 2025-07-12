@@ -194,26 +194,14 @@ public class GameScreen implements Screen {
             }
         }
 
-        knight.inputHandle(delta);
-        knight.update(delta);
-
-        for (int i = 0; i < fireSkill.size; i++) {
-            Skill skill = fireSkill.get(i);
-            skill.update(delta);
-            if (!skill.isActive()) {
-                fireSkill.removeIndex(i);
-                i--;
-            }
-        }
-
-        hpBar.update(delta);
-
         // --- Clear screen ---
         ScreenUtils.clear(0, 0, 0, 1);
 
         // --- DRAW ---
         batch.begin();
-
+        knight.inputHandle(delta);
+        knight.update(delta);
+        hpBar.update(delta);
         map.drawMap();
 
         if (!map.isBackgroundOnly()) {
@@ -226,13 +214,6 @@ public class GameScreen implements Screen {
                 obj[i].drawObject(this);
             }
         }
-
-        // ? Draw all skills (sau khi update, ?úng th?i ?i?m)
-        for (Skill skill : fireSkill) {
-            skill.render(batch);
-        }
-
-        knight.knightRender(delta); // có th? b? n?u ?ã render ? trên
         hpBar.render(batch);
 
         batch.end();

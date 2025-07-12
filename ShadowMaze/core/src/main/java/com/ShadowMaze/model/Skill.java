@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.ShadowMaze.model.Entity.Direction;
+import com.ShadowMaze.screen.GameScreen;
 
 public class Skill {
 
-    private Vector2 position;
-    private Vector2 velocity;
     private float speed = 200f;
     private boolean active;
 
@@ -18,27 +18,43 @@ public class Skill {
     private Animation<TextureRegion> animation;
     private float stateTime;
     private float width, height;
+    private Entity.Direction direction;
+    private float lifeTimer = 0f;
+    private float maxLifeTime = 5.5f; // ví d?: skill t?n t?i 1.5 giây
+    private float offsetX;
+    private float offsetY;
+    private Knight knight;
 
-    public Skill() {
+    public Skill(Direction direction) {
+        this.direction = direction;
         active = false;
 
-        // Load t?t c? ?nh có ?uôi .img trong th? m?c skills/
-        FileHandle dir = Gdx.files.internal("skill/1");
+        String path = switch (direction) {
+            case LEFT, RIGHT ->
+                "skill/1";
+            case UP ->
+                "skill/down";
+            case DOWN ->
+                "skill/up";
+            default ->
+                "skill/1"; // fallback
+        };
+
+        FileHandle dir = Gdx.files.internal(path);
         FileHandle[] files = dir.list();
 
         Array<TextureRegion> frames = new Array<>();
-        System.out.println("hello");
         for (FileHandle file : files) {
-            if (file.extension().equalsIgnoreCase(".png")) {
-                System.out.println("di qua day");
+            if (file.extension().equalsIgnoreCase("png")) {
                 Texture texture = new Texture(file);
                 textureList.add(texture);
-                frames.add(new TextureRegion(texture));
+                TextureRegion region = new TextureRegion(texture);
+                frames.add(new TextureRegion(region));
             }
         }
 
         if (frames.size == 0) {
-            throw new RuntimeException("Không tìm th?y ?nh .img nào trong th? m?c skills/");
+            throw new RuntimeException("Không tìm th?y ?nh trong th? m?c " + path);
         }
 
         animation = new Animation<>(0.1f, frames);
@@ -48,30 +64,85 @@ public class Skill {
         height = frames.get(0).getRegionHeight();
     }
 
-    public void activate(float x, float y, float dirX, float dirY) {
-        position = new Vector2(x + 20, y); // l?ch m?t chút cho ??p
-        velocity = new Vector2(dirX, dirY).nor().scl(speed);
+    public void activate(Knight knight, Direction direction) {
         active = true;
         stateTime = 0;
-    }
-
-    public void update(float delta) {
-        if (!active) return;
-
-        stateTime += delta;
-        position.add(velocity.x * delta, velocity.y * delta);
-
-        if (position.dst2(0, 0) > 5000 * 5000) {
-            active = false;
+        lifeTimer = 0; // reset th?i gian s?ng
+        this.direction = direction;
+        switch (direction) {
+            case LEFT -> {
+                offsetX = -GameScreen.TILE_SIZE / 2f;
+                offsetY = 0;
+            }
+            case RIGHT -> {
+                offsetX = GameScreen.TILE_SIZE / 2f;
+                offsetY = 0;
+            }
+            case UP ->
+                offsetY = +GameScreen.TILE_SIZE / 2f;
+            case DOWN ->
+                offsetY = -GameScreen.TILE_SIZE / 2f;
         }
     }
 
-    public void render(SpriteBatch batch) {
-        System.out.println("dada");
-        if (!active) return;
+    public void update(float delta) {
+        if (!active) {
+            return;
+        }
 
-        TextureRegion currentFrame = animation.getKeyFrame(stateTime, true);
-        batch.draw(currentFrame, position.x - width / 2, position.y - height / 2);
+        stateTime += delta;
+        lifeTimer += delta;
+
+        if (lifeTimer >= maxLifeTime) {
+            deactivate();
+        }
+    }
+
+    public void render(SpriteBatch batch, float knightWorldX, float knightWorldY, int knightRenderX, int knightRenderY) {
+        if (!active) {
+            return;
+        }
+
+        TextureRegion frame = animation.getKeyFrame(stateTime, false);
+
+        if (animation.isAnimationFinished(stateTime)) {
+            active = false;
+            return;
+        }
+
+        float drawX = knightRenderX;
+        float drawY = knightRenderY;
+        float offset = GameScreen.TILE_SIZE / 2f - 15; // ??y ra 1 n?a tile - 8px ?? g?n h?n
+        // Tính toán v? trí xu?t hi?n skill d?a trên h??ng
+        switch (direction) {
+            case UP -> {
+                drawY -= GameScreen.TILE_SIZE - offset; // V? skill phía trên ??u knight
+            }
+            case DOWN -> {
+                drawY += GameScreen.TILE_SIZE - offset - 30; // V? skill phía d??i
+            }
+            case LEFT -> {
+                drawX -= GameScreen.TILE_SIZE - offset - 10;
+            }
+            case RIGHT -> {
+                drawX += GameScreen.TILE_SIZE - offset - 10;
+            }
+        }
+
+        // Flip ?nh n?u c?n
+        if (direction == Direction.LEFT && !frame.isFlipX()) {
+            frame.flip(true, false);
+        } else if (direction == Direction.RIGHT && frame.isFlipX()) {
+            frame.flip(true, false);
+        }
+
+        batch.draw(
+                frame,
+                drawX,
+                drawY,
+                frame.getRegionWidth() * 2f,
+                frame.getRegionHeight() * 2f
+        );
     }
 
     public boolean isActive() {

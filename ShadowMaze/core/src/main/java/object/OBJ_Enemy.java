@@ -52,7 +52,6 @@ public class OBJ_Enemy extends SuperObject {
 
         int screenX = (int) (mapX - screen.knight.positionX + screen.knight.renderX);
         int screenY = (int) (mapY - screen.knight.positionY + screen.knight.renderY);
-        System.out.println("Draw enemy at screen (" + screenX + ", " + screenY + ")");
         if (mapX + GameScreen.TILE_SIZE > screen.knight.positionX - screen.knight.renderX
                 && mapX - GameScreen.TILE_SIZE < screen.knight.positionX + screen.knight.renderX
                 && mapY + GameScreen.TILE_SIZE > screen.knight.positionY - screen.knight.renderY

@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 
 /**
  *
@@ -27,12 +28,14 @@ public class Knight extends Entity {
     public int renderX;
     public int renderY;
     boolean hasKey;
+    private Array<Skill> skills = new Array<>();
 
     int offsetX;
     int offsetY;
 
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
     public int baseSpeed = 4;          // T?c ?? ?i b?
+    private boolean hasFired = false; // ?ã b?n k? n?ng ch?a?
 
     private StaminaBar staminaBar; // Thï¿½m thanh stamina+
     public int runSpeed = 8;   // t?c ?? khi ch?y (Shift)
@@ -41,6 +44,8 @@ public class Knight extends Entity {
     private HpBar hpBar; // Thï¿½m dï¿½ng nï¿½y vï¿½o class Knight
     GameScreen gs;
     float stateTime;
+    private Direction dir;
+    private Direction lastMoveDirection = Direction.RIGHT;
     Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
 
     public Knight(GameScreen gs, StaminaBar staminaBar, HpBar hpBar) {
@@ -48,8 +53,10 @@ public class Knight extends Entity {
         this.staminaBar = staminaBar;
         this.speed = baseSpeed;
         this.hpBar = hpBar; // Gï¿½n HpBar
-        this.hpBar = hpBar; // Gï¿½n HpBar
+        this.hpBar = hpBar; // Gï¿½n HpBars
         setDefaultValue();
+        dir = currentDirection;
+
     }
 
     private void setDefaultValue() {
@@ -90,14 +97,32 @@ public class Knight extends Entity {
     }
 
     public void setDirection(Direction direction) {
-        if (direction != currentDirection) {
-            stateTime = 0f;
+        if (direction != currentDirection && direction != Direction.IDLE) {
+            hasFired = false; // ??i h??ng ? cho phép b?n l?i
+        }
+        if (direction != Direction.IDLE) {
+            lastMoveDirection = direction;
         }
         currentDirection = direction;
     }
 
     public void update(float delta) {
         stateTime += delta;
+
+        for (int i = 0; i < skills.size; i++) {
+            Skill skill = skills.get(i);
+
+            // N?u h??ng hi?n t?i khác v?i h??ng k? n?ng ?ang b?n -> t?t
+//            if (skill.isActive() && currentDirection != Direction.IDLE && skill.getDirection() != currentDirection) {
+//                skill.setActive(false);  // ?ánh d?u không ho?t ??ng
+//            }
+            skill.update(delta);
+
+            if (!skill.isActive()) {
+                skills.removeIndex(i);
+                i--;
+            }
+        }
     }
 
     public void setPosition(int x, int y) {
@@ -107,6 +132,9 @@ public class Knight extends Entity {
 
     public void knightRender(float delta) {
         update(delta);
+        for (Skill skill : skills) {
+            skill.render(gs.batch, positionX, positionY, renderX, renderY);
+        }
         Animation<TextureRegion> currentAnim = switch (currentDirection) {
             case UP ->
                 moveDown;
@@ -208,7 +236,6 @@ public class Knight extends Entity {
 //            positionY = 10 * GameScreen.TILE_SIZE;
 //        }
 //       
-
         // check tile collision
         collisionOn = false;
         gs.cCheck.checkTile(this);
@@ -237,6 +264,21 @@ public class Knight extends Entity {
             } else {
                 speed = 4;
             }
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !hasFired) {
+            Entity.Direction skillDir = (currentDirection == Direction.IDLE)
+                    ? lastMoveDirection
+                    : currentDirection;
+
+            Skill skill = new Skill(skillDir);
+            skill.activate(this, skillDir);
+            hasFired = true; // ?ánh d?u ?ã b?n
+            skills.add(skill);
+        }
+
+// Reset hasFired n?u không còn nh?n SPACE
+        if (!Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            hasFired = false;
         }
     }
 
