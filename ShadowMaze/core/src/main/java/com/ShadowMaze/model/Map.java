@@ -231,6 +231,14 @@ public class Map {
         return validPositions;
     }
 
+    public int getMapWidthPixels() {
+        return GameScreen.MAP_X * GameScreen.TILE_SIZE;
+    }
+
+    public int getMapHeightPixels() {
+        return GameScreen.MAP_Y * GameScreen.TILE_SIZE;
+    }
+
     public void setPaused(boolean paused) {
         this.isPaused = paused;
     }

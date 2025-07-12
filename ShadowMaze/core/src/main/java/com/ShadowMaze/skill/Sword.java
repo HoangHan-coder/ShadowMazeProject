@@ -1,5 +1,6 @@
-package com.ShadowMaze.model;
+package com.ShadowMaze.skill;
 
+import com.ShadowMaze.model.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
@@ -7,9 +8,10 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.ShadowMaze.model.Entity.Direction;
+import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.screen.GameScreen;
 
-public class Skill {
+public class Sword {
 
     private float speed = 200f;
     private boolean active;
@@ -24,8 +26,10 @@ public class Skill {
     private float offsetX;
     private float offsetY;
     private Knight knight;
+    private Vector2 position;  // V? trí th?c trên b?n ??
+    private Vector2 velocity;  // H??ng bay
 
-    public Skill(Direction direction) {
+    public Sword(Direction direction) {
         this.direction = direction;
         active = false;
 

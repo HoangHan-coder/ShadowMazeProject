@@ -2,10 +2,12 @@ package com.ShadowMaze.screen;
 
 import com.ShadowMaze.core.AssetSetter;
 import com.ShadowMaze.core.CollisionChecker;
+import com.ShadowMaze.model.Entity.Direction;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
-import com.ShadowMaze.model.Skill;
+import com.ShadowMaze.skill.Sword;
 import com.ShadowMaze.render.MirrorRenderer;
+import com.ShadowMaze.skill.Fireball;
 import com.badlogic.gdx.*;
 import object.SuperObject;
 import com.badlogic.gdx.graphics.*;
@@ -24,6 +26,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -63,9 +66,13 @@ public class GameScreen implements Screen {
     private Stage stage;
     private boolean isPaused = false;
     private HpBar hpBar;
-    private Array<Skill> fireSkill = new Array<>();
+    private Array<Sword> fireSkill = new Array<>();
 
-    ;
+    private Array<Fireball> fireballs = new Array<>();
+    private Fireball currentFireball;
+    private boolean wasEPressedLastFrame = false;
+    private boolean isSkillAvailable = true;
+
     public GameScreen(Game game) {
         this.batch = new SpriteBatch();
         this.game = game;
@@ -206,6 +213,39 @@ public class GameScreen implements Screen {
 
         if (!map.isBackgroundOnly()) {
             knight.knightRender(delta);
+        }
+// C?p nh?t tr?ng thái phím E ?? b?n
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            if (!wasEPressedLastFrame && isSkillAvailable) { // ? Ki?m tra thêm isSkillAvailable
+                Vector2 start = new Vector2(knight.positionX, knight.positionY);
+                Direction dir = knight.getDirection();
+                if (dir != Direction.IDLE) {
+                    Fireball fb = new Fireball();
+                    fb.setMapSize(map.getMapWidthPixels(), map.getMapHeightPixels());
+                    fb.activate(start, dir);
+                    fb.shoot();
+                    fireballs.add(fb);
+                    currentFireball = fb;
+
+                    isSkillAvailable = false; // ? Không cho b?n ti?p
+                }
+            }
+            wasEPressedLastFrame = true;
+        } else {
+            wasEPressedLastFrame = false;
+        }
+
+// C?p nh?t & render các fireball ?ang ho?t ??ng
+        Iterator<Fireball> iterator = fireballs.iterator();
+        while (iterator.hasNext()) {
+            Fireball fireball = iterator.next();
+            fireball.update(delta);
+            if (fireball.isActive()) {
+                fireball.render(batch, knight.positionX, knight.positionY);
+            } else {
+                iterator.remove(); // Xoá n?u không còn active
+                isSkillAvailable = true; // ? Cho phép dùng skill l?i
+            }
         }
 
         // Draw all objects

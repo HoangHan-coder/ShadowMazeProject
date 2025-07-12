@@ -4,6 +4,7 @@
  */
 package com.ShadowMaze.model;
 
+import com.ShadowMaze.skill.Sword;
 import static com.ShadowMaze.model.Entity.Direction.DOWN;
 import static com.ShadowMaze.model.Entity.Direction.LEFT;
 import static com.ShadowMaze.model.Entity.Direction.RIGHT;
@@ -28,7 +29,7 @@ public class Knight extends Entity {
     public int renderX;
     public int renderY;
     boolean hasKey;
-    private Array<Skill> skills = new Array<>();
+    private Array<Sword> skills = new Array<>();
 
     int offsetX;
     int offsetY;
@@ -47,6 +48,7 @@ public class Knight extends Entity {
     private Direction dir;
     private Direction lastMoveDirection = Direction.RIGHT;
     Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
+    private Entity.Direction direction; // ? bi?n này ?ã t?n t?i
 
     public Knight(GameScreen gs, StaminaBar staminaBar, HpBar hpBar) {
         this.gs = gs;
@@ -110,7 +112,7 @@ public class Knight extends Entity {
         stateTime += delta;
 
         for (int i = 0; i < skills.size; i++) {
-            Skill skill = skills.get(i);
+            Sword skill = skills.get(i);
 
             // N?u h??ng hi?n t?i khác v?i h??ng k? n?ng ?ang b?n -> t?t
 //            if (skill.isActive() && currentDirection != Direction.IDLE && skill.getDirection() != currentDirection) {
@@ -132,7 +134,7 @@ public class Knight extends Entity {
 
     public void knightRender(float delta) {
         update(delta);
-        for (Skill skill : skills) {
+        for (Sword skill : skills) {
             skill.render(gs.batch, positionX, positionY, renderX, renderY);
         }
         Animation<TextureRegion> currentAnim = switch (currentDirection) {
@@ -270,7 +272,7 @@ public class Knight extends Entity {
                     ? lastMoveDirection
                     : currentDirection;
 
-            Skill skill = new Skill(skillDir);
+            Sword skill = new Sword(skillDir);
             skill.activate(this, skillDir);
             hasFired = true; // ?ánh d?u ?ã b?n
             skills.add(skill);
@@ -367,4 +369,11 @@ public class Knight extends Entity {
         }
     }
 
+    public Direction getDirection() {
+        return this.currentDirection != null ? this.currentDirection : Direction.IDLE;
+    }
+
+    public Direction getLastMoveDirection() {
+        return lastMoveDirection;
+    }
 }
