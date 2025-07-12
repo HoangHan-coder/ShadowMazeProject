@@ -23,10 +23,11 @@ public class OBJ_Enemy extends SuperObject {
     private float moveTimer = 0f;
     private float moveInterval = 0.1f; 
     public float mapX, mapY;
-    public int HP = 5;
+    public int hp = 5;
     
+
     
-    
+ 
     /**
      * Constructor initializes the enemy name and loads animation frames from
      * disk.
@@ -109,7 +110,6 @@ public class OBJ_Enemy extends SuperObject {
      */
     public void update(float delta, Map map) {
         moveTimer += delta; // Accumulate time since last direction change
-
         float dx = 0, dy = 0; // Movement deltas
 
         // Determine direction: 0 = left, 1 = down, 2 = right, 3 = up
@@ -190,6 +190,10 @@ public class OBJ_Enemy extends SuperObject {
                 }
             }
         }
+    }
+
+    public boolean isDead() {
+        return hp <= 0;  // Ho?c flag nào ?ó n?u b?n có hi?u ?ng ch?t
     }
 
     /**

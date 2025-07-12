@@ -298,6 +298,14 @@ public class Fireball {
         return active;
     }
 
+    public Vector2 getPosition() {
+        return this.position;
+    }
+
+    public void deactivate() {
+        active = false;
+    }
+
     /**
      * Disposes of all textures used by the fireball
      */

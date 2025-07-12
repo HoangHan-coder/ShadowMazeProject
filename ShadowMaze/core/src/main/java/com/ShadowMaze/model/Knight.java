@@ -68,9 +68,9 @@ public class Knight extends Entity {
      * @param staminaBar the player's stamina bar
      * @param hpBar the player's health bar
      */
-    public Knight(GameScreen gs, StaminaBar staminaBar, HpBar hpBar) {
+    public Knight(GameScreen gs, HpBar hpBar) {
         this.gs = gs;
-        this.staminaBar = staminaBar;
+//        this.staminaBar = staminaBar;
         this.hpBar = hpBar;
         this.speed = baseSpeed;
         this.hpBar = hpBar; // G�n HpBar
@@ -236,14 +236,14 @@ public class Knight extends Entity {
         }
 
         // Get current stamina/HP
-        float currentStamina = staminaBar.getCurrentStamina();
+//        float currentStamina = staminaBar.getCurrentStamina();
         float currentHp = hpBar.getCurrentHp();
 
         // Shift key affects HP/Stamina
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && currentStamina > 10f && currentHp > 1f) {
+        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
             isRunning = true;
             speed = runSpeed;
-            staminaBar.setCurrentStamina(Math.max(0, currentStamina - staminaDrainRate * delta));
+//            staminaBar.setCurrentStamina(Math.max(0, currentStamina - staminaDrainRate * delta));
             hpBar.setCurrentHp(currentHp - 30 * delta);
         } else {
             isRunning = false;
@@ -251,7 +251,7 @@ public class Knight extends Entity {
             if (currentHp < hpBar.getMaxHp()) {
                 hpBar.setCurrentHp(currentHp + 10 * delta);
             }
-            staminaBar.regenerate(delta);
+//            staminaBar.regenerate(delta);
         }
 
         // Check collisions
