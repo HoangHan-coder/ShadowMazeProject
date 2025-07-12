@@ -30,6 +30,8 @@ public class Entity {
     /** Image representing this entity (optional if animated separately) */
     Texture image;
 
+    public boolean isDead = false;
+    
     /** Rectangle used to detect collision with tiles and objects */
     public Rectangle solidArea = new Rectangle();
 

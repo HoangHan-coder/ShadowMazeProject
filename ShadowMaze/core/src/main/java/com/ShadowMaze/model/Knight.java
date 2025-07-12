@@ -14,9 +14,11 @@ import com.ShadowMaze.uis.HpBar;
 import com.ShadowMaze.uis.StaminaBar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
@@ -30,13 +32,14 @@ public class Knight extends Entity {
     // Position to render the character on screen (fixed to center)
     public int renderX;
     public int renderY;
+   
 
     // Key possession state
     boolean hasKey;
     private Array<Sword> skills = new Array<>();
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
     public int baseSpeed = 5;          // T?c ?? ?i b?
-    private boolean hasFired = false; // ?ã b?n k? n?ng ch?a?
+    private boolean hasFired = false; // ?ï¿½ b?n k? n?ng ch?a?
     // Movement and stamina management
     public final int runSpeed = 8;
     private float staminaDrainRate;
@@ -56,7 +59,7 @@ public class Knight extends Entity {
 
     // Animations for each direction
     Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
-    private Entity.Direction direction; // ? bi?n này ?ã t?n t?i
+    private Entity.Direction direction; // ? bi?n nï¿½y ?ï¿½ t?n t?i
 
     /**
      * Constructs a Knight entity.
@@ -120,7 +123,7 @@ public class Knight extends Entity {
      */
     public void setDirection(Direction direction) {
         if (direction != currentDirection && direction != Direction.IDLE) {
-            hasFired = false; // ??i h??ng ? cho phép b?n l?i
+            hasFired = false; // ??i h??ng ? cho phï¿½p b?n l?i
         }
         if (direction != Direction.IDLE) {
             lastMoveDirection = direction;
@@ -139,9 +142,9 @@ public class Knight extends Entity {
         for (int i = 0; i < skills.size; i++) {
             Sword skill = skills.get(i);
 
-            // N?u h??ng hi?n t?i khác v?i h??ng k? n?ng ?ang b?n -> t?t
+            
 //            if (skill.isActive() && currentDirection != Direction.IDLE && skill.getDirection() != currentDirection) {
-//                skill.setActive(false);  // ?ánh d?u không ho?t ??ng
+//                skill.setActive(false);  // ?ï¿½nh d?u khï¿½ng ho?t ??ng
 //            }
             skill.update(delta);
 
@@ -187,15 +190,38 @@ public class Knight extends Entity {
         };
 
         TextureRegion frame = currentAnim.getKeyFrame(stateTime, true);
-        gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+        if (isDead == false) {
+            gs.batch.draw(frame, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+        } else {
+            gs.batch.draw(image, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+        }
+        
+        //debug hit box
+//        ShapeRenderer shapeRenderer = new ShapeRenderer();
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setColor(Color.RED);
+//        shapeRenderer.rect(
+//                renderX + solidArea.x,
+//                renderY + solidArea.y,
+//                solidArea.width,
+//                solidArea.height
+//        );
+//       
+//        shapeRenderer.end();
     }
 
+    public void inputHandle(float delta) {
+        if (!isDead) {
+            movementHandle(delta);
+        }
+    }
+    
     /**
      * Handles input for movement, stamina, HP, collisions, and map switching.
      *
      * @param delta
      */
-    public void inputHandle(float delta) {
+    public void movementHandle(float delta) {
         // Direction input
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             setDirection(Direction.UP);
@@ -228,19 +254,12 @@ public class Knight extends Entity {
             staminaBar.regenerate(delta);
         }
 
-        // Check tile for map transition
-//        int tileX = (positionX + GameScreen.TILE_SIZE / 2) / GameScreen.TILE_SIZE;
-//        int tileY = (positionY + GameScreen.TILE_SIZE / 2) / GameScreen.TILE_SIZE;
-//        if (gs.map.tileNum[tileY][tileX] == 0) {
-//            gs.map.changeMap("maps/map_03.txt");
-//            positionX = 10 * GameScreen.TILE_SIZE;
-//            positionY = 10 * GameScreen.TILE_SIZE;
-//        }
         // Check collisions
         collisionOn = false;
         gs.cCheck.checkTile(this);
         int indexObject = gs.cCheck.checkObject(this, true);
         pickUpObject(indexObject);
+        gs.cCheck.checkEnemyCollision(this);
 
         // Move if no collision
         if (!collisionOn) {
@@ -265,11 +284,11 @@ public class Knight extends Entity {
 
             Sword skill = new Sword(skillDir);
             skill.activate(this, skillDir);
-            hasFired = true; // ?ánh d?u ?ã b?n
+            hasFired = true; // ?ï¿½nh d?u ?ï¿½ b?n
             skills.add(skill);
         }
 
-// Reset hasFired n?u không còn nh?n SPACE
+// Reset hasFired n?u khï¿½ng cï¿½n nh?n SPACE
         if (!Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             hasFired = false;
         }
@@ -282,6 +301,7 @@ public class Knight extends Entity {
      */
     public void pickUpObject(int indexOfObject) {
         if (indexOfObject != -1) {
+            System.out.println("Knight collided with: " + gs.obj[indexOfObject].name);
             String objectName = gs.obj[indexOfObject].name;
             switch (objectName) {
                 case "Key" -> {
@@ -298,6 +318,9 @@ public class Knight extends Entity {
                     if (hasKey) {
                         System.out.println("You win!");
                     }
+                }
+                case "Enemy" -> {
+                    System.out.println("You die!");
                 }
             }
         }

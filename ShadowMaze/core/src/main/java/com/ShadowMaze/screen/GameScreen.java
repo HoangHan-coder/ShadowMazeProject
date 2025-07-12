@@ -124,25 +124,9 @@ public class GameScreen implements Screen {
         cCheck = new CollisionChecker(this);
         knight = new Knight(this, staminaBar, hpBar);
         spawnEnemiesFromWalkableTiles(map, 4); // Spawn 4 enemy
-// khoi tao me cung
-//        int pathWidth = 1; // vÃ­ dá»¥ 3
-//        mazeGenerator = new MazeGenerator(MAX_SCREEN_COL, MAX_SCREEN_ROW, pathWidth);
-//        maze = mazeGenerator.generate(1, 1);
+
         map = new Map(this, game);
-        // print me cung random
-//        for (int x = 0; x < maze.length; x++) {
-//            for (int y = 0; y < maze[0].length; y++) {
-//                System.out.print(maze[x][y] + " ");
-//            }
-//            System.out.println();
-//        }
-        // print me cung tu file
-//           for (int x = 0; x < map.tileNum.length; x++) {
-//            for (int y = 0; y < map.tileNum[0].length; y++) {
-//                System.out.print(map.tileNum[x][y]+" ");
-//            }
-//            System.out.println();
-//        }
+
 
 //        cCheck = new CollisionChecker(this);
         // Initialize player
@@ -151,9 +135,6 @@ public class GameScreen implements Screen {
         map = new Map(this, game);
         map.createButtons(stage);
         shapeRenderer = new ShapeRenderer();
-        // Center the maze if needed
-//        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
-//        offsetY = 0;
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
@@ -163,7 +144,7 @@ public class GameScreen implements Screen {
 
         Array<int[]> walkableTiles = new Array<>();
 
-        // L?c ô ?i ???c
+        // L?c ï¿½ ?i ???c
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
                 if (map.tileNum[y][x] == 1) {
@@ -174,7 +155,7 @@ public class GameScreen implements Screen {
 
         int placed = 0;
         for (int i = 0; i < obj.length && placed < numEnemies; i++) {
-            if (obj[i] == null) { // Ch? ??t n?u ch?a có object
+            if (obj[i] == null) { 
                 int[] tile = walkableTiles.random();
                 OBJ_Enemy enemy = new OBJ_Enemy();
                 enemy.mapX = tile[0] * TILE_SIZE;
@@ -302,9 +283,9 @@ public class GameScreen implements Screen {
         if (!map.isBackgroundOnly()) {
             knight.knightRender(delta);
         }
-// C?p nh?t tr?ng thái phím E ?? b?n
+
         if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            if (!wasEPressedLastFrame && isSkillAvailable) { // ? Ki?m tra thêm isSkillAvailable
+            if (!wasEPressedLastFrame && isSkillAvailable) { 
                 Vector2 start = new Vector2(knight.positionX, knight.positionY);
                 Direction dir = knight.getDirection();
                 if (dir != Direction.IDLE) {
@@ -315,7 +296,7 @@ public class GameScreen implements Screen {
                     fireballs.add(fb);
                     currentFireball = fb;
 
-                    isSkillAvailable = false; // ? Không cho b?n ti?p
+                    isSkillAvailable = false; 
                 }
             }
             wasEPressedLastFrame = true;
@@ -323,7 +304,7 @@ public class GameScreen implements Screen {
             wasEPressedLastFrame = false;
         }
 
-// C?p nh?t & render các fireball ?ang ho?t ??ng
+
         Iterator<Fireball> iterator = fireballs.iterator();
         while (iterator.hasNext()) {
             Fireball fireball = iterator.next();
@@ -331,8 +312,8 @@ public class GameScreen implements Screen {
             if (fireball.isActive()) {
                 fireball.render(batch, knight.positionX, knight.positionY);
             } else {
-                iterator.remove(); // Xoá n?u không còn active
-                isSkillAvailable = true; // ? Cho phép dùng skill l?i
+                iterator.remove(); 
+                isSkillAvailable = true; 
             }
         }
 
@@ -369,7 +350,7 @@ public class GameScreen implements Screen {
         knight.knightRender(delta);
 
         // Debug output to console showing player's current tile coordinates
-        System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
+//        System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
 
         batch.end();  // Finish drawing sprites
 

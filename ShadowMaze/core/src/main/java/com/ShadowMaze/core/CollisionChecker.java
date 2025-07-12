@@ -7,7 +7,9 @@ import object.OBJ_Enemy;
 import object.OBJ_Gate;
 import com.ShadowMaze.model.Entity;
 import static com.ShadowMaze.model.Entity.Direction.*;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import object.SuperObject;
 
 /**
  * CollisionChecker handles collision detection between entities (like Knight)
@@ -131,6 +133,14 @@ public class CollisionChecker {
                     gs.obj[i].solidArea.width,
                     gs.obj[i].solidArea.height
                 );
+                
+                // Create hitbox for fireball
+                Rectangle fireballRect = new Rectangle(
+                    gs.obj[i].mapX + gs.obj[i].solidAreaDefaultX,
+                    gs.obj[i].mapY + gs.obj[i].solidAreaDefaultY,
+                    gs.obj[i].solidArea.width,
+                    gs.obj[i].solidArea.height
+                );
 
                 // Adjust entity rectangle based on its direction and speed
                 switch (entity.currentDirection) {
@@ -139,6 +149,8 @@ public class CollisionChecker {
                     case LEFT -> entityRect.x -= entity.speed;
                     case RIGHT -> entityRect.x += entity.speed;
                 }
+                
+                
 
                 // Check if rectangles intersect (i.e., collision)
                 if (entityRect.overlaps(objectRect)) {
@@ -146,15 +158,30 @@ public class CollisionChecker {
                     if (gs.obj[i].collision) {
                         entity.collisionOn = true;
                     }
-
+                    
                     // If entity is the player, record the index of the collided object
                     if (player) {
                         index = i;
-                    }
+                    }    
+                    System.out.println("Checking object: " + gs.obj[i].name);
+                    System.out.println("entityRect: " + entityRect);
+                    System.out.println("objectRect: " + objectRect);
+                    System.out.println("collision: " + entityRect.overlaps(objectRect));
                 }
+                
+                
             }
         }
 
         return index; // Return collided object index or -1 if no collision
+    }
+    
+    public void checkEnemyCollision(Entity entity) {
+        if (gs.isNearEnemy(GameScreen.TILE_SIZE)) {
+            System.out.println("you die!");
+            entity.setImage(new Texture("knight/knight_dead.png"));
+            entity.isDead = true;
+          
+        }
     }
 }
