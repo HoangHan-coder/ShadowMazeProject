@@ -215,7 +215,7 @@ public class GameScreen implements Screen {
                         spawnY = 3 * TILE_SIZE;
                     } else if (currentMap.equals("maps/map_02.txt")) {
                         nextMap = "maps/map_01.txt";                              // From map 2 ? map 1
-                        spawnX = 5 * TILE_SIZE;
+                        spawnX = 1 * TILE_SIZE;
                         spawnY = 5 * TILE_SIZE;
                     } else if (currentMap.equals("maps/map_03.txt")) {
                         nextMap = "maps/map_01.txt";                              // From map 3 ? map 1
