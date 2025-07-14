@@ -2,6 +2,7 @@ package com.ShadowMaze.render;
 
 import com.ShadowMaze.model.FadeTransitionScreen;
 import com.ShadowMaze.screen.GameScreen;
+import com.ShadowMaze.screen.HowToPlayScreen;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
@@ -15,9 +16,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.ArrayList;
 
 /**
- * The main menu screen renderer.
- * This class handles rendering background, buttons, and character animations in the main menu.
- * It uses Scene2D UI for layout and interaction.
+ * The main menu screen renderer. This class handles rendering background,
+ * buttons, and character animations in the main menu. It uses Scene2D UI for
+ * layout and interaction.
  */
 public class MenuRenderer implements Screen {
 
@@ -75,8 +76,20 @@ public class MenuRenderer implements Screen {
                 game.setScreen(new FadeTransitionScreen(game, current, next));
             }
         });
+        howButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
 
-        // Arrange buttons in a table
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Screen current = game.getScreen();
+                Screen next = new HowToPlayScreen(game);
+                game.setScreen(new FadeTransitionScreen(game, current, next));
+            }
+        });
+// Arrange buttons in a table
         Table table = new Table();
         table.setFillParent(true);
         table.bottom().padBottom(200);
@@ -145,9 +158,17 @@ public class MenuRenderer implements Screen {
         stage.getViewport().update(width, height, true);
     }
 
-    @Override public void hide() {}
-    @Override public void pause() {}
-    @Override public void resume() {}
+    @Override
+    public void hide() {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
 
     @Override
     public void dispose() {
@@ -156,18 +177,38 @@ public class MenuRenderer implements Screen {
         batch.dispose();
 
         // Dispose textures
-        if (resumeUp != null) resumeUp.dispose();
-        if (resumeDown != null) resumeDown.dispose();
-        if (optionsUp != null) optionsUp.dispose();
-        if (optionsDown != null) optionsDown.dispose();
-        if (quitUp != null) quitUp.dispose();
-        if (quitDown != null) quitDown.dispose();
-        if (quitDisabled != null) quitDisabled.dispose();
-        if (how != null) how.dispose();
+        if (resumeUp != null) {
+            resumeUp.dispose();
+        }
+        if (resumeDown != null) {
+            resumeDown.dispose();
+        }
+        if (optionsUp != null) {
+            optionsUp.dispose();
+        }
+        if (optionsDown != null) {
+            optionsDown.dispose();
+        }
+        if (quitUp != null) {
+            quitUp.dispose();
+        }
+        if (quitDown != null) {
+            quitDown.dispose();
+        }
+        if (quitDisabled != null) {
+            quitDisabled.dispose();
+        }
+        if (how != null) {
+            how.dispose();
+        }
         backgroundTexture.dispose();
 
         // Dispose animation textures
-        for (Texture tex : animationTextures) tex.dispose();
-        for (Texture tex : idleTextures) tex.dispose();
+        for (Texture tex : animationTextures) {
+            tex.dispose();
+        }
+        for (Texture tex : idleTextures) {
+            tex.dispose();
+        }
     }
 }
