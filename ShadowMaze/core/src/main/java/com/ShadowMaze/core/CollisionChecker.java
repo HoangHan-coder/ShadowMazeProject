@@ -203,7 +203,15 @@ public class CollisionChecker {
         }
     }
 
+    /**
+     * Checks collision between a fireball and all enemies on the map. If a
+     * fireball overlaps with an enemy's area, the enemy will be removed and the
+     * fireball will be deactivated.
+     *
+     * @param fireball The fireball to check for collision.
+     */
     public void checkFireballCollision(Fireball fireball) {
+        // Create a rectangular hitbox for the fireball based on its current position
         Rectangle fireballArea = new Rectangle(
                 fireball.getPosition().x,
                 fireball.getPosition().y,
@@ -211,23 +219,31 @@ public class CollisionChecker {
                 GameScreen.TILE_SIZE
         );
 
+        // Loop through all game objects to find enemies
         for (int i = 0; i < gs.obj.length; i++) {
             SuperObject obj = gs.obj[i];
+
+            // Check if this object exists and is an enemy
             if (obj != null && obj instanceof OBJ_Enemy) {
+                // Create a rectangular hitbox for the enemy
                 Rectangle enemyArea = new Rectangle(
                         obj.mapX, obj.mapY,
                         GameScreen.TILE_SIZE,
                         GameScreen.TILE_SIZE
                 );
 
+                // Check for collision between the fireball and the enemy
                 if (fireballArea.overlaps(enemyArea)) {
-                    // X? lý xóa enemy
+                    // Remove the enemy by setting its object reference to null
                     gs.obj[i] = null;
 
-                    // H?y fireball luôn n?u mu?n
+                    // Deactivate the fireball after a successful hit
                     fireball.deactivate();
 
+                    // Print confirmation for debugging
                     System.out.println("? Enemy hit and removed!");
+
+                    // Exit the loop after the first collision detected
                     break;
                 }
             }
