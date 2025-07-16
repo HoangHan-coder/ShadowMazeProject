@@ -70,7 +70,6 @@ public class Knight extends Entity {
      * Constructs a Knight entity.
      *
      * @param gs the current GameScreen
-     * @param staminaBar the player's stamina bar
      * @param hpBar the player's health bar
      */
     public Knight(GameScreen gs, HpBar hpBar) {
@@ -97,7 +96,7 @@ public class Knight extends Entity {
         
         // Render at screen center
         renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
-        renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
+        renderY = (GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2)) - GameScreen.TILE_SIZE*2;
 
         // Define collision area
         solidArea = new Rectangle();
@@ -108,9 +107,16 @@ public class Knight extends Entity {
         solidArea.width = 32;
         solidArea.height = 32;
 
-        // Set start position
-        positionX = 36 * GameScreen.TILE_SIZE;
-        positionY = 28 * GameScreen.TILE_SIZE;
+        // Set start map 1 position
+//        positionX = 60 * GameScreen.TILE_SIZE;
+//        positionY = 122 * GameScreen.TILE_SIZE;
+        
+        
+        // set start map 2 position
+        positionX = 70 * GameScreen.TILE_SIZE;
+        positionY = 43 * GameScreen.TILE_SIZE;
+
+        // set start map 3 position
 
         // Stamina drain and regen rates
         staminaDrainRate = 30f;
@@ -216,7 +222,7 @@ public class Knight extends Entity {
         
         if (currentFireball != null && currentFireball.isActive()) {
             currentFireball.update(Gdx.graphics.getDeltaTime());
-            currentFireball.render(gs.batch, positionX, positionY);
+            currentFireball.render(gs.batch, renderX, renderY);
         }
 
         

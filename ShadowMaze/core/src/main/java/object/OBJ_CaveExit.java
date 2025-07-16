@@ -15,6 +15,8 @@ import com.badlogic.gdx.graphics.Texture;
  */
 public class OBJ_CaveExit extends SuperObject {
 
+    public boolean isOpened = false;
+    
     /**
      * Constructs a new cave exit object with predefined properties:
      * - Name set to "Cave"
@@ -22,8 +24,15 @@ public class OBJ_CaveExit extends SuperObject {
      * - Collision enabled to prevent walking through it
      */
     public OBJ_CaveExit() {
-        name = "Cave";                                     // Identifier for object logic
-        image = new Texture("Object/cave_exit.png");       // Visual representation of the cave exit
-        collision = true;                                  // Enable collision so player can't walk through
+        setDefault();                                 
     }
+    private void setDefault() {
+        name = "Cave";                    
+        if (!isOpened) { 
+            image = new Texture("Object/cave_exit_close.png");
+        } else {
+            image = new Texture("Object/cave_exit_open.png");
+        }                        
+        collision = true; 
+    }    
 }

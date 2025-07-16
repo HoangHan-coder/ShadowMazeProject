@@ -66,7 +66,6 @@ public class Map {
         this.game = game;
         tiles = new Tile[10]; // Prepare 10 tile slots
         tileNum = new int[GameScreen.MAP_Y][GameScreen.MAP_X]; // Allocate map grid
-
         getImageTiles(); // Load tile textures
         loadMap();       // Load tile layout from file
     }
@@ -79,7 +78,7 @@ public class Map {
         try (BufferedReader reader = new BufferedReader(new FileReader("maps/map_02.txt"))) {
             String line;
             int row = 0;
-            while ((line = reader.readLine()) != null && row < GameScreen.MAP_X) {
+            while ((line = reader.readLine()) != null && row < GameScreen.MAP_Y) {
                 String[] tokens = line.trim().split(" ");
                 for (int col = 0; col < tokens.length && col < GameScreen.MAP_X; col++) {
                     tileNum[GameScreen.MAP_Y - 1 - row][col] = Integer.parseInt(tokens[col]);
@@ -153,8 +152,8 @@ public class Map {
                 int mapX = mapCol * GameScreen.TILE_SIZE;
                 int mapY = mapRow * GameScreen.TILE_SIZE;
 
-                int screenX = mapX - gs.knight.positionX + gs.knight.renderX;
-                int screenY = mapY - gs.knight.positionY + gs.knight.renderY;
+                float screenX = mapX - gs.knight.positionX + gs.knight.renderX;
+                float screenY = mapY - gs.knight.positionY + gs.knight.renderY;
 
                 // Only draw if tile is within screen bounds
                 if (mapX + GameScreen.TILE_SIZE > gs.knight.positionX - gs.knight.renderX
