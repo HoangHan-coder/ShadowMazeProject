@@ -26,6 +26,8 @@ public class SuperObject {
 
     /** Indicates whether the object blocks movement (e.g., gate = true, key = false). */
     public boolean collision = false;
+    
+    public boolean isOpened = false;
 
     /** Collision area of the object (hitbox). */
     public Rectangle solidArea = new Rectangle(0, 0, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);

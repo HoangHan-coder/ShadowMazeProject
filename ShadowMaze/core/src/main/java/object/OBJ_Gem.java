@@ -10,14 +10,12 @@ import com.badlogic.gdx.graphics.Texture;
  *
  * @author NgKaitou
  */
-public class OBJ_Chest extends SuperObject {
+public class OBJ_Gem extends SuperObject{
 
-    public OBJ_Chest() {
-        setDefault();
+    public OBJ_Gem() {
+        name = "";
+        image = new Texture("Object/gem_empty.png");
+        collision = true;
     }
-
-    private void setDefault() {
-        image = new Texture("Object/big_chest.png");
-    }
-
+    
 }

@@ -67,7 +67,7 @@ public class GameScreen implements Screen {
     public Map map;
     public CollisionChecker cCheck;
     public UI ui = new UI(this);
-    public SuperObject[] obj = new SuperObject[10];
+    public SuperObject[] obj = new SuperObject[50];
     public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
     private StaminaBar staminaBar;
@@ -300,7 +300,7 @@ public class GameScreen implements Screen {
 
         // Draw scoreboard
         scoreBoard.render(batch, 30, 650);
-        ui.render();
+        ui.render(delta);
         batch.end();
 
         // === HUD & UI RENDER PHASE ===
