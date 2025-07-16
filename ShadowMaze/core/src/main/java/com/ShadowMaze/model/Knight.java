@@ -10,6 +10,7 @@ import static com.ShadowMaze.model.Entity.Direction.LEFT;
 import static com.ShadowMaze.model.Entity.Direction.RIGHT;
 import static com.ShadowMaze.model.Entity.Direction.UP;
 import com.ShadowMaze.screen.GameScreen;
+import com.ShadowMaze.skill.Fireball;
 import com.ShadowMaze.uis.HpBar;
 import com.ShadowMaze.uis.StaminaBar;
 import com.badlogic.gdx.Gdx;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -51,6 +53,9 @@ public class Knight extends Entity {
 
     // Game context
     GameScreen gs;
+    
+    //skill
+    public Fireball currentFireball; // Biến để lưu quả cầu lửa hiện tại
 
     // Animation timing
     float stateTime;
@@ -88,6 +93,8 @@ public class Knight extends Entity {
         stateTime = 0f;
         hasKey = false;
 
+        
+        
         // Render at screen center
         renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
         renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
@@ -130,6 +137,17 @@ public class Knight extends Entity {
         }
         currentDirection = direction;
     }
+    
+    public void castFireball() {
+        if (currentFireball == null || !currentFireball.isActive()) {
+            currentFireball = new Fireball();
+            currentFireball.setMapSize(gs.map.getMapWidthPixels(), gs.map.getMapHeightPixels());
+            Direction fireDir = (currentDirection != Direction.IDLE) ? currentDirection : lastMoveDirection;
+            currentFireball.activate(new Vector2(positionX, positionY), fireDir);
+            currentFireball.shoot();
+        }
+    }
+
 
     /**
      * Updates the animation state.
@@ -144,7 +162,7 @@ public class Knight extends Entity {
 
             
 //            if (skill.isActive() && currentDirection != Direction.IDLE && skill.getDirection() != currentDirection) {
-//                skill.setActive(false);  // ?�nh d?u kh�ng ho?t ??ng
+//                skill.setActive(false);  
 //            }
             skill.update(delta);
 
@@ -196,6 +214,12 @@ public class Knight extends Entity {
             gs.batch.draw(image, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
         }
         
+        if (currentFireball != null && currentFireball.isActive()) {
+            currentFireball.update(Gdx.graphics.getDeltaTime());
+            currentFireball.render(gs.batch, positionX, positionY);
+        }
+
+        
         //debug hit box
 //        ShapeRenderer shapeRenderer = new ShapeRenderer();
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -234,6 +258,12 @@ public class Knight extends Entity {
         } else {
             setDirection(Direction.IDLE);
         }
+        
+        //use skill
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            castFireball();
+        }
+
 
         // Get current stamina/HP
 //        float currentStamina = staminaBar.getCurrentStamina();
@@ -257,10 +287,15 @@ public class Knight extends Entity {
         // Check collisions
         collisionOn = false;
         gs.cCheck.checkTile(this);
+        
         int indexObject = gs.cCheck.checkObject(this, true);
         pickUpObject(indexObject);
+        
         gs.cCheck.checkEnemyCollision(this);
 
+        if (currentFireball != null && currentFireball.isActive()) {
+            gs.cCheck.checkFireballCollision(currentFireball);
+        }
         // Move if no collision
         if (!collisionOn) {
             switch (currentDirection) {

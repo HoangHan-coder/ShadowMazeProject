@@ -37,10 +37,10 @@ public class SuperObject {
     public float solidAreaDefaultY = 0;
 
     /** X position on the map (in pixels). */
-    public int mapX;
+    public float mapX;
 
     /** Y position on the map (in pixels). */
-    public int mapY;
+    public float mapY;
 
     /**
      * Renders the object to the screen if it is within the current visible area of the player.
@@ -50,15 +50,15 @@ public class SuperObject {
     public void drawObject(GameScreen gs) {
 
         // Calculate on-screen coordinates based on player position
-        int screenX = mapX - gs.knight.positionX + gs.knight.renderX;
-        int screenY = mapY - gs.knight.positionY + gs.knight.renderY;
+        float screenX = mapX - gs.knight.positionX + gs.knight.renderX;
+        float screenY = mapY - gs.knight.positionY + gs.knight.renderY;
 
         // Check if object is within visible screen area before rendering
         if (mapX + GameScreen.TILE_SIZE > gs.knight.positionX - gs.knight.renderX
                 && mapX - GameScreen.TILE_SIZE < gs.knight.positionX + gs.knight.renderX
                 && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
                 && mapY - GameScreen.TILE_SIZE < gs.knight.positionY + gs.knight.renderY) {
-            gs.batch.draw(image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+                gs.batch.draw(image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
             
             //debug hit box
 //            int renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
