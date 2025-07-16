@@ -29,11 +29,11 @@ public class Fireball extends Entity{
 
     public Vector2 position; // Current position of the fireball
     private Vector2 velocity; // Directional velocity
-    private float speed = 300f;
+    private float speed = 200f;
 
     private boolean active = false;
     private float lifeTime = 0f;
-    private final float maxLifeTime = 2.0f;
+    private final float maxLifeTime = 0.5f;
     
     public Rectangle solidArea = new Rectangle(0, 0, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
     public float solidAreaDefaultX = 0;
@@ -125,6 +125,7 @@ public class Fireball extends Entity{
 
         stateTime = 0f;
         this.active = true; // Must be active to update/render
+        loadAnimations();
     }
     
     /**

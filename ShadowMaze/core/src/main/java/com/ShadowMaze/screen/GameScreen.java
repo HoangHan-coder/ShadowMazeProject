@@ -2,10 +2,8 @@ package com.ShadowMaze.screen;
 
 import com.ShadowMaze.core.AssetSetter;
 import com.ShadowMaze.core.CollisionChecker;
-<<<<<<< Updated upstream
 import com.ShadowMaze.model.Entity.Direction;
-=======
->>>>>>> Stashed changes
+import com.ShadowMaze.model.FadeTransitionScreen;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
 import com.ShadowMaze.model.ScoreBoard;
@@ -23,10 +21,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-<<<<<<< Updated upstream
 import com.badlogic.gdx.math.Vector2;
-=======
->>>>>>> Stashed changes
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -79,6 +78,9 @@ public class GameScreen implements Screen {
     private HpBar hpBar;
     private Array<Sword> fireSkill = new Array<>();
     public ScoreBoard scoreBoard;
+    public Array<Fireball> fireball = new Array<>();
+    public boolean isGameOver = false;
+    private GameOverHandler gameOverHandler;
 
     /**
      * Constructor that sets up the main batch and stores game reference.
@@ -129,15 +131,17 @@ public class GameScreen implements Screen {
 
 //        cCheck = new CollisionChecker(this);
         // Initialize player
-        stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        map = new Map(this, game);
         map.createButtons(stage);
         shapeRenderer = new ShapeRenderer();
         // Center the maze if needed
 //        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
 //        offsetY = 0;
         scoreBoard = new ScoreBoard();
+        Fireball fb = new Fireball(knight.getPosition(), knight.getDirection());
+        fb.setMapSize(MAP_X, MAP_Y);
+        fireball.add(fb);
+        gameOverHandler = new GameOverHandler();
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
@@ -234,18 +238,29 @@ public class GameScreen implements Screen {
             stage.draw();                 // Render UI
             return;
         }
+        if (isGameOver) {
+            gameOverHandler.update(delta);
+            ScreenUtils.clear(0, 0, 0, 1);
+
+            batch.begin();
+            map.drawMap();
+            gameOverHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT);
+            batch.end();
+            gameOverHandler.addToStage(stage);
+            stage.act(delta);
+            stage.draw();
+            return;
+        }
 
         // === UPDATE PHASE ===
         knight.inputHandle(delta);
         knight.update(delta);
-
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null && obj[i] instanceof OBJ_Enemy enemy) {
                 enemy.update(Gdx.graphics.getDeltaTime(), this);
             }
         }
-<<<<<<< Updated upstream
-=======
+
 
         for (Iterator<Fireball> it = fireball.iterator(); it.hasNext();) {
             Fireball fireball = it.next();
@@ -256,22 +271,24 @@ public class GameScreen implements Screen {
                 it.remove(); // Remove n?u ?� h?t hi?u l?c
             }
         }
->>>>>>> Stashed changes
 
         checkGateCollisionAndChangeMap();  // Handle map transition if near gate
 
         hpBar.update(delta);  // Update knight HP bar
-        // Nếu staminaBar cần update animation, bạn có thể gọi thêm update ở đây (nếu có)
+        // Nếu staminaBar cần update animation, bạn có thể g�?i thêm update ở đây (nếu có)
 
         // === GAME RENDER PHASE ===
         batch.begin();
+        for (Fireball fireball : fireball) {
+            fireball.render(batch, knight.getPositionX(), knight.getPositionY());
+        }
 
         map.drawMap();  // Draw tile-based background
 
         // Draw all objects (including enemies, items, gates...)
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) {
-                obj[i].drawObject(this);  
+                obj[i].drawObject(this);
             }
         }
 
@@ -293,7 +310,6 @@ public class GameScreen implements Screen {
         // HUD: render Knight's HP bar and Stamina icon
         hpBar.render(batch);
         staminaBar.renderIcon(batch);
-
         // UI Stage: pause menu, dialogs, etc.
         stage.act(delta);
         stage.draw();
@@ -317,13 +333,14 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        
+
     }
 
     @Override
     public void pause() {
-        
+
     }
+
     /**
      * Dispose all disposable assets to free memory.
      */
@@ -331,6 +348,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();       // Dispose sprite batch
         knight.dispose();      // Dispose knight assets
+
         // Add more disposals as needed (e.g., textures, UI)
     }
 }

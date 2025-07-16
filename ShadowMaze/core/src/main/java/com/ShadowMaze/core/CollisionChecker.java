@@ -26,6 +26,7 @@ import object.SuperObject;
 public class CollisionChecker {
 
     GameScreen gs; // Reference to the game screen context
+    AssetSetter set;
 
     /**
      * Constructor links the CollisionChecker to the current GameScreen.
@@ -34,6 +35,7 @@ public class CollisionChecker {
      */
     public CollisionChecker(GameScreen gs) {
         this.gs = gs;
+        set = new AssetSetter(gs);
     }
 
     /**
@@ -198,91 +200,60 @@ public class CollisionChecker {
                     System.out.println("you die!");
                     entity.setImage(new Texture("knight/knight_dead.png"));
                     entity.isDead = true;
+                    // ??t c? game over
                 }
             }
         }
     }
 
+    /**
+     * Checks collision between a fireball and all enemies on the map. If a
+     * fireball overlaps with an enemy's area, the enemy will be removed and the
+     * fireball will be deactivated.
+     *
+     * @param fireball The fireball to check for collision.
+     */
     public void checkFireballCollision(Fireball fireball) {
-        if (fireball == null || !fireball.isActive()) {
-            return;
-        }
-
-        // === Tính hitbox fireball ===
-        Rectangle fireballRect = new Rectangle(
-                fireball.position.x + fireball.solidArea.x,
-                fireball.position.y + fireball.solidArea.y,
-                fireball.solidArea.width,
-                fireball.solidArea.height
+        // Create a rectangular hitbox for the fireball based on its current position
+        Rectangle fireballArea = new Rectangle(
+                fireball.getPosition().x,
+                fireball.getPosition().y,
+                GameScreen.TILE_SIZE,
+                GameScreen.TILE_SIZE
         );
 
-        // === Check va chạm tile (map) ===
-        int leftTile = (int) fireballRect.x / GameScreen.TILE_SIZE;
-        int rightTile = (int) (fireballRect.x + fireballRect.width) / GameScreen.TILE_SIZE;
-        int topTile = (int) fireballRect.y / GameScreen.TILE_SIZE;
-        int bottomTile = (int) (fireballRect.y + fireballRect.height) / GameScreen.TILE_SIZE;
-
-        for (int row = topTile; row <= bottomTile; row++) {
-            for (int col = leftTile; col <= rightTile; col++) {
-                if (row >= 0 && row < GameScreen.MAX_SCREEN_ROW && col >= 0 && col < GameScreen.MAX_SCREEN_COL) {
-                    int tileNum = gs.map.tileNum[row][col];
-                    if (gs.map.tiles[tileNum].collision) {
-                        fireball.deactivate();
-                        System.out.println("[Fireball] Hit wall tile -> deactivated");
-                        return;
-                    }
-                }
-            }
-        }
-
-        // === Check va chạm object có collision ===
-        for (SuperObject object : gs.obj) {
-            if (object != null && object.collision) {
-                Rectangle objectRect = new Rectangle(
-                        object.mapX + object.solidAreaDefaultX,
-                        object.mapY + object.solidAreaDefaultY,
-                        object.solidArea.width,
-                        object.solidArea.height
-                );
-
-                if (fireballRect.overlaps(objectRect)) {
-                    fireball.deactivate();
-                    System.out.println("[Fireball] Hit object '" + object.name + "' -> deactivated");
-                    return;
-                }
-            }
-        }
-
-        // === Check va chạm Enemy ===
+        // Loop through all game objects to find enemies
         for (int i = 0; i < gs.obj.length; i++) {
-            SuperObject object = gs.obj[i];
+            SuperObject obj = gs.obj[i];
 
-            if (object instanceof OBJ_Enemy enemy && object.collision) {
-                Rectangle enemyRect = new Rectangle(
-                        enemy.mapX + enemy.solidAreaDefaultX,
-                        enemy.mapY + enemy.solidAreaDefaultY,
-                        enemy.solidArea.width,
-                        enemy.solidArea.height
+            // Check if this object exists and is an enemy
+            if (obj != null && obj instanceof OBJ_Enemy) {
+                // Create a rectangular hitbox for the enemy
+                Rectangle enemyArea = new Rectangle(
+                        obj.mapX, obj.mapY,
+                        GameScreen.TILE_SIZE,
+                        GameScreen.TILE_SIZE
                 );
-//                System.out.println("→ Checking fireball collision with enemy at: " + enemy.mapX + ", " + enemy.mapY);
-//                System.out.println("→ Fireball rect: " + fireballRect);
-//                System.out.println("→ Enemy rect: " + enemyRect);
-                if (fireballRect.overlaps(enemyRect)) {
-//                     System.out.println("🔥 COLLISION DETECTED!");
-                    fireball.deactivate();
-                    enemy.hp -= 25;
-                    System.out.println(enemy);
 
-                    if (enemy.hp <= 0) {
-                        OBJ_Coin coin = new OBJ_Coin();
-                        coin.mapX = enemy.mapX;
-                        coin.mapY = enemy.mapY;
-                        gs.obj[i] = coin;
-                        System.out.println(gs.obj[i].name);
-                    }
+                // Check for collision between the fireball and the enemy
+                if (fireballArea.overlaps(enemyArea)) {
+                    // L?u v? tr� qu�i c?
+                    float oldX = obj.mapX;
+                    float oldY = obj.mapY;
+                    // Remove the enemy by setting its object reference to null
+                    gs.obj[i] = new OBJ_Coin(oldX, oldY);
+
+                    // Deactivate the fireball after a successful hit
+                    fireball.deactivate();
+
+                    // Print confirmation for debugging
+                    System.out.println("? Enemy hit and removed!");
+
+                    // Exit the loop after the first collision detected
+                    break;
                 }
             }
         }
-
     }
+
 }

@@ -48,6 +48,10 @@ public class ScoreBoard {
         return score;
     }
 
+    public void reset() {
+        this.score = 0;
+    }
+
     public void render(SpriteBatch batch, float x, float y) {
         // C?p nh?t animation
         animationTimer += Gdx.graphics.getDeltaTime();
@@ -59,8 +63,8 @@ public class ScoreBoard {
         Texture currentIcon = iconFrames.get(currentFrameIndex);
         int VisitX = 70;
         int VisitY = 600;
-        batch.draw(currentIcon, VisitX,VisitY, 32, 32);
-        font.draw(batch, String.valueOf(score), VisitX + 60,VisitY + 28);
+        batch.draw(currentIcon, VisitX, VisitY, 32, 32);
+        font.draw(batch, String.valueOf(score), VisitX + 60, VisitY + 28);
         font.draw(batch, "Score: " + score, x + 50, y + 35);
     }
 

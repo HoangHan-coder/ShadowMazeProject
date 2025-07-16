@@ -35,18 +35,13 @@ public class Map {
     public int[][] tileNum;            // 2D array storing tile indices
 
     // UI elements and textures
-    private Texture resumeUp, resumeDown;
-    private Texture optionsUp, optionsDown;
-    private Texture quitUp, quitDown, quitDisabled;
-    private Texture how;
+    private Texture resumeUp;
     private Table pauseMenuTable;
 
     // Pause state and background control
-    private boolean isPauseMenuVisible = false;
     private boolean isPaused = false;
 
     // Reference to main menu screen and game context
-    private MainMenuScreen screen;
     private Game game;
 
     // Optional background overlay

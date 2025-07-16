@@ -1,6 +1,7 @@
 package com.ShadowMaze.render;
 
 import com.ShadowMaze.model.FadeTransitionScreen;
+import com.ShadowMaze.screen.GameOverHandler;
 import com.ShadowMaze.screen.GameScreen;
 import com.ShadowMaze.screen.HowToPlayScreen;
 import com.badlogic.gdx.*;
@@ -38,6 +39,7 @@ public class MenuRenderer implements Screen {
     private ArrayList<Texture> idleTextures = new ArrayList<>();
 
     private GameScreen screen;
+    
 
     public MenuRenderer(Game game) {
         this.game = game;
