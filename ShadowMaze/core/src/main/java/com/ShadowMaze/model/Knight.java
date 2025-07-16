@@ -23,6 +23,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import object.OBJ_Chest;
+import object.SuperObject;
 
 /**
  * The Knight class represents the main player character in the game. It handles
@@ -36,7 +38,7 @@ public class Knight extends Entity {
     public int renderY;
 
     // Key possession state
-    boolean hasKey;
+    public int hasKey;
     private Array<Sword> skills = new Array<>();
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
     public int baseSpeed = 1;          // T?c ?? ?i b?
@@ -52,7 +54,7 @@ public class Knight extends Entity {
     GameScreen gs;
 
     //skill
-    public Fireball currentFireball; // Biến để lưu quả cầu lửa hiện tại
+    public Fireball currentFireball; 
 
     // Animation timing
     float stateTime;
@@ -67,7 +69,6 @@ public class Knight extends Entity {
      * Constructs a Knight entity.
      *
      * @param gs the current GameScreen
-     * @param staminaBar the player's stamina bar
      * @param hpBar the player's health bar
      */
     public Knight(GameScreen gs, HpBar hpBar) {
@@ -88,11 +89,11 @@ public class Knight extends Entity {
     private void setDefaultValue() {
         speed = 4;
         stateTime = 0f;
-        hasKey = false;
+        hasKey = 0;
 
         // Render at screen center
         renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
-        renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
+        renderY = (GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2)) - GameScreen.TILE_SIZE*2;
 
         // Define collision area
         solidArea = new Rectangle();
@@ -103,9 +104,16 @@ public class Knight extends Entity {
         solidArea.width = 32;
         solidArea.height = 32;
 
-        // Set start position
-        positionX = 36 * GameScreen.TILE_SIZE;
-        positionY = 28 * GameScreen.TILE_SIZE;
+        // Set start map 1 position
+//        positionX = 60 * GameScreen.TILE_SIZE;
+//        positionY = 122 * GameScreen.TILE_SIZE;
+        
+        
+        // set start map 2 position
+        positionX = 70 * GameScreen.TILE_SIZE;
+        positionY = 43 * GameScreen.TILE_SIZE;
+
+        // set start map 3 position
 
         // Stamina drain and regen rates
         staminaDrainRate = 30f;
@@ -208,7 +216,7 @@ public class Knight extends Entity {
 
         if (currentFireball != null && currentFireball.isActive()) {
             currentFireball.update(Gdx.graphics.getDeltaTime());
-            currentFireball.render(gs.batch, positionX, positionY);
+            currentFireball.render(gs.batch, renderX, renderY);
         }
 
         //debug hit box
@@ -337,12 +345,13 @@ public class Knight extends Entity {
             String objectName = gs.obj[indexOfObject].name;
             switch (objectName) {
                 case "Key" -> {
-                    hasKey = true;
+                    hasKey += 1;
                     gs.obj[indexOfObject] = null;
                 }
                 case "Gate" -> {
-                    if (hasKey) {
+                    if (hasKey > 0) {
                         collisionOn = false;
+                        hasKey -= 1;
                         gs.obj[indexOfObject].image = new Texture("Object/gate_open.png");
                     }
                 }
@@ -351,13 +360,19 @@ public class Knight extends Entity {
                     gs.obj[indexOfObject] = null;
                 }
                 case "Cave" -> {
-                    if (hasKey) {
+                    if (hasKey > 0) {
                         System.out.println("You win!");
                     }
                 }
                 case "Enemy" -> {
                     gs.isGameOver = true;
                     System.out.println("You die!");
+                }
+                case "Big chest" -> {
+                    gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
+                }
+                case "Cave exit" -> {
+                    gs.obj[indexOfObject].image = new Texture("Object/cave_exit_open.png");
                 }
             }
         }

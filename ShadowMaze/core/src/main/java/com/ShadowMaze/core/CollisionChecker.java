@@ -196,7 +196,7 @@ public class CollisionChecker {
     public void checkEnemyCollision(Entity entity) {
         for (SuperObject object : gs.obj) {
             if (object instanceof OBJ_Enemy enemy) {
-                if (isNearEnemy(entity, enemy, GameScreen.TILE_SIZE / 2) && !enemy.isDead()) {
+                if (isNearEnemy(entity, enemy, GameScreen.TILE_SIZE) && !enemy.isDead()) {
                     System.out.println("you die!");
                     entity.setImage(new Texture("knight/knight_dead.png"));
                     entity.isDead = true;
