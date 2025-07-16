@@ -55,10 +55,6 @@ public class AssetSetter {
         gs.obj[4].mapX = 37 * GameScreen.TILE_SIZE;
         gs.obj[4].mapY = 28 * GameScreen.TILE_SIZE;
         
-        gs.obj[3] = new OBJ_Coin();
-        gs.obj[3].mapX = 37 * GameScreen.TILE_SIZE;
-        gs.obj[3].mapY = 37 * GameScreen.TILE_SIZE;
-        gs.obj[3].name = "Test---------------------->";
     }
         
 }

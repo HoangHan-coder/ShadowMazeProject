@@ -3,6 +3,7 @@ package object;
 import com.ShadowMaze.model.Map;
 import com.ShadowMaze.screen.GameScreen;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,6 +26,12 @@ public class OBJ_Enemy extends SuperObject {
     private float moveTimer = 0f;
     private float moveInterval = 0.1f;
     public int hp = 100;
+    private Animation<TextureRegion> animUp;
+    private Animation<TextureRegion> animDown;
+    private Animation<TextureRegion> animLeft;
+    private Animation<TextureRegion> animRight;
+
+    private Animation<TextureRegion> currentAnimation;
 
     /**
      * Constructor initializes the enemy name and loads animation frames from
@@ -35,36 +42,46 @@ public class OBJ_Enemy extends SuperObject {
     }
 
     private void setDefaultValue() {
-
         name = "Enemy";
         collision = true;
+        scale = 3f;
+        direction = 1; // m?c ??nh ?i xu?ng
 
-        int tileX = 5;
-        int tileY = 5;
+        animUp = loadAnimation("icons/up");
+        animDown = loadAnimation("icons/down");
+        animLeft = loadAnimation("icons/left");
+        animRight = loadAnimation("icons/right");
 
-        Array<TextureRegion> regions = new Array<>();
-        for (int i = 0; i < 4; i++) {
-            Texture tex = new Texture(Gdx.files.internal("icons/Special" + i + ".png"));
-            frames.add(tex);
-            regions.add(new TextureRegion(tex));
-        }
+        currentAnimation = animDown;
 
-        animation = new Animation<>(0.15f, regions);
+        TextureRegion firstFrame = currentAnimation.getKeyFrame(0);
+        float enemyWidth = firstFrame.getRegionWidth() * scale;
+        float enemyHeight = firstFrame.getRegionHeight() * scale;
 
-        float enemyWidth = animation.getKeyFrame(0).getRegionWidth() * scale;
-        float enemyHeight = animation.getKeyFrame(0).getRegionHeight() * scale;
+        mapX = 5 * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyWidth / 2f;
+        mapY = 5 * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyHeight / 2f;
 
-        mapX = tileX * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyWidth / 2f;
-        mapY = tileY * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyHeight / 2f;
-        solidArea = new Rectangle();
-        solidArea.x = 10;
-        solidArea.y = 10;
-        solidArea.width = animation.getKeyFrame(0).getRegionWidth() * scale - 20;
-        solidArea.height = animation.getKeyFrame(0).getRegionHeight() * scale - 20;
-
+        solidArea = new Rectangle(10, 10, enemyWidth - 20, enemyHeight - 20);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+        currentAnimation = animDown;
+        animation = currentAnimation; // ? thêm dòng này
 
+    }
+
+    private Animation<TextureRegion> loadAnimation(String folderPath) {
+        Array<TextureRegion> regions = new Array<>();
+        FileHandle dir = Gdx.files.internal(folderPath);
+
+        for (FileHandle file : dir.list()) {
+            if (file.extension().equalsIgnoreCase("png")) {
+                Texture tex = new Texture(file);
+                this.frames.add(tex); // L?u vào danh sách ?? dispose() sau
+                regions.add(new TextureRegion(tex)); // Ch? thêm TextureRegion vào animation
+            }
+        }
+
+        return new Animation<>(0.1f, regions, Animation.PlayMode.LOOP);
     }
 
     private boolean isWalkable(Map map, float x, float y) {
@@ -150,7 +167,21 @@ public class OBJ_Enemy extends SuperObject {
                     dy = -1; // Move down
             }
         }
-
+        // ? C?p nh?t h??ng và animation
+        if (dx < 0) {
+            direction = 0;
+            currentAnimation = animLeft;
+        } else if (dx > 0) {
+            direction = 2;
+            currentAnimation = animRight;
+        } else if (dy < 0) {
+            direction = 3;
+            currentAnimation = animDown;
+        } else if (dy > 0) {
+            direction = 1;
+            currentAnimation = animUp;
+        }
+        animation = currentAnimation;
         // Calculate next position based on direction and speed
         float nextX = mapX + dx * speed * delta;
         float nextY = mapY + dy * speed * delta;

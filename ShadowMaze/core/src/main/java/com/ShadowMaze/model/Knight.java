@@ -346,12 +346,17 @@ public class Knight extends Entity {
                         gs.obj[indexOfObject].image = new Texture("Object/gate_open.png");
                     }
                 }
+                case "Coin" -> {
+                    gs.scoreBoard.addScore(1);
+                    gs.obj[indexOfObject] = null;
+                }
                 case "Cave" -> {
                     if (hasKey) {
                         System.out.println("You win!");
                     }
                 }
                 case "Enemy" -> {
+                    gs.isGameOver = true;
                     System.out.println("You die!");
                 }
             }

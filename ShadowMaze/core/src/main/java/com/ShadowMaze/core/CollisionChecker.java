@@ -26,6 +26,7 @@ import object.SuperObject;
 public class CollisionChecker {
 
     GameScreen gs; // Reference to the game screen context
+    AssetSetter set;
 
     /**
      * Constructor links the CollisionChecker to the current GameScreen.
@@ -34,6 +35,7 @@ public class CollisionChecker {
      */
     public CollisionChecker(GameScreen gs) {
         this.gs = gs;
+        set = new AssetSetter(gs);
     }
 
     /**
@@ -198,6 +200,7 @@ public class CollisionChecker {
                     System.out.println("you die!");
                     entity.setImage(new Texture("knight/knight_dead.png"));
                     entity.isDead = true;
+                    // ??t c? game over
                 }
             }
         }
@@ -234,8 +237,11 @@ public class CollisionChecker {
 
                 // Check for collision between the fireball and the enemy
                 if (fireballArea.overlaps(enemyArea)) {
+                    // L?u v? trí quái c?
+                    float oldX = obj.mapX;
+                    float oldY = obj.mapY;
                     // Remove the enemy by setting its object reference to null
-                    gs.obj[i] = null;
+                    gs.obj[i] = new OBJ_Coin(oldX, oldY);
 
                     // Deactivate the fireball after a successful hit
                     fireball.deactivate();
