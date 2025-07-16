@@ -1,12 +1,9 @@
 package com.ShadowMaze.core;
 
-import com.ShadowMaze.model.Entity;
 import object.OBJ_CaveExit;
 import object.OBJ_Key;
 import com.ShadowMaze.screen.GameScreen;
 import object.OBJ_Chest;
-import object.OBJ_Coin;
-import object.OBJ_Enemy;
 import object.OBJ_Gate;
 
 /**

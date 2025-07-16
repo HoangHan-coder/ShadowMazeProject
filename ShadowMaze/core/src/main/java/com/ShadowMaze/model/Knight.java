@@ -42,7 +42,11 @@ public class Knight extends Entity {
     public int hasKey;
     private Array<Sword> skills = new Array<>();
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
+<<<<<<< Updated upstream
     public int baseSpeed = 5;          // T?c ?? ?i b?
+=======
+    public int baseSpeed = 4;          // T?c ?? ?i b?
+>>>>>>> Stashed changes
     private boolean hasFired = false; // ?� b?n k? n?ng ch?a?
     // Movement and stamina management
     public final int runSpeed = 8;
@@ -345,6 +349,7 @@ public class Knight extends Entity {
     public void pickUpObject(int indexOfObject) {
         if (indexOfObject != -1) {
             System.out.println("Knight collided with: " + gs.obj[indexOfObject].name);
+            System.out.println("Knight collide : " + collisionOn);
             String objectName = gs.obj[indexOfObject].name;
             switch (objectName) {
                 case "Key" -> {
@@ -352,9 +357,9 @@ public class Knight extends Entity {
                     gs.obj[indexOfObject] = null;
                 }
                 case "Gate" -> {
-                    if (hasKey > 0) {
-                        collisionOn = false;
+                    if (hasKey > 0 && gs.obj[indexOfObject].collision) {
                         hasKey -= 1;
+                        gs.obj[indexOfObject].collision  = false;
                         gs.obj[indexOfObject].image = new Texture("Object/gate_open.png");
                     }
                 }

@@ -2,7 +2,10 @@ package com.ShadowMaze.screen;
 
 import com.ShadowMaze.core.AssetSetter;
 import com.ShadowMaze.core.CollisionChecker;
+<<<<<<< Updated upstream
 import com.ShadowMaze.model.Entity.Direction;
+=======
+>>>>>>> Stashed changes
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
 import com.ShadowMaze.model.ScoreBoard;
@@ -11,24 +14,23 @@ import com.ShadowMaze.render.MirrorRenderer;
 import com.ShadowMaze.skill.Fireball;
 import com.badlogic.gdx.*;
 import object.SuperObject;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import object.OBJ_Enemy;
 import com.ShadowMaze.uis.HpBar;
 import com.ShadowMaze.uis.StaminaBar;
+import com.ShadowMaze.uis.UI;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+<<<<<<< Updated upstream
 import com.badlogic.gdx.math.Vector2;
+=======
+>>>>>>> Stashed changes
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 
 /**
@@ -61,8 +63,11 @@ public class GameScreen implements Screen {
 //    private int[][] maze = new int[MAX_SCREEN_ROW][MAX_SCREEN_COL];
 //    private int offsetX, offsetY;
 
+    
+    // Sytem
     public Map map;
     public CollisionChecker cCheck;
+    public UI ui = new UI(this);
     public SuperObject[] obj = new SuperObject[10];
     public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
@@ -239,6 +244,19 @@ public class GameScreen implements Screen {
                 enemy.update(Gdx.graphics.getDeltaTime(), this);
             }
         }
+<<<<<<< Updated upstream
+=======
+
+        for (Iterator<Fireball> it = fireball.iterator(); it.hasNext();) {
+            Fireball fireball = it.next();
+            fireball.update(delta);
+            cCheck.checkFireballCollision(fireball); // G?I CHECK VA CH?M T?I ?�Y
+
+            if (!fireball.isActive()) {
+                it.remove(); // Remove n?u ?� h?t hi?u l?c
+            }
+        }
+>>>>>>> Stashed changes
 
         checkGateCollisionAndChangeMap();  // Handle map transition if near gate
 
@@ -265,7 +283,7 @@ public class GameScreen implements Screen {
 
         // Draw scoreboard
         scoreBoard.render(batch, 30, 650);
-
+        ui.render();
         batch.end();
 
         // === HUD & UI RENDER PHASE ===
