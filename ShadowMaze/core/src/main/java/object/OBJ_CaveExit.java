@@ -14,8 +14,6 @@ import com.badlogic.gdx.graphics.Texture;
  * Author: NgKaitou
  */
 public class OBJ_CaveExit extends SuperObject {
-
-    public boolean isOpened = false;
     
     /**
      * Constructs a new cave exit object with predefined properties:
@@ -27,12 +25,8 @@ public class OBJ_CaveExit extends SuperObject {
         setDefault();                                 
     }
     private void setDefault() {
-        name = "Cave";                    
-        if (!isOpened) { 
-            image = new Texture("Object/cave_exit_close.png");
-        } else {
-            image = new Texture("Object/cave_exit_open.png");
-        }                        
+        name = "Cave exit";                    
+        image = new Texture("Object/cave_exit_close.png");             
         collision = true; 
     }    
 }

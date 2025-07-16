@@ -12,19 +12,13 @@ import com.badlogic.gdx.graphics.Texture;
  */
 public class OBJ_Chest extends SuperObject {
 
-    public boolean isOpened = false;
-
     public OBJ_Chest() {
         name = "Big chest";
         setDefault();
     }
 
     private void setDefault() {
-        if (isOpened) {
-            image = new Texture("Object/big_chest_open.png");
-        } else {
-            image = new Texture("Object/big_chest.png");
-        }
+        image = new Texture("Object/big_chest.png");
     }
 
 }
