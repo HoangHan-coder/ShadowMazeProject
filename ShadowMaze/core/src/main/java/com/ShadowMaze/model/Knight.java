@@ -43,10 +43,8 @@ public class Knight extends Entity {
     // Movement and stamina management
     public final int runSpeed = 8;
     private float staminaDrainRate;
-    private float staminaRegenRate;
 
     // UI elements
-    private StaminaBar staminaBar;
     private HpBar hpBar;
 
     // Game context
@@ -107,7 +105,6 @@ public class Knight extends Entity {
 
         // Stamina drain and regen rates
         staminaDrainRate = 30f;
-        staminaRegenRate = 15f;
 
         // Load animations
         moveUp = loadUpAnimation();

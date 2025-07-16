@@ -144,7 +144,6 @@ public class GameScreen implements Screen {
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
-        Random random = new Random();
         int mapHeight = map.tileNum.length;
         int mapWidth = map.tileNum[0].length;
 
