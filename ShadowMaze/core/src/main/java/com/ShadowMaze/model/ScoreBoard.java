@@ -26,7 +26,7 @@ public class ScoreBoard {
         font.setColor(Color.WHITE);
         font.getData().setScale(2.2f);
 
-        // Quét th? m?c ui/score/ và thêm các file .png
+        // Quï¿½t th? m?c ui/score/ vï¿½ thï¿½m cï¿½c file .png
         FileHandle dirHandle = Gdx.files.internal("score/");
         for (FileHandle file : dirHandle.list()) {
             if (file.name().toLowerCase().endsWith(".png")) {
@@ -34,7 +34,7 @@ public class ScoreBoard {
             }
         }
 
-        // N?u không có ?nh nào -> thêm ?nh m?c ??nh ?? tránh l?i
+        // N?u khï¿½ng cï¿½ ?nh nï¿½o -> thï¿½m ?nh m?c ??nh ?? trï¿½nh l?i
         if (iconFrames.size == 0) {
             iconFrames.add(new Texture("ui/score/coin.png")); // fallback
         }
@@ -55,7 +55,7 @@ public class ScoreBoard {
             animationTimer = 0f;
             currentFrameIndex = (currentFrameIndex + 1) % iconFrames.size;
         }
-        System.out.println(score);
+//        System.out.println(score);
         Texture currentIcon = iconFrames.get(currentFrameIndex);
         int VisitX = 70;
         int VisitY = 600;

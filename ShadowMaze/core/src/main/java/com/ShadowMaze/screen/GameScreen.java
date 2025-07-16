@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import object.OBJ_Coin;
 
 /**
  * GameScreen is the main screen for rendering gameplay, UI, and handling core
@@ -73,12 +74,7 @@ public class GameScreen implements Screen {
     private boolean isPaused = false;
     private HpBar hpBar;
     private Array<Sword> fireSkill = new Array<>();
-
-    private Array<Fireball> fireballs = new Array<>();
-    private Fireball currentFireball;
-    private boolean wasEPressedLastFrame = false;
-    private boolean isSkillAvailable = true;
-    private ScoreBoard scoreBoard;
+    public ScoreBoard scoreBoard;
 
     /**
      * Constructor that sets up the main batch and stores game reference.
@@ -126,9 +122,7 @@ public class GameScreen implements Screen {
         cCheck = new CollisionChecker(this);
         knight = new Knight(this, hpBar);
         spawnEnemiesFromWalkableTiles(map, 4); // Spawn 4 enemy
-
         map = new Map(this, game);
-
 
 //        cCheck = new CollisionChecker(this);
         // Initialize player
@@ -160,7 +154,7 @@ public class GameScreen implements Screen {
 
         int placed = 0;
         for (int i = 0; i < obj.length && placed < numEnemies; i++) {
-            if (obj[i] == null) { 
+            if (obj[i] == null) {
                 int[] tile = walkableTiles.random();
                 OBJ_Enemy enemy = new OBJ_Enemy();
                 enemy.mapX = tile[0] * TILE_SIZE;
@@ -224,174 +218,70 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * Checks if the player (knight) is within a specified range of any enemy.
-     *
-     * @param range The maximum distance to check (in pixels).
-     * @return true if an enemy is within the given range, false otherwise.
-     */
-    public boolean isNearEnemy(float range) {
-        for (SuperObject object : obj) {
-            if (object instanceof OBJ_Enemy) {
-                OBJ_Enemy enemy = (OBJ_Enemy) object;
-
-                float dx = knight.getPositionX() - enemy.mapX;          // Horizontal distance between knight and enemy
-                float dy = knight.getPositionY() - enemy.mapY;          // Vertical distance between knight and enemy
-                float distance = (float) Math.sqrt(dx * dx + dy * dy);  // Calculate Euclidean distance
-
-                if (distance <= range) {                                // If enemy is within range, return true
-                    return true;
-                }
-            }
-        }
-        return false;                                                   // No enemy is within range
-    }
-
-    /**
-     * Called every frame to update game logic and render all components.
-     * Handles input, collision detection, rendering of map, player, objects,
-     * UI, and transitions to battle screen.
-     *
-     * @param delta Time in seconds since the last frame
-     */
     @Override
     public void render(float delta) {
-        // If the map is paused (e.g., in menu or cutscene), skip updates and only draw current frame
+        // === Handle paused state (e.g., menu, cutscene) ===
         if (map.isPaused()) {
-            ScreenUtils.clear(0, 0, 0, 1);  // Clear the screen to black
+            ScreenUtils.clear(0, 0, 0, 1);  // Clear screen
 
             batch.begin();
-            map.drawMap();                 // Draw only the map background
+            map.drawMap();                 // Draw background only
             batch.end();
 
-            stage.act(delta);              // Update UI stage actors (buttons, dialogs)
-            stage.draw();                  // Render the UI stage
-            return;                        // Exit render early
+            stage.act(delta);             // Update UI logic
+            stage.draw();                 // Render UI
+            return;
         }
 
-        // --- DRAW ---
-        batch.begin();
+        // === UPDATE PHASE ===
         knight.inputHandle(delta);
-
-        // Update knight's position, state, and physics (e.g., gravity, animation)
         knight.update(delta);
-        checkGateCollisionAndChangeMap();
-        hpBar.update(delta);
-        map.drawMap();
 
-        if (!map.isBackgroundOnly()) {
-            knight.knightRender(delta);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            if (!wasEPressedLastFrame && isSkillAvailable) { 
-                Vector2 start = new Vector2(knight.positionX, knight.positionY);
-                Direction dir = knight.getDirection();
-                if (dir != Direction.IDLE) {
-                    Fireball fb = new Fireball();
-                    fb.setMapSize(map.getMapWidthPixels(), map.getMapHeightPixels());
-                    fb.activate(start, dir);
-                    fb.shoot();
-                    fireballs.add(fb);
-                    currentFireball = fb;
-
-                    isSkillAvailable = false; 
-                }
-            }
-            wasEPressedLastFrame = true;
-        } else {
-            wasEPressedLastFrame = false;
-        }
-
-
-        Iterator<Fireball> iterator = fireballs.iterator();
-        while (iterator.hasNext()) {
-            Fireball fireball = iterator.next();
-            fireball.update(delta);
-            if (fireball.isActive()) {
-                fireball.render(batch, knight.positionX, knight.positionY);
-            } else {
-                iterator.remove(); 
-                isSkillAvailable = true; 
-                iterator.remove(); // Xo? n?u kh?ng c?n active
-                isSkillAvailable = true; // ? Cho ph?p d?ng skill l?i
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null && obj[i] instanceof OBJ_Enemy enemy) {
+                enemy.update(Gdx.graphics.getDeltaTime(), this);
             }
         }
 
-        // Draw all objects
+        checkGateCollisionAndChangeMap();  // Handle map transition if near gate
+
+        hpBar.update(delta);  // Update knight HP bar
+        // Nếu staminaBar cần update animation, bạn có thể gọi thêm update ở đây (nếu có)
+
+        // === GAME RENDER PHASE ===
+        batch.begin();
+
+        map.drawMap();  // Draw tile-based background
+
+        // Draw all objects (including enemies, items, gates...)
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) {
-                obj[i].drawObject(this);
+                obj[i].drawObject(this);  
             }
         }
 
-        batch.end();
-        hpBar.render(batch);
-        // Draw UI (stamina icon)
-        staminaBar.renderIcon(batch);
-
-        // Draw stage UI
-        batch.begin();
-
-        // Draw tile-based game map relative to player's position
-        // Only render player if the map is not in "background only" mode
-        // (e.g., when paused for dialog or event)
+        // Draw knight (once only)
         if (!map.isBackgroundOnly()) {
             knight.knightRender(delta);
+            System.out.println("position: (" + knight.positionX/TILE_SIZE + ", " + knight.positionX/TILE_SIZE + ")");
         }
 
-        // Loop through all objects and render them if they exist
-        for (SuperObject obj1 : obj) {
-            if (obj1 != null) {
-                obj1.drawObject(this); // Draw the object using current screen context
-            }
-        }
-
-        // Render knight again (this seems redundant; might be intentional for layering)
-        knight.knightRender(delta);
-
-        // Debug output to console showing player's current tile coordinates
-//        System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
-
-        System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
+        // Draw scoreboard
         scoreBoard.render(batch, 30, 650);
-        batch.end();  // Finish drawing sprites
 
-        // Apply same camera projection to shapeRenderer as SpriteBatch
+        batch.end();
+
+        // === HUD & UI RENDER PHASE ===
+        // Apply same camera to shapeRenderer if needed
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
 
-        // Optional: render stamina bar as shapes (currently commented out)
-        // staminaBar.render(shapeRenderer);
-        // Update knight's HP bar (e.g., animations, transitions)
-        hpBar.update(delta);
+        // HUD: render Knight's HP bar and Stamina icon
+        hpBar.render(batch);
+        staminaBar.renderIcon(batch);
 
-        // Begin new batch for UI rendering
-        hpBar.render(batch);               // Draw HP bar
-
-        staminaBar.renderIcon(batch);     // Draw stamina icon
-
-        // Update and draw UI stage (includes buttons, overlays, etc.)
+        // UI Stage: pause menu, dialogs, etc.
         stage.act(delta);
         stage.draw();
-    }
-
-    /**
-     * Called when the screen is resized.
-     *
-     * @param width New width
-     * @param height New height
-     */
-    @Override
-    public void resize(int width, int height) {
-        // No resize behavior yet
-    }
-
-    /**
-     * Called when the game is paused.
-     */
-    @Override
-    public void pause() {
-        // No pause behavior implemented
     }
 
     /**
@@ -410,6 +300,15 @@ public class GameScreen implements Screen {
         // No hide behavior implemented
     }
 
+    @Override
+    public void resize(int width, int height) {
+        
+    }
+
+    @Override
+    public void pause() {
+        
+    }
     /**
      * Dispose all disposable assets to free memory.
      */

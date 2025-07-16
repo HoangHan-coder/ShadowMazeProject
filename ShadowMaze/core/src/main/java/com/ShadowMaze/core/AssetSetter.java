@@ -4,6 +4,7 @@ import com.ShadowMaze.model.Entity;
 import object.OBJ_CaveExit;
 import object.OBJ_Key;
 import com.ShadowMaze.screen.GameScreen;
+import object.OBJ_Coin;
 import object.OBJ_Enemy;
 import object.OBJ_Gate;
 
@@ -49,6 +50,15 @@ public class AssetSetter {
         gs.obj[2] = new OBJ_Gate();
         gs.obj[2].mapX = 88 * GameScreen.TILE_SIZE;
         gs.obj[2].mapY = 19 * GameScreen.TILE_SIZE;
+        
+        gs.obj[4] = new OBJ_Gate();
+        gs.obj[4].mapX = 37 * GameScreen.TILE_SIZE;
+        gs.obj[4].mapY = 28 * GameScreen.TILE_SIZE;
+        
+        gs.obj[3] = new OBJ_Coin();
+        gs.obj[3].mapX = 37 * GameScreen.TILE_SIZE;
+        gs.obj[3].mapY = 37 * GameScreen.TILE_SIZE;
+        gs.obj[3].name = "Test---------------------->";
     }
         
 }

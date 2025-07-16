@@ -74,14 +74,14 @@ public class Sword {
     }
 
     /**
-     * Activates the sword skill at knight’s current position and direction.
+     * Activates the sword skill at knights current position and direction.
      * @param knight The knight using the skill
      * @param direction The direction in which the skill will be performed
      */
     public void activate(Knight knight, Direction direction) {
         active = true;
         stateTime = 0;
-        lifeTimer = 0; // Reset the skill’s lifetime
+        lifeTimer = 0; // Reset the skills lifetime
         this.direction = direction;
 
         // Set offset based on attack direction
@@ -118,10 +118,10 @@ public class Sword {
     /**
      * Renders the sword effect at the correct position relative to the knight.
      * @param batch SpriteBatch used for drawing
-     * @param knightWorldX The knight’s world X position
-     * @param knightWorldY The knight’s world Y position
-     * @param knightRenderX The knight’s screen render X position
-     * @param knightRenderY The knight’s screen render Y position
+     * @param knightWorldX The knights world X position
+     * @param knightWorldY The knights world Y position
+     * @param knightRenderX The knights screen render X position
+     * @param knightRenderY The knights screen render Y position
      */
     public void render(SpriteBatch batch, float knightWorldX, float knightWorldY, int knightRenderX, int knightRenderY) {
         if (!active) return;
