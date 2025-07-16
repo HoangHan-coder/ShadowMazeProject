@@ -75,6 +75,7 @@ public class GameScreen implements Screen {
     private HpBar hpBar;
     private Array<Sword> fireSkill = new Array<>();
     public ScoreBoard scoreBoard;
+    public Array<Fireball> fireball = new Array<>();
 
     /**
      * Constructor that sets up the main batch and stores game reference.
@@ -122,19 +123,19 @@ public class GameScreen implements Screen {
         cCheck = new CollisionChecker(this);
         knight = new Knight(this, hpBar);
         spawnEnemiesFromWalkableTiles(map, 4); // Spawn 4 enemy
-        map = new Map(this, game);
 
 //        cCheck = new CollisionChecker(this);
         // Initialize player
-        stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        map = new Map(this, game);
         map.createButtons(stage);
         shapeRenderer = new ShapeRenderer();
         // Center the maze if needed
 //        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
 //        offsetY = 0;
         scoreBoard = new ScoreBoard();
+        Fireball fb = new Fireball(knight.getPosition(), knight.getDirection());
+        fb.setMapSize(MAP_X, MAP_Y);
+        fireball.add(fb);
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
@@ -242,28 +243,41 @@ public class GameScreen implements Screen {
                 enemy.update(Gdx.graphics.getDeltaTime(), this);
             }
         }
+// Update v� ki?m tra va ch?m t?ng qu? fireball
+        for (Iterator<Fireball> it = fireball.iterator(); it.hasNext();) {
+            Fireball fireball = it.next();
+            fireball.update(delta);
+            cCheck.checkFireballCollision(fireball); // G?I CHECK VA CH?M T?I ?�Y
+
+            if (!fireball.isActive()) {
+                it.remove(); // Remove n?u ?� h?t hi?u l?c
+            }
+        }
 
         checkGateCollisionAndChangeMap();  // Handle map transition if near gate
 
         hpBar.update(delta);  // Update knight HP bar
-        // Nếu staminaBar cần update animation, bạn có thể gọi thêm update ở đây (nếu có)
+        // Nếu staminaBar cần update animation, bạn có thể g�?i thêm update ở đây (nếu có)
 
         // === GAME RENDER PHASE ===
         batch.begin();
+        for (Fireball fireball : fireball) {
+            fireball.render(batch, knight.getPositionX(), knight.getPositionY());
+        }
 
         map.drawMap();  // Draw tile-based background
 
         // Draw all objects (including enemies, items, gates...)
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) {
-                obj[i].drawObject(this);  
+                obj[i].drawObject(this);
             }
         }
 
         // Draw knight (once only)
         if (!map.isBackgroundOnly()) {
             knight.knightRender(delta);
-            System.out.println("position: (" + knight.positionX/TILE_SIZE + ", " + knight.positionX/TILE_SIZE + ")");
+            System.out.println("position: (" + knight.positionX / TILE_SIZE + ", " + knight.positionX / TILE_SIZE + ")");
         }
 
         // Draw scoreboard
@@ -302,13 +316,14 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        
+
     }
 
     @Override
     public void pause() {
-        
+
     }
+
     /**
      * Dispose all disposable assets to free memory.
      */

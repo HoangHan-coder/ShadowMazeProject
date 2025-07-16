@@ -204,85 +204,34 @@ public class CollisionChecker {
     }
 
     public void checkFireballCollision(Fireball fireball) {
-        if (fireball == null || !fireball.isActive()) {
-            return;
-        }
-
-        // === Tính hitbox fireball ===
-        Rectangle fireballRect = new Rectangle(
-                fireball.position.x + fireball.solidArea.x,
-                fireball.position.y + fireball.solidArea.y,
-                fireball.solidArea.width,
-                fireball.solidArea.height
+        Rectangle fireballArea = new Rectangle(
+                fireball.getPosition().x,
+                fireball.getPosition().y,
+                GameScreen.TILE_SIZE,
+                GameScreen.TILE_SIZE
         );
 
-        // === Check va chạm tile (map) ===
-        int leftTile = (int) fireballRect.x / GameScreen.TILE_SIZE;
-        int rightTile = (int) (fireballRect.x + fireballRect.width) / GameScreen.TILE_SIZE;
-        int topTile = (int) fireballRect.y / GameScreen.TILE_SIZE;
-        int bottomTile = (int) (fireballRect.y + fireballRect.height) / GameScreen.TILE_SIZE;
-
-        for (int row = topTile; row <= bottomTile; row++) {
-            for (int col = leftTile; col <= rightTile; col++) {
-                if (row >= 0 && row < GameScreen.MAX_SCREEN_ROW && col >= 0 && col < GameScreen.MAX_SCREEN_COL) {
-                    int tileNum = gs.map.tileNum[row][col];
-                    if (gs.map.tiles[tileNum].collision) {
-                        fireball.deactivate();
-                        System.out.println("[Fireball] Hit wall tile -> deactivated");
-                        return;
-                    }
-                }
-            }
-        }
-
-        // === Check va chạm object có collision ===
-        for (SuperObject object : gs.obj) {
-            if (object != null && object.collision) {
-                Rectangle objectRect = new Rectangle(
-                        object.mapX + object.solidAreaDefaultX,
-                        object.mapY + object.solidAreaDefaultY,
-                        object.solidArea.width,
-                        object.solidArea.height
-                );
-
-                if (fireballRect.overlaps(objectRect)) {
-                    fireball.deactivate();
-                    System.out.println("[Fireball] Hit object '" + object.name + "' -> deactivated");
-                    return;
-                }
-            }
-        }
-
-        // === Check va chạm Enemy ===
         for (int i = 0; i < gs.obj.length; i++) {
-            SuperObject object = gs.obj[i];
-
-            if (object instanceof OBJ_Enemy enemy && object.collision) {
-                Rectangle enemyRect = new Rectangle(
-                        enemy.mapX + enemy.solidAreaDefaultX,
-                        enemy.mapY + enemy.solidAreaDefaultY,
-                        enemy.solidArea.width,
-                        enemy.solidArea.height
+            SuperObject obj = gs.obj[i];
+            if (obj != null && obj instanceof OBJ_Enemy) {
+                Rectangle enemyArea = new Rectangle(
+                        obj.mapX, obj.mapY,
+                        GameScreen.TILE_SIZE,
+                        GameScreen.TILE_SIZE
                 );
-//                System.out.println("→ Checking fireball collision with enemy at: " + enemy.mapX + ", " + enemy.mapY);
-//                System.out.println("→ Fireball rect: " + fireballRect);
-//                System.out.println("→ Enemy rect: " + enemyRect);
-                if (fireballRect.overlaps(enemyRect)) {
-//                     System.out.println("🔥 COLLISION DETECTED!");
-                    fireball.deactivate();
-                    enemy.hp -= 25;
-                    System.out.println(enemy);
 
-                    if (enemy.hp <= 0) {
-                        OBJ_Coin coin = new OBJ_Coin();
-                        coin.mapX = enemy.mapX;
-                        coin.mapY = enemy.mapY;
-                        gs.obj[i] = coin;
-                        System.out.println(gs.obj[i].name);
-                    }
+                if (fireballArea.overlaps(enemyArea)) {
+                    // X? l� x�a enemy
+                    gs.obj[i] = null;
+
+                    // H?y fireball lu�n n?u mu?n
+                    fireball.deactivate();
+
+                    System.out.println("? Enemy hit and removed!");
+                    break;
                 }
             }
         }
-
     }
+
 }

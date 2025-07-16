@@ -33,9 +33,9 @@ public class OBJ_Enemy extends SuperObject {
     public OBJ_Enemy() {
         setDefaultValue();
     }
-    
+
     private void setDefaultValue() {
-        
+
         name = "Enemy";
         collision = true;
 
@@ -48,7 +48,7 @@ public class OBJ_Enemy extends SuperObject {
             frames.add(tex);
             regions.add(new TextureRegion(tex));
         }
-        
+
         animation = new Animation<>(0.15f, regions);
 
         float enemyWidth = animation.getKeyFrame(0).getRegionWidth() * scale;
@@ -56,6 +56,15 @@ public class OBJ_Enemy extends SuperObject {
 
         mapX = tileX * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyWidth / 2f;
         mapY = tileY * GameScreen.TILE_SIZE + GameScreen.TILE_SIZE / 2f - enemyHeight / 2f;
+        solidArea = new Rectangle();
+        solidArea.x = 10;
+        solidArea.y = 10;
+        solidArea.width = animation.getKeyFrame(0).getRegionWidth() * scale - 20;
+        solidArea.height = animation.getKeyFrame(0).getRegionHeight() * scale - 20;
+
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+
     }
 
     private boolean isWalkable(Map map, float x, float y) {
@@ -71,8 +80,9 @@ public class OBJ_Enemy extends SuperObject {
     public void drawObject(GameScreen gs) {
         if (!isDead()) {
             drawMonster(gs);
-        } 
-    }  
+        }
+    }
+
     /**
      * Draws the animated enemy on the screen if it's within the visible camera
      * bounds.
@@ -97,7 +107,7 @@ public class OBJ_Enemy extends SuperObject {
             float frameHeight = currentFrame.getRegionHeight(); // Frame height in pixels
 
             // Draw the current animation frame at the calculated screen position
-            screen.batch.draw(currentFrame,screenX, screenY,frameWidth * scale,frameHeight * scale);
+            screen.batch.draw(currentFrame, screenX, screenY, frameWidth * scale, frameHeight * scale);
         }
     }
 
@@ -130,10 +140,14 @@ public class OBJ_Enemy extends SuperObject {
         } else {
             // If not chasing, move in the current random direction
             switch (direction) {
-                case 0 -> dx = -1; // Move left
-                case 1 -> dy = 1;  // Move up
-                case 2 -> dx = 1;  // Move right
-                case 3 -> dy = -1; // Move down
+                case 0 ->
+                    dx = -1; // Move left
+                case 1 ->
+                    dy = 1;  // Move up
+                case 2 ->
+                    dx = 1;  // Move right
+                case 3 ->
+                    dy = -1; // Move down
             }
         }
 
@@ -202,7 +216,6 @@ public class OBJ_Enemy extends SuperObject {
             }
         }
     }
-
 
     public boolean isDead() {
         return hp <= 0;  // Ho?c flag n�o ?� n?u b?n c� hi?u ?ng ch?t

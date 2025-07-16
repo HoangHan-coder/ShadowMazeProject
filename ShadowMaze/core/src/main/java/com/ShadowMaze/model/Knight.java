@@ -34,16 +34,15 @@ public class Knight extends Entity {
     // Position to render the character on screen (fixed to center)
     public int renderX;
     public int renderY;
-   
 
     // Key possession state
     boolean hasKey;
     private Array<Sword> skills = new Array<>();
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
-    public int baseSpeed = 5;          // T?c ?? ?i b?
+    public int baseSpeed = 1;          // T?c ?? ?i b?
     private boolean hasFired = false; // ?� b?n k? n?ng ch?a?
     // Movement and stamina management
-    public final int runSpeed = 8;
+    public final int runSpeed = 18;
     private float staminaDrainRate;
 
     // UI elements
@@ -51,7 +50,7 @@ public class Knight extends Entity {
 
     // Game context
     GameScreen gs;
-    
+
     //skill
     public Fireball currentFireball; // Biến để lưu quả cầu lửa hiện tại
 
@@ -91,8 +90,6 @@ public class Knight extends Entity {
         stateTime = 0f;
         hasKey = false;
 
-        
-        
         // Render at screen center
         renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
         renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
@@ -134,7 +131,7 @@ public class Knight extends Entity {
         }
         currentDirection = direction;
     }
-    
+
     public void castFireball() {
         if (currentFireball == null || !currentFireball.isActive()) {
             currentFireball = new Fireball();
@@ -144,7 +141,6 @@ public class Knight extends Entity {
             currentFireball.shoot();
         }
     }
-
 
     /**
      * Updates the animation state.
@@ -157,7 +153,6 @@ public class Knight extends Entity {
         for (int i = 0; i < skills.size; i++) {
             Sword skill = skills.get(i);
 
-            
 //            if (skill.isActive() && currentDirection != Direction.IDLE && skill.getDirection() != currentDirection) {
 //                skill.setActive(false);  
 //            }
@@ -210,13 +205,12 @@ public class Knight extends Entity {
         } else {
             gs.batch.draw(image, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
         }
-        
+
         if (currentFireball != null && currentFireball.isActive()) {
             currentFireball.update(Gdx.graphics.getDeltaTime());
             currentFireball.render(gs.batch, positionX, positionY);
         }
 
-        
         //debug hit box
 //        ShapeRenderer shapeRenderer = new ShapeRenderer();
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -236,7 +230,7 @@ public class Knight extends Entity {
             movementHandle(delta);
         }
     }
-    
+
     /**
      * Handles input for movement, stamina, HP, collisions, and map switching.
      *
@@ -255,39 +249,46 @@ public class Knight extends Entity {
         } else {
             setDirection(Direction.IDLE);
         }
-        
+
         //use skill
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
             castFireball();
         }
 
-
         // Get current stamina/HP
-//        float currentStamina = staminaBar.getCurrentStamina();
         float currentHp = hpBar.getCurrentHp();
 
-        // Shift key affects HP/Stamina
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            isRunning = true;
-            speed = runSpeed;
-//            staminaBar.setCurrentStamina(Math.max(0, currentStamina - staminaDrainRate * delta));
-            hpBar.setCurrentHp(currentHp - 30 * delta);
+        // If HP > 0 and SHIFT is being held down => run faster
+        if (currentHp > 0) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                isRunning = true;
+                speed = runSpeed;
+                // Decrease HP while running
+                hpBar.setCurrentHp(Math.max(0, currentHp - 30 * delta));
+            } else {
+                isRunning = false;
+                speed = baseSpeed;
+                // Regenerate HP when not running
+                hpBar.setCurrentHp(Math.min(hpBar.getMaxHp(), currentHp + 10 * delta));
+            }
         } else {
+            // If HP is 0, running is disabled even if SHIFT is pressed
             isRunning = false;
             speed = baseSpeed;
-            if (currentHp < hpBar.getMaxHp()) {
+
+            // Allow HP regeneration only when not holding SHIFT
+            if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                 hpBar.setCurrentHp(currentHp + 10 * delta);
             }
-//            staminaBar.regenerate(delta);
         }
 
         // Check collisions
         collisionOn = false;
         gs.cCheck.checkTile(this);
-        
+
         int indexObject = gs.cCheck.checkObject(this, true);
         pickUpObject(indexObject);
-        
+
         gs.cCheck.checkEnemyCollision(this);
 
         if (currentFireball != null && currentFireball.isActive()) {
@@ -307,7 +308,6 @@ public class Knight extends Entity {
             }
 
             // Reset speed after move
-            speed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ? runSpeed : baseSpeed;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !hasFired) {
             Entity.Direction skillDir = (currentDirection == Direction.IDLE)
@@ -413,6 +413,10 @@ public class Knight extends Entity {
         for (TextureRegion region : moveRight.getKeyFrames()) {
             region.getTexture().dispose();
         }
+    }
+
+    public Vector2 getPosition() {
+        return new Vector2(positionX, positionY);
     }
 
     public Direction getDirection() {

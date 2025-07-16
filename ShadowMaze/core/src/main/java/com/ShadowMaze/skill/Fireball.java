@@ -125,6 +125,7 @@ public class Fireball extends Entity{
 
         stateTime = 0f;
         this.active = true; // Must be active to update/render
+        loadAnimations();
     }
     
     /**
