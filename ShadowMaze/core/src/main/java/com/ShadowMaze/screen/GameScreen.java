@@ -21,16 +21,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import java.util.Iterator;
-
 
 /**
  * GameScreen is the main screen for rendering gameplay, UI, and handling core
@@ -52,7 +46,7 @@ public class GameScreen implements Screen {
 
     // Map setting
     public static final int MAP_X = 121;
-    public static final int MAP_Y = 83*2;
+    public static final int MAP_Y = 83 * 2;
     public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
 
@@ -62,7 +56,6 @@ public class GameScreen implements Screen {
 //    private int[][] maze = new int[MAX_SCREEN_ROW][MAX_SCREEN_COL];
 //    private int offsetX, offsetY;
 
-    
     // Sytem
     public Map map;
     public CollisionChecker cCheck;
@@ -187,11 +180,10 @@ public class GameScreen implements Screen {
             stage.draw();                 // Render UI
             return;
         }
-        
-        if (!isGameOver) {
+
+        if (isGameOver || knight.isDead) {
             gameOverHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
-
             batch.begin();
             map.drawMap();
             gameOverHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT, delta);
@@ -201,7 +193,7 @@ public class GameScreen implements Screen {
             stage.draw();
             return;
         }
-        
+
         if (knight.countOpenChest == 7) {
             gameVictoryHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
@@ -215,7 +207,6 @@ public class GameScreen implements Screen {
             stage.draw();
             return;
         }
-knight.movementHandle(delta); 
         // === UPDATE PHASE ===
         knight.inputHandle(delta);
         knight.update(delta);
@@ -224,7 +215,6 @@ knight.movementHandle(delta);
                 enemy.update(Gdx.graphics.getDeltaTime(), this);
             }
         }
-
 
         for (Iterator<Fireball> it = fireball.iterator(); it.hasNext();) {
             Fireball fireball = it.next();
@@ -257,7 +247,7 @@ knight.movementHandle(delta);
         // Draw knight (once only)
         if (!map.isBackgroundOnly()) {
             knight.knightRender(delta);
-            System.out.println("position: (" + knight.positionX/TILE_SIZE + ", " + knight.positionY/TILE_SIZE + ")");
+            System.out.println("position: (" + knight.positionX / TILE_SIZE + ", " + knight.positionY / TILE_SIZE + ")");
         }
 
         // Draw scoreboard

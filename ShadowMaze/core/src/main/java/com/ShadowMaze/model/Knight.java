@@ -39,10 +39,10 @@ public class Knight extends Entity {
     public int hasKey;
     private Array<Sword> skills = new Array<>();
     public boolean isRunning = false;  
-    public int baseSpeed = 5;         
+    public int baseSpeed = 4;         
     private boolean hasFired = false; 
     // Movement and stamina management
-    public final int runSpeed = 18;
+    public final int runSpeed = 8;
     private float staminaDrainRate;
 
     // UI elements
@@ -366,6 +366,7 @@ public class Knight extends Entity {
                     }
                 }
                 case "Enemy" -> {
+                    isDead = true;
                     gs.isGameOver = true;
                     System.out.println("You die!");
                 }
