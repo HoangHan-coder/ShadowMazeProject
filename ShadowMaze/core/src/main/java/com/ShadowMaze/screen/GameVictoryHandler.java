@@ -50,8 +50,8 @@ public class GameVictoryHandler {
         this.gs = gs;
 
         // Buttons
-        Texture btnReplayTex = new Texture(Gdx.files.internal("menu/function/replay.png"));
-        Texture btnQuitTex = new Texture(Gdx.files.internal("menu/function/type4.png"));
+        Texture btnReplayTex = new Texture(Gdx.files.internal("menu/function/new.png"));
+        Texture btnQuitTex = new Texture(Gdx.files.internal("menu/function/quitnew.png"));
 
         // Replay button style
         ImageButton.ImageButtonStyle styleReplay = new ImageButton.ImageButtonStyle();

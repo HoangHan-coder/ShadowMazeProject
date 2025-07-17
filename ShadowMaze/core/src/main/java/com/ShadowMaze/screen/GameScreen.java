@@ -188,7 +188,7 @@ public class GameScreen implements Screen {
             return;
         }
         
-        if (isGameOver) {
+        if (!isGameOver) {
             gameOverHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
 

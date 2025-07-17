@@ -43,8 +43,8 @@ public class GameOverHandler {
         game = (Game) Gdx.app.getApplicationListener();
 
         // Buttons
-        Texture btnReplayTex = new Texture(Gdx.files.internal("menu/function/replay.png"));
-        Texture btnQuitTex = new Texture(Gdx.files.internal("menu/function/type4.png"));
+        Texture btnReplayTex = new Texture(Gdx.files.internal("menu/function/replaynew.png"));
+        Texture btnQuitTex = new Texture(Gdx.files.internal("menu/function/quitnew.png"));
 
         ImageButton.ImageButtonStyle styleReplay = new ImageButton.ImageButtonStyle();
         styleReplay.imageUp = new TextureRegionDrawable(new TextureRegion(btnReplayTex));
@@ -109,7 +109,6 @@ public class GameOverHandler {
 
         batch.draw(scorePanelImage, 405, 105, scoreWidth, scoreHeight);
         batch.draw(gameOverImage, 460, 300, imageWidth, imageHeight);
-        scoreBoard.render(batch, (int) scoreX + 50, (int) scoreY + 90, delta);
         String scoreText = String.format("Score: %01d", scoreBoard.scoreActual);
         font.draw(batch, scoreText, 550, 290);
 
