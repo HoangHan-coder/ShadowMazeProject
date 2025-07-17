@@ -1,6 +1,7 @@
 package com.ShadowMaze.render;
 
 import com.ShadowMaze.model.FadeTransitionScreen;
+import com.ShadowMaze.screen.AboutUs;
 import com.ShadowMaze.screen.GameOverHandler;
 import com.ShadowMaze.screen.GameScreen;
 import com.ShadowMaze.screen.HowToPlayScreen;
@@ -88,6 +89,19 @@ public class MenuRenderer implements Screen {
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 Screen current = game.getScreen();
                 Screen next = new HowToPlayScreen(game);
+                game.setScreen(new FadeTransitionScreen(game, current, next));
+            }
+        });
+       optionsButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Screen current = game.getScreen();
+                Screen next = new AboutUs(game);
                 game.setScreen(new FadeTransitionScreen(game, current, next));
             }
         });

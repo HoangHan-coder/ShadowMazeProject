@@ -16,42 +16,52 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-public class GameOverHandler {
+/**
+ * Handles the Victory screen display and interactions when the player wins the game.
+ */
+public class GameVictoryHandler {
 
-    private Texture gameOverImage;
-    private Texture scorePanelImage;
-    private BitmapFont font;
-    private BitmapFont totalCore;
-    private float gameOverTime;
-    private boolean active;
+    private Texture victoryImage;          // Victory banner image
+    private Texture scorePanelImage;       // Scoreboard panel image
+    private BitmapFont font;               // Font for text display
+    private float victoryTime;             // Tracks elapsed time since victory screen triggered
+    private boolean active;                // Indicates if the victory screen is active
 
-    private final ImageButton btnReplay;
-    private final ImageButton btnQuit;
+    private final ImageButton btnReplay;   // Replay button
+    private final ImageButton btnQuit;     // Quit button
 
-    private final ScoreBoard scoreBoard;
-    private final Game game;
-    private GameScreen gs;
-    public GameOverHandler(GameScreen gs, ScoreBoard scoreBoard) {
-        gameOverImage = new Texture(Gdx.files.internal("menu/function/over.png"));
+    private final ScoreBoard scoreBoard;   // Scoreboard reference
+    private final Game game;               // Main game instance
+    private final GameScreen gs;           // Reference to GameScreen for UI and data
+
+    public GameVictoryHandler(GameScreen gs) {
+        // Load images
+        victoryImage = new Texture(Gdx.files.internal("menu/function/you_win.png"));
         scorePanelImage = new Texture(Gdx.files.internal("menu/function/score.png"));
+
+        // Initialize font
         font = new BitmapFont();
         font.setColor(Color.WHITE);
         font.getData().setScale(2);
 
+        // Reference main components
         scoreBoard = gs.scoreBoard;
-        this.scoreBoard = scoreBoard;
         game = (Game) Gdx.app.getApplicationListener();
+        this.gs = gs;
 
         // Buttons
-        Texture btnReplayTex = new Texture(Gdx.files.internal("menu/function/replaynew.png"));
+        Texture btnReplayTex = new Texture(Gdx.files.internal("menu/function/new.png"));
         Texture btnQuitTex = new Texture(Gdx.files.internal("menu/function/quitnew.png"));
 
+        // Replay button style
         ImageButton.ImageButtonStyle styleReplay = new ImageButton.ImageButtonStyle();
         styleReplay.imageUp = new TextureRegionDrawable(new TextureRegion(btnReplayTex));
 
+        // Quit button style
         ImageButton.ImageButtonStyle styleQuit = new ImageButton.ImageButtonStyle();
         styleQuit.imageUp = new TextureRegionDrawable(new TextureRegion(btnQuitTex));
 
+        // Create buttons
         btnReplay = new ImageButton(styleReplay);
         btnReplay.setSize(150, 60);
         btnReplay.setPosition(440, 130);
@@ -60,8 +70,9 @@ public class GameOverHandler {
         btnQuit.setSize(150, 60);
         btnQuit.setPosition(620, 130);
 
-        // Events
+        // Button events
         btnReplay.addListener(new ClickListener() {
+            @Override
             public void clicked(InputEvent event, float x, float y) {
                 reset();
                 Screen current = game.getScreen();
@@ -71,60 +82,77 @@ public class GameOverHandler {
         });
 
         btnQuit.addListener(new ClickListener() {
+            @Override
             public void clicked(InputEvent event, float x, float y) {
                 Screen current = game.getScreen();
                 Screen next = new MainMenuScreen(game);
                 game.setScreen(new FadeTransitionScreen(game, current, next));
             }
         });
-        this.gs = gs;
     }
 
+    /** Activates the victory screen */
     public void trigger() {
         this.active = true;
-        this.gameOverTime = 0;
+        this.victoryTime = 0;
     }
 
+    /** Resets the victory state and scoreboard */
     public void reset() {
         this.active = false;
-        this.gameOverTime = 0;
+        this.victoryTime = 0;
         scoreBoard.reset();
     }
 
+    /** Returns whether the victory screen is active
+     * @return  */
     public boolean isActive() {
         return active;
     }
 
+    /** Updates internal timer when active
+     * @param delta */
     public void update(float delta) {
         if (active) {
-            gameOverTime += delta;
+            victoryTime += delta;
         }
     }
 
+    /**
+     * Renders the victory screen components
+     * @param batch SpriteBatch for drawing
+     * @param screenWidth Width of the screen
+     * @param screenHeight Height of the screen
+     * @param delta Frame delta time
+     */
     public void render(SpriteBatch batch, int screenWidth, int screenHeight, float delta) {
         float imageWidth = 300, imageHeight = 300;
         float scoreWidth = 400, scoreHeight = 400;
         float scoreX = (screenWidth - scoreWidth) / 2f;
         float scoreY = (screenHeight - scoreHeight) / 2f - 100;
 
+        // Draw panel and victory image
         batch.draw(scorePanelImage, 405, 105, scoreWidth, scoreHeight);
-        batch.draw(gameOverImage, 460, 300, imageWidth, imageHeight);
-        String scoreText = String.format("Score: %01d", scoreBoard.scoreActual);
-        font.draw(batch, scoreText, 550, 290);
+        batch.draw(victoryImage, 440, 230, imageWidth, imageHeight);
 
-        // Draw time (e.g. 00:10 format)
-        int seconds = (int) gameOverTime;
-        String timeText = String.format("Time: %02d:%02d", gs.ui.min,gs.ui.second);
+        // Render score board
+        scoreBoard.render(batch, (int) scoreX + 50, (int) scoreY + 90, delta);
+
+        // Display time in format mm:ss
+        String timeText = String.format("Time: %02d:%02d", gs.ui.min, gs.ui.second);
         font.draw(batch, timeText, 530, 240);
     }
 
+    /** Adds buttons to the stage for input handling
+     * @param stage */
     public void addToStage(Stage stage) {
         stage.addActor(btnReplay);
         stage.addActor(btnQuit);
     }
 
+    /** Disposes resources */
     public void dispose() {
-        gameOverImage.dispose();
+        victoryImage.dispose();
         scorePanelImage.dispose();
         font.dispose();
     }
@@ -140,5 +168,4 @@ public class GameOverHandler {
     public ImageButton getQuitButton() {
         return btnQuit;
     }
-
 }
