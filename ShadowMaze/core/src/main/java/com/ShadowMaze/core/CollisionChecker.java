@@ -200,7 +200,6 @@ public class CollisionChecker {
                     System.out.println("you die!");
                     entity.setImage(new Texture("knight/knight_dead.png"));
                     entity.isDead = true;
-                    // ??t c? game over
                 }
             }
         }
@@ -244,7 +243,7 @@ public class CollisionChecker {
                     if (enemy.isDead()) {
                         float oldX = enemy.mapX;
                         float oldY = enemy.mapY;
-                        gs.obj[i] = new OBJ_Coin(oldX, oldY); // Thay quái b?ng coin
+                        gs.obj[i] = new OBJ_Coin(oldX, oldY); // Thay quï¿½i b?ng coin
                         System.out.println("? Enemy died and dropped a coin!");
                     } else {
                         System.out.println("? Enemy hit, but still alive!");

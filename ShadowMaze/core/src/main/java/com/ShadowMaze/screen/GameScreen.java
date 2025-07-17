@@ -21,11 +21,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -186,16 +181,11 @@ public class GameScreen implements Screen {
             return;
         }
 
-        if (isGameOver) {
-//            System.out.println(gameOverHandler.isTriggered());
-            if (isGameOver) {
-                gameOverHandler.trigger(stage);
-                gameOverHandler.isSetTriggered();
-            }
-
+        if (isGameOver || knight.isDead) {
+            gameOverHandler.trigger(stage);
+        
             gameOverHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
-
             batch.begin();
             map.drawMap();
 
