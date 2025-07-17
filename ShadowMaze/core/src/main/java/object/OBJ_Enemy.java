@@ -29,7 +29,7 @@ public class OBJ_Enemy extends SuperObject {
     // --- Animation state ---
     private Animation<TextureRegion> animation;  // Active animation used this frame
     private float stateTime = 0f;                // Time accumulator for animation playback
-    private Array<Texture> frames = new Array<>(); // Raw textures for disposal
+    private final Array<Texture> frames = new Array<>(); // Raw textures for disposal
 
     // Visual scale for drawing (all directional animations scaled the same)
     private float scale = 3f;
@@ -41,7 +41,9 @@ public class OBJ_Enemy extends SuperObject {
     private int direction = 1;
 
     // Movement speed in pixels/second
-    private float speed = 50f;
+    private final float normalSpeed = 50f;  // Base movement speed when idle or patrolling
+    private final float chaseSpeed = 100f;   // Increased movement speed when chasing the Knight
+    private float speed = normalSpeed; // Current movement speed applied to the enemy
 
     // Timers for throttling random re‑steering when idle
     private float moveTimer = 0f;
@@ -70,7 +72,7 @@ public class OBJ_Enemy extends SuperObject {
     private static final float TILE_CENTER_EPS = 4f;
 
     // Behavior weighting: probability of choosing tile that reduces distance to Knight
-    private static final float CHASE_BIAS_CHASE = 0.9f; // when near Knight
+    private static final float CHASE_BIAS_CHASE = 1f; // when near Knight
     private static final float CHASE_BIAS_IDLE  = 0.5f; // when roaming
     private float chaseBias = CHASE_BIAS_IDLE;          // current bias applied
 
@@ -337,8 +339,8 @@ public class OBJ_Enemy extends SuperObject {
     }
 
     /**
-     * Draws the animated enemy on the screen if it's within the visible camera bounds.
-     * Converts world (mapX/mapY) to screen using Knight's camera origin (renderX/renderY).
+     * Draws the animated enemy on the screen if it's within the visible camera bounds.Converts world (mapX/mapY) to screen using Knight's camera origin (renderX/renderY).
+     * @param screen
      */
     public void drawMonster(GameScreen screen) {
         // Advance animation
@@ -377,14 +379,25 @@ public class OBJ_Enemy extends SuperObject {
         enemyHalfW  = enemyWidth / 2f;
         enemyHalfH  = enemyHeight / 2f;
 
-        // Compute tile distance to Knight
-        int knightTileX = (int)(gs.knight.positionX / GameScreen.TILE_SIZE);
-        int knightTileY = (int)(gs.knight.positionY / GameScreen.TILE_SIZE);
-        updateCurrentTile();
-        float distTile = Math.abs(knightTileX - curTileX) + Math.abs(knightTileY - curTileY);
+//        // Compute tile distance to Knight
+//        int knightTileX = (int)(gs.knight.positionX / GameScreen.TILE_SIZE);
+//        int knightTileY = (int)(gs.knight.positionY / GameScreen.TILE_SIZE);
+//        updateCurrentTile();
+//        float distTile = Math.abs(knightTileX - curTileX) + Math.abs(knightTileY - curTileY);
+//
+//        // Within chase radius? (3 tiles)
+//        boolean isChasing = distTile <= 3;
 
-        // Within chase radius? (3 tiles)
-        boolean isChasing = distTile <= 3;
+        // Calculate the distance between enemy and the Knight
+        float knightX = gs.knight.positionX;
+        float knightY = gs.knight.positionY;
+        float distance = Vector2.dst(mapX, mapY, knightX, knightY);
+
+        // Determine if the enemy should start chasing the Knight (within 3 tiles)
+        boolean isChasing = distance < GameScreen.TILE_SIZE * 3;
+
+        // Update speed based on current state: chasing or idle
+        speed = isChasing ? chaseSpeed : normalSpeed;
 
         // Need new steering decision?
         if (!hasTargetTile || reachedTargetTile() || (!isChasing && moveTimer >= moveInterval)) {
@@ -401,7 +414,8 @@ public class OBJ_Enemy extends SuperObject {
     // ------------------------------------------------------------------------
 
     /**
-     * Apply damage; logs HP after hit. Death handled by isDead().
+     * Apply damage; logs HP after hit.Death handled by isDead().
+     * @param amount
      */
     public void takeDamage(int amount) {
         if (!isDead()) {
@@ -412,6 +426,7 @@ public class OBJ_Enemy extends SuperObject {
 
     /**
      * Returns true if HP has reached zero (or below).
+     * @return 
      */
     public boolean isDead() {
         return hp <= 0;
