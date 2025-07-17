@@ -49,7 +49,6 @@ public class Map {
     private boolean showBackground = false;
     private String mapPath = "maps/map_02.txt"; // Default current map path (used to track which map is active)
 
-
     /**
      * Constructor for Map. Initializes tiles and loads map from file.
      *

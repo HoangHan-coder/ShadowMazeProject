@@ -111,7 +111,6 @@ public class Knight extends Entity {
         // set start map 2 position
 //        positionX = 70 * GameScreen.TILE_SIZE;
 //        positionY = 43 * GameScreen.TILE_SIZE;
-
         // Stamina drain and regen rates
         staminaDrainRate = 30f;
 
@@ -411,6 +410,7 @@ public class Knight extends Entity {
                         countOpenChest++;
                         gs.obj[indexOfObject].isOpened = true;
                         gs.obj[indexOfObject].image = new Texture("Object/cave_exit_open.png");
+                        setPosition(70 * GameScreen.TILE_SIZE, 43 * GameScreen.TILE_SIZE);
                     }
                 }
 
@@ -487,4 +487,21 @@ public class Knight extends Entity {
     public Direction getLastMoveDirection() {
         return lastMoveDirection;
     }
+
+    public int getPositionX() {
+        return positionX;
+    }
+
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
+    }
+
+    public int getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
+    }
+
 }

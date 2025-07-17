@@ -30,8 +30,8 @@ public class GameOverHandler {
 
     private final ScoreBoard scoreBoard;
     private final Game game;
-    private final GameScreen gs;
-    public GameOverHandler(GameScreen gs) {
+    private GameScreen gs;
+    public GameOverHandler(GameScreen gs, ScoreBoard scoreBoard) {
         gameOverImage = new Texture(Gdx.files.internal("menu/function/over.png"));
         scorePanelImage = new Texture(Gdx.files.internal("menu/function/score.png"));
         font = new BitmapFont();
@@ -39,6 +39,7 @@ public class GameOverHandler {
         font.getData().setScale(2);
 
         scoreBoard = gs.scoreBoard;
+        this.scoreBoard = scoreBoard;
         game = (Game) Gdx.app.getApplicationListener();
 
         // Buttons
@@ -109,11 +110,12 @@ public class GameOverHandler {
         batch.draw(scorePanelImage, 405, 105, scoreWidth, scoreHeight);
         batch.draw(gameOverImage, 460, 300, imageWidth, imageHeight);
         scoreBoard.render(batch, (int) scoreX + 50, (int) scoreY + 90, delta);
+        String scoreText = String.format("Score: %01d", scoreBoard.scoreActual);
+        font.draw(batch, scoreText, 550, 290);
 
         // Draw time (e.g. 00:10 format)
         int seconds = (int) gameOverTime;
         String timeText = String.format("Time: %02d:%02d", gs.ui.min,gs.ui.second);
-        System.out.println(gs.ui.min);
         font.draw(batch, timeText, 530, 240);
     }
 

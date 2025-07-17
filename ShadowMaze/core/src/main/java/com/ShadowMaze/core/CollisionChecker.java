@@ -237,21 +237,22 @@ public class CollisionChecker {
 
                 // Check for collision between the fireball and the enemy
                 if (fireballArea.overlaps(enemyArea)) {
-                    // L?u v? trí quái c?
-                    float oldX = obj.mapX;
-                    float oldY = obj.mapY;
-                    // Remove the enemy by setting its object reference to null
-                    gs.obj[i] = new OBJ_Coin(oldX, oldY);
-
-                    // Deactivate the fireball after a successful hit
+                    OBJ_Enemy enemy = (OBJ_Enemy) gs.obj[i];
+                    enemy.takeDamage(25);
                     fireball.deactivate();
 
-                    // Print confirmation for debugging
-                    System.out.println("? Enemy hit and removed!");
+                    if (enemy.isDead()) {
+                        float oldX = enemy.mapX;
+                        float oldY = enemy.mapY;
+                        gs.obj[i] = new OBJ_Coin(oldX, oldY); // Thay quái b?ng coin
+                        System.out.println("? Enemy died and dropped a coin!");
+                    } else {
+                        System.out.println("? Enemy hit, but still alive!");
+                    }
 
-                    // Exit the loop after the first collision detected
                     break;
                 }
+
             }
         }
     }

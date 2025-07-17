@@ -128,7 +128,7 @@ public class GameScreen implements Screen {
         hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
         cCheck = new CollisionChecker(this);
         knight = new Knight(this, hpBar);
-        spawnEnemiesFromWalkableTiles(map, 4); // Spawn 4 enemy
+        spawnEnemiesFromWalkableTiles(map, 20); // Spawn 4 enemy
 
 //        cCheck = new CollisionChecker(this);
         // Initialize player
@@ -142,8 +142,8 @@ public class GameScreen implements Screen {
         Fireball fb = new Fireball(knight.getPosition(), knight.getDirection());
         fb.setMapSize(MAP_X, MAP_Y);
         fireball.add(fb);
-        gameOverHandler = new GameOverHandler(this);
         gameVictoryHandler = new GameVictoryHandler(this);
+        gameOverHandler = new GameOverHandler(this, scoreBoard);
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
@@ -173,59 +173,6 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * Checks if the knight is close enough to any enemy object. If a collision
-     * is detected (within half tile size), the game switches to a battle
-     * screen.
-     */
-    private void checkGateCollisionAndChangeMap() {
-//        for (SuperObject object : obj) {
-//            if (object instanceof object.OBJ_CaveExit) {
-//                float dx = knight.getPositionX() - object.mapX;                    // Calculate horizontal distance from player to gate
-//                float dy = knight.getPositionY() - object.mapY;                    // Calculate vertical distance from player to gate
-//                float distance = (float) Math.sqrt(dx * dx + dy * dy);            // Calculate Euclidean distance to gate
-//
-//                if (distance < TILE_SIZE / 1f) {                                   // If player is close enough to the gate
-//                    String currentMap = map.getMapPath();                         // Get current map path (must be set in changeMap)
-////                    String nextMap = "";                                          // Target map to switch to
-//                    int spawnX = 3 * TILE_SIZE;                                   // Default spawn X after switching map
-//                    int spawnY = 3 * TILE_SIZE;                                   // Default spawn Y after switching map
-//
-//                    System.out.println("Current map: " + currentMap);
-//                    System.out.println("Knight position: ("
-//                            + knight.getPositionX() / TILE_SIZE + ", "
-//                            + knight.getPositionY() / TILE_SIZE + ")");
-//
-//                    // Determine the next map based on current map
-//                    if (currentMap.equals("maps/map_01.txt")) {
-////                        nextMap = "maps/map_03.txt";                              // From map 1 ? map 3
-//                        spawnX = 3 * TILE_SIZE;
-//                        spawnY = 3 * TILE_SIZE;
-//                    } else if (currentMap.equals("maps/map_02.txt")) {
-////                        nextMap = "maps/map_01.txt";                              // From map 2 ? map 1
-//                        spawnX = 1 * TILE_SIZE;
-//                        spawnY = 5 * TILE_SIZE;
-//                    } else if (currentMap.equals("maps/map_03.txt")) {
-//                        nextMap = "maps/map_01.txt";                              // From map 3 ? map 1
-//                        spawnX = 5 * TILE_SIZE;
-//                        spawnY = 5 * TILE_SIZE;
-//                    }
-//
-//                    // Switch to new map if valid
-//                    if (!nextMap.isEmpty()) {
-//                        System.out.println("Switching to: " + nextMap);
-//                        map.changeMap(nextMap);                                   // Change to the new map
-//                        knight.setPosition(spawnX, spawnY);                       // Move player to the new spawn location
-//                        aSetter.setObject();                                      // Reset objects on the new map
-//                        spawnEnemiesFromWalkableTiles(map, 4);                    // Respawn enemies
-//                    }
-//
-//                    break; // Stop checking after the first gate collision
-//                }
-//            }
-//        }
-    }
-
     @Override
     public void render(float delta) {
         // === Handle paused state (e.g., menu, cutscene) ===
@@ -240,7 +187,7 @@ public class GameScreen implements Screen {
             stage.draw();                 // Render UI
             return;
         }
-        knight.movementHandle(delta); 
+        
         if (isGameOver) {
             gameOverHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
@@ -268,7 +215,7 @@ public class GameScreen implements Screen {
             stage.draw();
             return;
         }
-
+knight.movementHandle(delta); 
         // === UPDATE PHASE ===
         knight.inputHandle(delta);
         knight.update(delta);
@@ -288,8 +235,6 @@ public class GameScreen implements Screen {
                 it.remove(); // Remove n?u ?� h?t hi?u l?c
             }
         }
-
-        checkGateCollisionAndChangeMap();  // Handle map transition if near gate
 
         hpBar.update(delta);  // Update knight HP bar
         // Nếu staminaBar cần update animation, bạn có thể g�?i thêm update ở đây (nếu có)
