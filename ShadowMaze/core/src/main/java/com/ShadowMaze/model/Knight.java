@@ -23,8 +23,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import java.util.ArrayList;
-import object.OBJ_CaveExit;
 
 /**
  * The Knight class represents the main player character in the game. It handles
@@ -40,9 +38,9 @@ public class Knight extends Entity {
     // Key possession state
     public int hasKey;
     private Array<Sword> skills = new Array<>();
-    public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
-    public int baseSpeed = 5;          // T?c ?? ?i b?
-    private boolean hasFired = false; // ?� b?n k? n?ng ch?a?
+    public boolean isRunning = false;  
+    public int baseSpeed = 5;         
+    private boolean hasFired = false; 
     // Movement and stamina management
     public final int runSpeed = 18;
     private float staminaDrainRate;
@@ -55,6 +53,7 @@ public class Knight extends Entity {
     public boolean hasScrollFire;
     public boolean hasScrollIce;
     public boolean hasScrollThunder;
+    public int countOpenChest = 0;
     //skill
     public Fireball currentFireball;
 
@@ -372,6 +371,10 @@ public class Knight extends Entity {
                     System.out.println("You die!");
                 }
                 case "ScollFireChest" -> {
+                    if(!gs.obj[indexOfObject].isOpened) {
+                        gs.scoreBoard.addScore(14);
+                        countOpenChest++;
+                    }
                     hasScrollFire = true;
                     System.out.println("You get a scoll-Fire!");
                     gs.obj[11].image = new Texture("Object/fire_gem.png");
@@ -380,6 +383,10 @@ public class Knight extends Entity {
                     gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
                 }
                 case "ScollIceChest" -> {
+                    if(!gs.obj[indexOfObject].isOpened) {
+                        gs.scoreBoard.addScore(14);
+                        countOpenChest++;
+                    }
                     hasScrollIce = true;
                     System.out.println("You get a scoll-Ice!");
                     gs.obj[12].image = new Texture("Object/aqua_gem.png");
@@ -388,6 +395,10 @@ public class Knight extends Entity {
                     gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
                 }
                 case "ScollThunderChest" -> {
+                    if(!gs.obj[indexOfObject].isOpened) {
+                        gs.scoreBoard.addScore(14);
+                        countOpenChest++;
+                    }
                     hasScrollThunder = true;
                     System.out.println("You get a scoll-Thunder!");
                     gs.obj[13].image = new Texture("Object/thunder_gem.png");
@@ -396,11 +407,13 @@ public class Knight extends Entity {
                     gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
                 }
                 case "Cave exit" -> {
-                    if (hasScrollFire && hasScrollIce && hasScrollThunder) {
+                    if (countOpenChest == 3 || countOpenChest == 7) {
+                        countOpenChest++;
                         gs.obj[indexOfObject].isOpened = true;
                         gs.obj[indexOfObject].image = new Texture("Object/cave_exit_open.png");
                     }
                 }
+
             }
 
         }

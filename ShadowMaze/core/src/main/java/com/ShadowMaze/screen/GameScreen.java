@@ -81,6 +81,7 @@ public class GameScreen implements Screen {
     public Array<Fireball> fireball = new Array<>();
     public boolean isGameOver = false;
     private GameOverHandler gameOverHandler;
+    private GameVictoryHandler gameVictoryHandler;
 
     /**
      * Constructor that sets up the main batch and stores game reference.
@@ -142,6 +143,7 @@ public class GameScreen implements Screen {
         fb.setMapSize(MAP_X, MAP_Y);
         fireball.add(fb);
         gameOverHandler = new GameOverHandler(this);
+        gameVictoryHandler = new GameVictoryHandler(this);
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
@@ -238,16 +240,30 @@ public class GameScreen implements Screen {
             stage.draw();                 // Render UI
             return;
         }
-        knight.movementHandle(delta); // g?i hàm x? lý di chuy?n và va ch?m
+        knight.movementHandle(delta); 
         if (isGameOver) {
             gameOverHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
 
             batch.begin();
             map.drawMap();
-            gameOverHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT);
+            gameOverHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT, delta);
             batch.end();
             gameOverHandler.addToStage(stage);
+            stage.act(delta);
+            stage.draw();
+            return;
+        }
+        
+        if (knight.countOpenChest == 7) {
+            gameVictoryHandler.update(delta);
+            ScreenUtils.clear(0, 0, 0, 1);
+
+            batch.begin();
+            map.drawMap();
+            gameVictoryHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT, delta);
+            batch.end();
+            gameVictoryHandler.addToStage(stage);
             stage.act(delta);
             stage.draw();
             return;
@@ -300,7 +316,7 @@ public class GameScreen implements Screen {
         }
 
         // Draw scoreboard
-        scoreBoard.render(batch, 30, 650);
+        scoreBoard.render(batch, 30, 650, delta);
         ui.render(delta);
         batch.end();
 

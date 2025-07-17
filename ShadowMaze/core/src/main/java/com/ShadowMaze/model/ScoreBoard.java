@@ -4,29 +4,30 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 public class ScoreBoard {
 
-    private int score;
-    private BitmapFont font;
+    
+    private float scoreDisplay = 0;
+    private final float speed = 25f;
+    private int scoreActual;
+    private final BitmapFont font;
     private Texture bgTexture;
 
-    private Array<Texture> iconFrames = new Array<>();
+    private final Array<Texture> iconFrames = new Array<>();
     private float animationTimer = 0f;
-    private float frameDuration = 0.07f; // m?i frame 0.07s
+    private final float frameDuration = 0.07f; 
     private int currentFrameIndex = 0;
 
     public ScoreBoard() {
-        score = 0;
+        scoreActual = 0;
         font = new BitmapFont();
         font.setColor(Color.WHITE);
         font.getData().setScale(2.2f);
 
-        // Qu�t th? m?c ui/score/ v� th�m c�c file .png
         FileHandle dirHandle = Gdx.files.internal("score/");
         for (FileHandle file : dirHandle.list()) {
             if (file.name().toLowerCase().endsWith(".png")) {
@@ -34,26 +35,34 @@ public class ScoreBoard {
             }
         }
 
-        // N?u kh�ng c� ?nh n�o -> th�m ?nh m?c ??nh ?? tr�nh l?i
         if (iconFrames.size == 0) {
             iconFrames.add(new Texture("ui/score/coin.png")); // fallback
         }
     }
 
     public void addScore(int amount) {
-        score += amount;
+        scoreActual += amount;            
     }
 
-    public int getScore() {
-        return score;
+    public void update(float delta) {
+        if (scoreDisplay < scoreActual) {
+            scoreDisplay += speed * delta;
+            if (scoreDisplay > scoreActual) {
+                scoreDisplay = scoreActual;
+            }
+        }
+    }
+    
+      public int getDisplayScore() {
+        return (int)scoreDisplay;
     }
 
     public void reset() {
-        this.score = 0;
+        this.scoreActual = 0;
     }
 
-    public void render(SpriteBatch batch, float x, float y) {
-        // C?p nh?t animation
+    public void render(SpriteBatch batch, float x, float y, float delta) {
+        update(delta);
         animationTimer += Gdx.graphics.getDeltaTime();
         if (animationTimer >= frameDuration) {
             animationTimer = 0f;
@@ -64,8 +73,8 @@ public class ScoreBoard {
         int VisitX = 70;
         int VisitY = 600;
         batch.draw(currentIcon, VisitX, VisitY, 32, 32);
-        font.draw(batch, String.valueOf(score), VisitX + 60, VisitY + 28);
-        font.draw(batch, "Score: " + score, x + 50, y + 35);
+        font.draw(batch, String.valueOf(getDisplayScore()), VisitX + 60, VisitY + 28);
+        font.draw(batch, "Score: " + scoreActual, x + 50, y + 35);
     }
 
     public void dispose() {
