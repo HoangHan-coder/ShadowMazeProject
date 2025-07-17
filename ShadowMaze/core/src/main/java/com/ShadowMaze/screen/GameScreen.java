@@ -127,7 +127,7 @@ public class GameScreen implements Screen {
         hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
         cCheck = new CollisionChecker(this);
         knight = new Knight(this, hpBar);
-        spawnEnemiesFromWalkableTiles(map, 4); // Spawn 4 enemy
+        spawnEnemiesFromWalkableTiles(map, 20); // Spawn 4 enemy
 
 //        cCheck = new CollisionChecker(this);
         // Initialize player
@@ -141,7 +141,7 @@ public class GameScreen implements Screen {
         Fireball fb = new Fireball(knight.getPosition(), knight.getDirection());
         fb.setMapSize(MAP_X, MAP_Y);
         fireball.add(fb);
-        gameOverHandler = new GameOverHandler(this);
+        gameOverHandler = new GameOverHandler(this, scoreBoard);
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {

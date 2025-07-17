@@ -25,7 +25,7 @@ public class OBJ_Enemy extends SuperObject {
     private float speed = 50f;
     private float moveTimer = 0f;
     private float moveInterval = 0.1f;
-    public int hp = 100;
+    public int hp = 125;
     private Animation<TextureRegion> animUp;
     private Animation<TextureRegion> animDown;
     private Animation<TextureRegion> animLeft;
@@ -244,6 +244,16 @@ public class OBJ_Enemy extends SuperObject {
             // If there are valid directions, choose one randomly
             if (possibleDirections.size > 0) {
                 direction = possibleDirections.random();
+            }
+        }
+    }
+
+    public void takeDamage(int amount) {
+        if (!isDead()) {
+            hp -= amount;
+            System.out.println("Enemy takes " + amount + " damage. HP: " + hp);
+            if (hp <= 0) {
+                isDead();
             }
         }
     }
