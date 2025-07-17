@@ -3,6 +3,7 @@ package com.ShadowMaze.screen;
 import com.ShadowMaze.core.AssetSetter;
 import com.ShadowMaze.core.CollisionChecker;
 import com.ShadowMaze.model.Entity.Direction;
+import com.ShadowMaze.model.FadeTransitionScreen;
 import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.model.Map;
 import com.ShadowMaze.model.ScoreBoard;
@@ -11,25 +12,24 @@ import com.ShadowMaze.render.MirrorRenderer;
 import com.ShadowMaze.skill.Fireball;
 import com.badlogic.gdx.*;
 import object.SuperObject;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import object.OBJ_Enemy;
 import com.ShadowMaze.uis.HpBar;
 import com.ShadowMaze.uis.StaminaBar;
+import com.ShadowMaze.uis.UI;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 
 /**
  * GameScreen is the main screen for rendering gameplay, UI, and handling core
@@ -51,7 +51,7 @@ public class GameScreen implements Screen {
 
     // Map setting
     public static final int MAP_X = 121;
-    public static final int MAP_Y = 83;
+    public static final int MAP_Y = 83 * 2;
     public static final int MAP_WIDTH = MAP_X * TILE_SIZE;
     public static final int MAP_HEIGHT = MAP_Y * TILE_SIZE;
 
@@ -61,9 +61,11 @@ public class GameScreen implements Screen {
 //    private int[][] maze = new int[MAX_SCREEN_ROW][MAX_SCREEN_COL];
 //    private int offsetX, offsetY;
 
+    // Sytem
     public Map map;
     public CollisionChecker cCheck;
-    public SuperObject[] obj = new SuperObject[10];
+    public UI ui = new UI(this);
+    public SuperObject[] obj = new SuperObject[50];
     public AssetSetter aSetter = new AssetSetter(this);
     public Knight knight;
     private StaminaBar staminaBar;
@@ -73,12 +75,10 @@ public class GameScreen implements Screen {
     private boolean isPaused = false;
     private HpBar hpBar;
     private Array<Sword> fireSkill = new Array<>();
-
-    private Array<Fireball> fireballs = new Array<>();
-    private Fireball currentFireball;
-    private boolean wasEPressedLastFrame = false;
-    private boolean isSkillAvailable = true;
-    private ScoreBoard scoreBoard;
+    public ScoreBoard scoreBoard;
+    public Array<Fireball> fireball = new Array<>();
+    public boolean isGameOver = false;
+    private GameOverHandler gameOverHandler;
 
     /**
      * Constructor that sets up the main batch and stores game reference.
@@ -125,32 +125,29 @@ public class GameScreen implements Screen {
         hpBar = new HpBar(170, 30, 200, 20, 100, hpBg, hpFill);
         cCheck = new CollisionChecker(this);
         knight = new Knight(this, hpBar);
-        spawnEnemiesFromWalkableTiles(map, 4); // Spawn 4 enemy
-
-        map = new Map(this, game);
-
+        spawnEnemiesFromWalkableTiles(map, 20); // Spawn 4 enemy
 
 //        cCheck = new CollisionChecker(this);
         // Initialize player
-        stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        map = new Map(this, game);
         map.createButtons(stage);
         shapeRenderer = new ShapeRenderer();
         // Center the maze if needed
 //        offsetX = 0; // Set to (SCREEN_WIDTH - MAX_SCREEN_COL * TILE_SIZE) / 2 if centered rendering is needed
 //        offsetY = 0;
         scoreBoard = new ScoreBoard();
+        Fireball fb = new Fireball(knight.getPosition(), knight.getDirection());
+        fb.setMapSize(MAP_X, MAP_Y);
+        fireball.add(fb);
+        gameOverHandler = new GameOverHandler(this, scoreBoard);
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
-        Random random = new Random();
         int mapHeight = map.tileNum.length;
         int mapWidth = map.tileNum[0].length;
 
         Array<int[]> walkableTiles = new Array<>();
 
-        // L?c � ?i ???c
         for (int y = 0; y < mapHeight; y++) {
             for (int x = 0; x < mapWidth; x++) {
                 if (map.tileNum[y][x] == 1) {
@@ -161,7 +158,7 @@ public class GameScreen implements Screen {
 
         int placed = 0;
         for (int i = 0; i < obj.length && placed < numEnemies; i++) {
-            if (obj[i] == null) { 
+            if (obj[i] == null) {
                 int[] tile = walkableTiles.random();
                 OBJ_Enemy enemy = new OBJ_Enemy();
                 enemy.mapX = tile[0] * TILE_SIZE;
@@ -172,225 +169,101 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * Checks if the knight is close enough to any enemy object. If a collision
-     * is detected (within half tile size), the game switches to a battle
-     * screen.
-     */
-    private void checkGateCollisionAndChangeMap() {
-        for (SuperObject object : obj) {
-            if (object instanceof object.OBJ_CaveExit) {
-                float dx = knight.getPositionX() - object.mapX;                    // Calculate horizontal distance from player to gate
-                float dy = knight.getPositionY() - object.mapY;                    // Calculate vertical distance from player to gate
-                float distance = (float) Math.sqrt(dx * dx + dy * dy);            // Calculate Euclidean distance to gate
-
-                if (distance < TILE_SIZE / 1f) {                                   // If player is close enough to the gate
-                    String currentMap = map.getMapPath();                         // Get current map path (must be set in changeMap)
-                    String nextMap = "";                                          // Target map to switch to
-                    int spawnX = 3 * TILE_SIZE;                                   // Default spawn X after switching map
-                    int spawnY = 3 * TILE_SIZE;                                   // Default spawn Y after switching map
-
-                    System.out.println("Current map: " + currentMap);
-                    System.out.println("Knight position: ("
-                            + knight.getPositionX() / TILE_SIZE + ", "
-                            + knight.getPositionY() / TILE_SIZE + ")");
-
-                    // Determine the next map based on current map
-                    if (currentMap.equals("maps/map_01.txt")) {
-                        nextMap = "maps/map_03.txt";                              // From map 1 ? map 3
-                        spawnX = 3 * TILE_SIZE;
-                        spawnY = 3 * TILE_SIZE;
-                    } else if (currentMap.equals("maps/map_02.txt")) {
-                        nextMap = "maps/map_01.txt";                              // From map 2 ? map 1
-                        spawnX = 1 * TILE_SIZE;
-                        spawnY = 5 * TILE_SIZE;
-                    } else if (currentMap.equals("maps/map_03.txt")) {
-                        nextMap = "maps/map_01.txt";                              // From map 3 ? map 1
-                        spawnX = 5 * TILE_SIZE;
-                        spawnY = 5 * TILE_SIZE;
-                    }
-
-                    // Switch to new map if valid
-                    if (!nextMap.isEmpty()) {
-                        System.out.println("Switching to: " + nextMap);
-                        map.changeMap(nextMap);                                   // Change to the new map
-                        knight.setPosition(spawnX, spawnY);                       // Move player to the new spawn location
-                        aSetter.setObject();                                      // Reset objects on the new map
-                        spawnEnemiesFromWalkableTiles(map, 4);                    // Respawn enemies
-                    }
-
-                    break; // Stop checking after the first gate collision
-                }
-            }
-        }
-    }
-
-    /**
-     * Checks if the player (knight) is within a specified range of any enemy.
-     *
-     * @param range The maximum distance to check (in pixels).
-     * @return true if an enemy is within the given range, false otherwise.
-     */
-    public boolean isNearEnemy(float range) {
-        for (SuperObject object : obj) {
-            if (object instanceof OBJ_Enemy) {
-                OBJ_Enemy enemy = (OBJ_Enemy) object;
-
-                float dx = knight.getPositionX() - enemy.mapX;          // Horizontal distance between knight and enemy
-                float dy = knight.getPositionY() - enemy.mapY;          // Vertical distance between knight and enemy
-                float distance = (float) Math.sqrt(dx * dx + dy * dy);  // Calculate Euclidean distance
-
-                if (distance <= range) {                                // If enemy is within range, return true
-                    return true;
-                }
-            }
-        }
-        return false;                                                   // No enemy is within range
-    }
-
-    /**
-     * Called every frame to update game logic and render all components.
-     * Handles input, collision detection, rendering of map, player, objects,
-     * UI, and transitions to battle screen.
-     *
-     * @param delta Time in seconds since the last frame
-     */
     @Override
     public void render(float delta) {
-        // If the map is paused (e.g., in menu or cutscene), skip updates and only draw current frame
+        // === Handle paused state (e.g., menu, cutscene) ===
         if (map.isPaused()) {
-            ScreenUtils.clear(0, 0, 0, 1);  // Clear the screen to black
+            ScreenUtils.clear(0, 0, 0, 1);  // Clear screen
 
             batch.begin();
-            map.drawMap();                 // Draw only the map background
+            map.drawMap();                 // Draw background only
             batch.end();
 
-            stage.act(delta);              // Update UI stage actors (buttons, dialogs)
-            stage.draw();                  // Render the UI stage
-            return;                        // Exit render early
+            stage.act(delta);             // Update UI logic
+            stage.draw();                 // Render UI
+            return;
+        }
+        knight.movementHandle(delta); // g?i h�m x? l� di chuy?n v� va ch?m
+        if (isGameOver) {
+            gameOverHandler.update(delta);
+            ScreenUtils.clear(0, 0, 0, 1);
+
+            batch.begin();
+            map.drawMap();
+            gameOverHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT);
+            batch.end();
+            gameOverHandler.addToStage(stage);
+            stage.act(delta);
+            stage.draw();
+            return;
         }
 
-        // --- DRAW ---
-        batch.begin();
+        // === UPDATE PHASE ===
         knight.inputHandle(delta);
-
-        // Update knight's position, state, and physics (e.g., gravity, animation)
         knight.update(delta);
-        checkGateCollisionAndChangeMap();
-        hpBar.update(delta);
-        map.drawMap();
-
-        if (!map.isBackgroundOnly()) {
-            knight.knightRender(delta);
-        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            if (!wasEPressedLastFrame && isSkillAvailable) { 
-                Vector2 start = new Vector2(knight.positionX, knight.positionY);
-                Direction dir = knight.getDirection();
-                if (dir != Direction.IDLE) {
-                    Fireball fb = new Fireball();
-                    fb.setMapSize(map.getMapWidthPixels(), map.getMapHeightPixels());
-                    fb.activate(start, dir);
-                    fb.shoot();
-                    fireballs.add(fb);
-                    currentFireball = fb;
-
-                    isSkillAvailable = false; 
-                }
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null && obj[i] instanceof OBJ_Enemy enemy) {
+                enemy.update(Gdx.graphics.getDeltaTime(), this);
             }
-            wasEPressedLastFrame = true;
-        } else {
-            wasEPressedLastFrame = false;
         }
 
-
-        Iterator<Fireball> iterator = fireballs.iterator();
-        while (iterator.hasNext()) {
-            Fireball fireball = iterator.next();
+        for (Iterator<Fireball> it = fireball.iterator(); it.hasNext();) {
+            Fireball fireball = it.next();
             fireball.update(delta);
             if (fireball.isActive()) {
                 fireball.render(batch, knight.positionX, knight.positionY);
             } else {
-                iterator.remove(); 
-                isSkillAvailable = true; 
+                iterator.remove();
+                isSkillAvailable = true;
+                cCheck.checkFireballCollision(fireball); // G?I CHECK VA CH?M T?I ?�Y
+
+                if (!fireball.isActive()) {
+                    it.remove(); // Remove n?u ?� h?t hi?u l?c
+                }
             }
-        }
 
-        // Draw all objects
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i] != null) {
-                obj[i].drawObject(this);
+            checkGateCollisionAndChangeMap();  // Handle map transition if near gate
+
+            hpBar.update(delta);  // Update knight HP bar
+            // Nếu staminaBar cần update animation, bạn có thể g�?i thêm update ở đây (nếu có)
+
+            // === GAME RENDER PHASE ===
+            batch.begin();
+            for (Fireball fireball : fireball) {
+                fireball.render(batch, knight.getPositionX(), knight.getPositionY());
             }
-        }
 
-        batch.end();
-        hpBar.render(batch);
-        // Draw UI (stamina icon)
-        staminaBar.renderIcon(batch);
+            map.drawMap();  // Draw tile-based background
 
-        // Draw stage UI
-        batch.begin();
-
-        // Draw tile-based game map relative to player's position
-        // Only render player if the map is not in "background only" mode
-        // (e.g., when paused for dialog or event)
-        if (!map.isBackgroundOnly()) {
-            knight.knightRender(delta);
-        }
-
-        // Loop through all objects and render them if they exist
-        for (SuperObject obj1 : obj) {
-            if (obj1 != null) {
-                obj1.drawObject(this); // Draw the object using current screen context
+            // Draw all objects (including enemies, items, gates...)
+            for (int i = 0; i < obj.length; i++) {
+                if (obj[i] != null) {
+                    obj[i].drawObject(this);
+                }
             }
+
+            // Draw knight (once only)
+            if (!map.isBackgroundOnly()) {
+                knight.knightRender(delta);
+                System.out.println("position: (" + knight.positionX / TILE_SIZE + ", " + knight.positionY / TILE_SIZE + ")");
+            }
+
+            // Draw scoreboard
+            scoreBoard.render(batch, 30, 650);
+            ui.render(delta);
+            batch.end();
+
+            // === HUD & UI RENDER PHASE ===
+            // Apply same camera to shapeRenderer if needed
+            shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+
+            // HUD: render Knight's HP bar and Stamina icon
+            hpBar.render(batch);
+            staminaBar.renderIcon(batch);
+            // UI Stage: pause menu, dialogs, etc.
+            stage.act(delta);
+            stage.draw();
         }
-
-        // Render knight again (this seems redundant; might be intentional for layering)
-        knight.knightRender(delta);
-
-        // Debug output to console showing player's current tile coordinates
-//        System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
-
-        System.out.println("Player at: (" + knight.getPositionX() / TILE_SIZE + ", " + knight.getPositionY() / TILE_SIZE + ")");
-        scoreBoard.render(batch, 30, 650);
-        batch.end();  // Finish drawing sprites
-
-        // Apply same camera projection to shapeRenderer as SpriteBatch
-        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-
-        // Optional: render stamina bar as shapes (currently commented out)
-        // staminaBar.render(shapeRenderer);
-        // Update knight's HP bar (e.g., animations, transitions)
-        hpBar.update(delta);
-
-        // Begin new batch for UI rendering
-        hpBar.render(batch);               // Draw HP bar
-
-        staminaBar.renderIcon(batch);     // Draw stamina icon
-
-        // Update and draw UI stage (includes buttons, overlays, etc.)
-        stage.act(delta);
-        stage.draw();
-    }
-
-    /**
-     * Called when the screen is resized.
-     *
-     * @param width New width
-     * @param height New height
-     */
-    @Override
-    public void resize(int width, int height) {
-        // No resize behavior yet
-    }
-
-    /**
-     * Called when the game is paused.
-     */
-    @Override
-    public void pause() {
-        // No pause behavior implemented
     }
 
     /**
@@ -409,6 +282,16 @@ public class GameScreen implements Screen {
         // No hide behavior implemented
     }
 
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
     /**
      * Dispose all disposable assets to free memory.
      */
@@ -416,6 +299,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         batch.dispose();       // Dispose sprite batch
         knight.dispose();      // Dispose knight assets
+
         // Add more disposals as needed (e.g., textures, UI)
     }
 }

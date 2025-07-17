@@ -35,25 +35,19 @@ public class Map {
     public int[][] tileNum;            // 2D array storing tile indices
 
     // UI elements and textures
-    private Texture resumeUp, resumeDown;
-    private Texture optionsUp, optionsDown;
-    private Texture quitUp, quitDown, quitDisabled;
-    private Texture how;
+    private Texture resumeUp;
     private Table pauseMenuTable;
 
     // Pause state and background control
-    private boolean isPauseMenuVisible = false;
     private boolean isPaused = false;
 
     // Reference to main menu screen and game context
-    private MainMenuScreen screen;
     private Game game;
 
     // Optional background overlay
     private Texture backgroundImage;
     private boolean showBackground = false;
     private String mapPath = "maps/map_02.txt"; // Default current map path (used to track which map is active)
-
 
     /**
      * Constructor for Map. Initializes tiles and loads map from file.
@@ -66,7 +60,6 @@ public class Map {
         this.game = game;
         tiles = new Tile[10]; // Prepare 10 tile slots
         tileNum = new int[GameScreen.MAP_Y][GameScreen.MAP_X]; // Allocate map grid
-
         getImageTiles(); // Load tile textures
         loadMap();       // Load tile layout from file
     }
@@ -79,7 +72,7 @@ public class Map {
         try (BufferedReader reader = new BufferedReader(new FileReader("maps/map_02.txt"))) {
             String line;
             int row = 0;
-            while ((line = reader.readLine()) != null && row < GameScreen.MAP_X) {
+            while ((line = reader.readLine()) != null && row < GameScreen.MAP_Y) {
                 String[] tokens = line.trim().split(" ");
                 for (int col = 0; col < tokens.length && col < GameScreen.MAP_X; col++) {
                     tileNum[GameScreen.MAP_Y - 1 - row][col] = Integer.parseInt(tokens[col]);
@@ -97,7 +90,7 @@ public class Map {
     private void getImageTiles() {
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
-        // tiles[0].collision = true; // You can uncomment this if this tile blocks movement
+//         tiles[0].collision = true; // You can uncomment this if this tile blocks movement
 
         tiles[1] = new Tile();
         tiles[1].image = new Texture("tiles/grass.png");
@@ -153,8 +146,8 @@ public class Map {
                 int mapX = mapCol * GameScreen.TILE_SIZE;
                 int mapY = mapRow * GameScreen.TILE_SIZE;
 
-                int screenX = mapX - gs.knight.positionX + gs.knight.renderX;
-                int screenY = mapY - gs.knight.positionY + gs.knight.renderY;
+                float screenX = mapX - gs.knight.positionX + gs.knight.renderX;
+                float screenY = mapY - gs.knight.positionY + gs.knight.renderY;
 
                 // Only draw if tile is within screen bounds
                 if (mapX + GameScreen.TILE_SIZE > gs.knight.positionX - gs.knight.renderX

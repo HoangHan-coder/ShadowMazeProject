@@ -5,13 +5,10 @@
 package com.ShadowMaze.skill;
 
 import com.ShadowMaze.model.Entity;
-import com.ShadowMaze.model.Entity.Direction;
 import static com.ShadowMaze.model.Entity.Direction.DOWN;
 import static com.ShadowMaze.model.Entity.Direction.LEFT;
 import static com.ShadowMaze.model.Entity.Direction.RIGHT;
 import static com.ShadowMaze.model.Entity.Direction.UP;
-import com.ShadowMaze.model.Knight;
-import com.ShadowMaze.model.Map;
 import com.ShadowMaze.screen.GameScreen;
 import static com.ShadowMaze.screen.GameScreen.SCREEN_HEIGHT;
 import static com.ShadowMaze.screen.GameScreen.SCREEN_WIDTH;
@@ -19,7 +16,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import static com.badlogic.gdx.math.MathUtils.map;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -29,15 +25,15 @@ import com.badlogic.gdx.utils.Array;
  * direction. The fireball has animations, travels in 4 directions, and
  * disappears after a time or when out of bounds.
  */
-public class Fireball {
+public class Fireball extends Entity{
 
-    private Vector2 position; // Current position of the fireball
+    public Vector2 position; // Current position of the fireball
     private Vector2 velocity; // Directional velocity
-    private float speed = 300f;
+    private float speed = 200f;
 
     private boolean active = false;
     private float lifeTime = 0f;
-    private final float maxLifeTime = 2.0f;
+    private final float maxLifeTime = 0.5f;
     
     public Rectangle solidArea = new Rectangle(0, 0, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
     public float solidAreaDefaultX = 0;
@@ -129,31 +125,9 @@ public class Fireball {
 
         stateTime = 0f;
         this.active = true; // Must be active to update/render
+        loadAnimations();
     }
-
-    /**
-     * Loads animation frames if not using directional folders (fallback)
-     */
-    private void loadAnimation() {
-        FileHandle dir = Gdx.files.internal("skill/fireball");
-        FileHandle[] files = dir.list();
-
-        Array<TextureRegion> frames = new Array<>();
-        for (FileHandle file : files) {
-            if (file.extension().equalsIgnoreCase("png")) {
-                Texture texture = new Texture(file);
-                textureList.add(texture);
-                frames.add(new TextureRegion(texture));
-            }
-        }
-
-        if (frames.isEmpty()) {
-            throw new RuntimeException("No fireball frames found");
-        }
-
-        animation = new Animation<>(0.1f, frames, Animation.PlayMode.LOOP);
-    }
-
+    
     /**
      * Activates the fireball at the knight's position in a specified direction.
      *

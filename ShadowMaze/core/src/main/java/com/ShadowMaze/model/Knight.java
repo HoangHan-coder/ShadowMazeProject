@@ -10,6 +10,7 @@ import static com.ShadowMaze.model.Entity.Direction.LEFT;
 import static com.ShadowMaze.model.Entity.Direction.RIGHT;
 import static com.ShadowMaze.model.Entity.Direction.UP;
 import com.ShadowMaze.screen.GameScreen;
+import com.ShadowMaze.skill.Fireball;
 import com.ShadowMaze.uis.HpBar;
 import com.ShadowMaze.uis.StaminaBar;
 import com.badlogic.gdx.Gdx;
@@ -20,7 +21,10 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import java.util.ArrayList;
+import object.OBJ_CaveExit;
 
 /**
  * The Knight class represents the main player character in the game. It handles
@@ -32,25 +36,27 @@ public class Knight extends Entity {
     // Position to render the character on screen (fixed to center)
     public int renderX;
     public int renderY;
-   
 
     // Key possession state
-    boolean hasKey;
+    public int hasKey;
     private Array<Sword> skills = new Array<>();
     public boolean isRunning = false;  // C? ki?m tra ?ang ch?y
     public int baseSpeed = 5;          // T?c ?? ?i b?
     private boolean hasFired = false; // ?� b?n k? n?ng ch?a?
     // Movement and stamina management
-    public final int runSpeed = 8;
+    public final int runSpeed = 18;
     private float staminaDrainRate;
-    private float staminaRegenRate;
 
     // UI elements
-    private StaminaBar staminaBar;
     private HpBar hpBar;
 
     // Game context
     GameScreen gs;
+    public boolean hasScrollFire;
+    public boolean hasScrollIce;
+    public boolean hasScrollThunder;
+    //skill
+    public Fireball currentFireball;
 
     // Animation timing
     float stateTime;
@@ -65,7 +71,6 @@ public class Knight extends Entity {
      * Constructs a Knight entity.
      *
      * @param gs the current GameScreen
-     * @param staminaBar the player's stamina bar
      * @param hpBar the player's health bar
      */
     public Knight(GameScreen gs, HpBar hpBar) {
@@ -86,11 +91,11 @@ public class Knight extends Entity {
     private void setDefaultValue() {
         speed = 4;
         stateTime = 0f;
-        hasKey = false;
+        hasKey = 0;
 
         // Render at screen center
-        renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
-        renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
+        renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2) - GameScreen.TILE_SIZE;
+        renderY = (GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2)) - GameScreen.TILE_SIZE * 2;
 
         // Define collision area
         solidArea = new Rectangle();
@@ -101,13 +106,18 @@ public class Knight extends Entity {
         solidArea.width = 32;
         solidArea.height = 32;
 
-        // Set start position
-        positionX = 36 * GameScreen.TILE_SIZE;
-        positionY = 28 * GameScreen.TILE_SIZE;
-
+        // Set start map 1 position
+        positionX = 60 * GameScreen.TILE_SIZE;
+        positionY = 122 * GameScreen.TILE_SIZE;
+        // set start map 2 position
+//        positionX = 70 * GameScreen.TILE_SIZE;
+//        positionY = 43 * GameScreen.TILE_SIZE;
         // Stamina drain and regen rates
         staminaDrainRate = 30f;
-        staminaRegenRate = 15f;
+
+        hasScrollFire = false;
+        hasScrollIce = false;
+        hasScrollThunder = false;
 
         // Load animations
         moveUp = loadUpAnimation();
@@ -131,6 +141,16 @@ public class Knight extends Entity {
         currentDirection = direction;
     }
 
+    public void castFireball() {
+        if (currentFireball == null || !currentFireball.isActive()) {
+            currentFireball = new Fireball();
+            currentFireball.setMapSize(gs.map.getMapWidthPixels(), gs.map.getMapHeightPixels());
+            Direction fireDir = (currentDirection != Direction.IDLE) ? currentDirection : lastMoveDirection;
+            currentFireball.activate(new Vector2(positionX, positionY), fireDir);
+            currentFireball.shoot();
+        }
+    }
+
     /**
      * Updates the animation state.
      *
@@ -142,9 +162,8 @@ public class Knight extends Entity {
         for (int i = 0; i < skills.size; i++) {
             Sword skill = skills.get(i);
 
-            
 //            if (skill.isActive() && currentDirection != Direction.IDLE && skill.getDirection() != currentDirection) {
-//                skill.setActive(false);  // ?�nh d?u kh�ng ho?t ??ng
+//                skill.setActive(false);  
 //            }
             skill.update(delta);
 
@@ -195,7 +214,12 @@ public class Knight extends Entity {
         } else {
             gs.batch.draw(image, renderX, renderY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
         }
-        
+
+        if (currentFireball != null && currentFireball.isActive()) {
+            currentFireball.update(Gdx.graphics.getDeltaTime());
+            currentFireball.render(gs.batch, positionX + GameScreen.TILE_SIZE, positionY + GameScreen.TILE_SIZE * 2);
+        }
+
         //debug hit box
 //        ShapeRenderer shapeRenderer = new ShapeRenderer();
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -215,7 +239,7 @@ public class Knight extends Entity {
             movementHandle(delta);
         }
     }
-    
+
     /**
      * Handles input for movement, stamina, HP, collisions, and map switching.
      *
@@ -235,32 +259,50 @@ public class Knight extends Entity {
             setDirection(Direction.IDLE);
         }
 
+        //use skill
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            castFireball();
+        }
+
         // Get current stamina/HP
-//        float currentStamina = staminaBar.getCurrentStamina();
         float currentHp = hpBar.getCurrentHp();
 
-        // Shift key affects HP/Stamina
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            isRunning = true;
-            speed = runSpeed;
-//            staminaBar.setCurrentStamina(Math.max(0, currentStamina - staminaDrainRate * delta));
-            hpBar.setCurrentHp(currentHp - 30 * delta);
+        // If HP > 0 and SHIFT is being held down => run faster
+        if (currentHp > 0) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+                isRunning = true;
+                speed = runSpeed;
+                // Decrease HP while running
+                hpBar.setCurrentHp(Math.max(0, currentHp - 30 * delta));
+            } else {
+                isRunning = false;
+                speed = baseSpeed;
+                // Regenerate HP when not running
+                hpBar.setCurrentHp(Math.min(hpBar.getMaxHp(), currentHp + 10 * delta));
+            }
         } else {
+            // If HP is 0, running is disabled even if SHIFT is pressed
             isRunning = false;
             speed = baseSpeed;
-            if (currentHp < hpBar.getMaxHp()) {
+
+            // Allow HP regeneration only when not holding SHIFT
+            if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
                 hpBar.setCurrentHp(currentHp + 10 * delta);
             }
-//            staminaBar.regenerate(delta);
         }
 
         // Check collisions
         collisionOn = false;
         gs.cCheck.checkTile(this);
+
         int indexObject = gs.cCheck.checkObject(this, true);
         pickUpObject(indexObject);
+
         gs.cCheck.checkEnemyCollision(this);
 
+        if (currentFireball != null && currentFireball.isActive()) {
+            gs.cCheck.checkFireballCollision(currentFireball);
+        }
         // Move if no collision
         if (!collisionOn) {
             switch (currentDirection) {
@@ -275,7 +317,6 @@ public class Knight extends Entity {
             }
 
             // Reset speed after move
-            speed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ? runSpeed : baseSpeed;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !hasFired) {
             Entity.Direction skillDir = (currentDirection == Direction.IDLE)
@@ -302,27 +343,66 @@ public class Knight extends Entity {
     public void pickUpObject(int indexOfObject) {
         if (indexOfObject != -1) {
             System.out.println("Knight collided with: " + gs.obj[indexOfObject].name);
+            System.out.println("Knight collide : " + collisionOn);
             String objectName = gs.obj[indexOfObject].name;
             switch (objectName) {
                 case "Key" -> {
-                    hasKey = true;
+                    hasKey += 1;
                     gs.obj[indexOfObject] = null;
                 }
                 case "Gate" -> {
-                    if (hasKey) {
-                        collisionOn = false;
+                    if (hasKey > 0 && gs.obj[indexOfObject].collision) {
+                        hasKey -= 1;
+                        gs.obj[indexOfObject].collision = false;
                         gs.obj[indexOfObject].image = new Texture("Object/gate_open.png");
                     }
                 }
+                case "Coin" -> {
+                    gs.scoreBoard.addScore(1);
+                    gs.obj[indexOfObject] = null;
+                }
                 case "Cave" -> {
-                    if (hasKey) {
+                    if (hasKey > 0) {
                         System.out.println("You win!");
                     }
                 }
                 case "Enemy" -> {
+                    gs.isGameOver = true;
                     System.out.println("You die!");
                 }
+                case "ScollFireChest" -> {
+                    hasScrollFire = true;
+                    System.out.println("You get a scoll-Fire!");
+                    gs.obj[11].image = new Texture("Object/fire_gem.png");
+                    gs.obj[14].image = new Texture("Object/fire_gem.png");
+                    gs.obj[indexOfObject].isOpened = true;
+                    gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
+                }
+                case "ScollIceChest" -> {
+                    hasScrollIce = true;
+                    System.out.println("You get a scoll-Ice!");
+                    gs.obj[12].image = new Texture("Object/aqua_gem.png");
+                    gs.obj[15].image = new Texture("Object/aqua_gem.png");
+                    gs.obj[indexOfObject].isOpened = true;
+                    gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
+                }
+                case "ScollThunderChest" -> {
+                    hasScrollThunder = true;
+                    System.out.println("You get a scoll-Thunder!");
+                    gs.obj[13].image = new Texture("Object/thunder_gem.png");
+                    gs.obj[16].image = new Texture("Object/thunder_gem.png");
+                    gs.obj[indexOfObject].isOpened = true;
+                    gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
+                }
+                case "Cave exit" -> {
+                    if (hasScrollFire && hasScrollIce && hasScrollThunder) {
+                        gs.obj[indexOfObject].isOpened = true;
+                        gs.obj[indexOfObject].image = new Texture("Object/cave_exit_open.png");
+                        setPosition(70 * GameScreen.TILE_SIZE, 43 * GameScreen.TILE_SIZE);
+                    }
+                }
             }
+
         }
     }
 
@@ -383,6 +463,10 @@ public class Knight extends Entity {
         }
     }
 
+    public Vector2 getPosition() {
+        return new Vector2(positionX, positionY);
+    }
+
     public Direction getDirection() {
         return this.currentDirection != null ? this.currentDirection : Direction.IDLE;
     }
@@ -390,4 +474,21 @@ public class Knight extends Entity {
     public Direction getLastMoveDirection() {
         return lastMoveDirection;
     }
+
+    public int getPositionX() {
+        return positionX;
+    }
+
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
+    }
+
+    public int getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
+    }
+
 }
