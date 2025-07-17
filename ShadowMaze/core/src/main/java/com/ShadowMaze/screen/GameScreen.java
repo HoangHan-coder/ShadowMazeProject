@@ -169,6 +169,59 @@ public class GameScreen implements Screen {
         }
     }
 
+    /**
+     * Checks if the knight is close enough to any enemy object. If a collision
+     * is detected (within half tile size), the game switches to a battle
+     * screen.
+     */
+    private void checkGateCollisionAndChangeMap() {
+//        for (SuperObject object : obj) {
+//            if (object instanceof object.OBJ_CaveExit) {
+//                float dx = knight.getPositionX() - object.mapX;                    // Calculate horizontal distance from player to gate
+//                float dy = knight.getPositionY() - object.mapY;                    // Calculate vertical distance from player to gate
+//                float distance = (float) Math.sqrt(dx * dx + dy * dy);            // Calculate Euclidean distance to gate
+//
+//                if (distance < TILE_SIZE / 1f) {                                   // If player is close enough to the gate
+//                    String currentMap = map.getMapPath();                         // Get current map path (must be set in changeMap)
+////                    String nextMap = "";                                          // Target map to switch to
+//                    int spawnX = 3 * TILE_SIZE;                                   // Default spawn X after switching map
+//                    int spawnY = 3 * TILE_SIZE;                                   // Default spawn Y after switching map
+//
+//                    System.out.println("Current map: " + currentMap);
+//                    System.out.println("Knight position: ("
+//                            + knight.getPositionX() / TILE_SIZE + ", "
+//                            + knight.getPositionY() / TILE_SIZE + ")");
+//
+//                    // Determine the next map based on current map
+//                    if (currentMap.equals("maps/map_01.txt")) {
+////                        nextMap = "maps/map_03.txt";                              // From map 1 ? map 3
+//                        spawnX = 3 * TILE_SIZE;
+//                        spawnY = 3 * TILE_SIZE;
+//                    } else if (currentMap.equals("maps/map_02.txt")) {
+////                        nextMap = "maps/map_01.txt";                              // From map 2 ? map 1
+//                        spawnX = 1 * TILE_SIZE;
+//                        spawnY = 5 * TILE_SIZE;
+//                    } else if (currentMap.equals("maps/map_03.txt")) {
+//                        nextMap = "maps/map_01.txt";                              // From map 3 ? map 1
+//                        spawnX = 5 * TILE_SIZE;
+//                        spawnY = 5 * TILE_SIZE;
+//                    }
+//
+//                    // Switch to new map if valid
+//                    if (!nextMap.isEmpty()) {
+//                        System.out.println("Switching to: " + nextMap);
+//                        map.changeMap(nextMap);                                   // Change to the new map
+//                        knight.setPosition(spawnX, spawnY);                       // Move player to the new spawn location
+//                        aSetter.setObject();                                      // Reset objects on the new map
+//                        spawnEnemiesFromWalkableTiles(map, 4);                    // Respawn enemies
+//                    }
+//
+//                    break; // Stop checking after the first gate collision
+//                }
+//            }
+//        }
+    }
+
     @Override
     public void render(float delta) {
         // === Handle paused state (e.g., menu, cutscene) ===
@@ -183,7 +236,6 @@ public class GameScreen implements Screen {
             stage.draw();                 // Render UI
             return;
         }
-        knight.movementHandle(delta); // g?i h�m x? l� di chuy?n v� va ch?m
         if (isGameOver) {
             gameOverHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
@@ -197,10 +249,11 @@ public class GameScreen implements Screen {
             stage.draw();
             return;
         }
-
+        knight.movementHandle(delta); // g?i h�m x? l� di chuy?n v� va ch?m
         // === UPDATE PHASE ===
         knight.inputHandle(delta);
         knight.update(delta);
+
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null && obj[i] instanceof OBJ_Enemy enemy) {
                 enemy.update(Gdx.graphics.getDeltaTime(), this);
@@ -210,60 +263,54 @@ public class GameScreen implements Screen {
         for (Iterator<Fireball> it = fireball.iterator(); it.hasNext();) {
             Fireball fireball = it.next();
             fireball.update(delta);
-            if (fireball.isActive()) {
-                fireball.render(batch, knight.positionX, knight.positionY);
-            } else {
-                iterator.remove();
-                isSkillAvailable = true;
-                cCheck.checkFireballCollision(fireball); // G?I CHECK VA CH?M T?I ?�Y
+            cCheck.checkFireballCollision(fireball); // G?I CHECK VA CH?M T?I ?�Y
 
-                if (!fireball.isActive()) {
-                    it.remove(); // Remove n?u ?� h?t hi?u l?c
-                }
+            if (!fireball.isActive()) {
+                it.remove(); // Remove n?u ?� h?t hi?u l?c
             }
-
-            checkGateCollisionAndChangeMap();  // Handle map transition if near gate
-
-            hpBar.update(delta);  // Update knight HP bar
-            // Nếu staminaBar cần update animation, bạn có thể g�?i thêm update ở đây (nếu có)
-
-            // === GAME RENDER PHASE ===
-            batch.begin();
-            for (Fireball fireball : fireball) {
-                fireball.render(batch, knight.getPositionX(), knight.getPositionY());
-            }
-
-            map.drawMap();  // Draw tile-based background
-
-            // Draw all objects (including enemies, items, gates...)
-            for (int i = 0; i < obj.length; i++) {
-                if (obj[i] != null) {
-                    obj[i].drawObject(this);
-                }
-            }
-
-            // Draw knight (once only)
-            if (!map.isBackgroundOnly()) {
-                knight.knightRender(delta);
-                System.out.println("position: (" + knight.positionX / TILE_SIZE + ", " + knight.positionY / TILE_SIZE + ")");
-            }
-
-            // Draw scoreboard
-            scoreBoard.render(batch, 30, 650);
-            ui.render(delta);
-            batch.end();
-
-            // === HUD & UI RENDER PHASE ===
-            // Apply same camera to shapeRenderer if needed
-            shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-
-            // HUD: render Knight's HP bar and Stamina icon
-            hpBar.render(batch);
-            staminaBar.renderIcon(batch);
-            // UI Stage: pause menu, dialogs, etc.
-            stage.act(delta);
-            stage.draw();
         }
+
+        checkGateCollisionAndChangeMap();  // Handle map transition if near gate
+
+        hpBar.update(delta);  // Update knight HP bar
+        // Nếu staminaBar cần update animation, bạn có thể g�?i thêm update ở đây (nếu có)
+
+        // === GAME RENDER PHASE ===
+        batch.begin();
+        for (Fireball fireball : fireball) {
+            fireball.render(batch, knight.getPositionX(), knight.getPositionY());
+        }
+
+        map.drawMap();  // Draw tile-based background
+
+        // Draw all objects (including enemies, items, gates...)
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) {
+                obj[i].drawObject(this);
+            }
+        }
+
+        // Draw knight (once only)
+        if (!map.isBackgroundOnly()) {
+            knight.knightRender(delta);
+            System.out.println("position: (" + knight.positionX / TILE_SIZE + ", " + knight.positionY / TILE_SIZE + ")");
+        }
+
+        // Draw scoreboard
+        scoreBoard.render(batch, 30, 650);
+        ui.render(delta);
+        batch.end();
+
+        // === HUD & UI RENDER PHASE ===
+        // Apply same camera to shapeRenderer if needed
+        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+
+        // HUD: render Knight's HP bar and Stamina icon
+        hpBar.render(batch);
+        staminaBar.renderIcon(batch);
+        // UI Stage: pause menu, dialogs, etc.
+        stage.act(delta);
+        stage.draw();
     }
 
     /**
@@ -283,7 +330,8 @@ public class GameScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height
+    ) {
 
     }
 
