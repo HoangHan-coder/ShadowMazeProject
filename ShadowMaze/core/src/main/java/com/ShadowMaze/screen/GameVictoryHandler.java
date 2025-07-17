@@ -133,7 +133,7 @@ public class GameVictoryHandler {
 
         // Draw panel and victory image
         batch.draw(scorePanelImage, 405, 105, scoreWidth, scoreHeight);
-        batch.draw(victoryImage, 460, 300, imageWidth, imageHeight);
+        batch.draw(victoryImage, 440, 230, imageWidth, imageHeight);
 
         // Render score board
         scoreBoard.render(batch, (int) scoreX + 50, (int) scoreY + 90, delta);

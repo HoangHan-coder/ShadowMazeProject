@@ -13,7 +13,7 @@ public class ScoreBoard {
     
     private float scoreDisplay = 0;
     private final float speed = 25f;
-    private int scoreActual;
+    public int scoreActual;
     private final BitmapFont font;
     private Texture bgTexture;
 
