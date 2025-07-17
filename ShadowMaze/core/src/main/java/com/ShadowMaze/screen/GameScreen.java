@@ -141,7 +141,7 @@ public class GameScreen implements Screen {
         Fireball fb = new Fireball(knight.getPosition(), knight.getDirection());
         fb.setMapSize(MAP_X, MAP_Y);
         fireball.add(fb);
-        gameOverHandler = new GameOverHandler();
+        gameOverHandler = new GameOverHandler(this);
     }
 
     public void spawnEnemiesFromWalkableTiles(Map map, int numEnemies) {
@@ -238,6 +238,7 @@ public class GameScreen implements Screen {
             stage.draw();                 // Render UI
             return;
         }
+        knight.movementHandle(delta); // g?i hàm x? lý di chuy?n và va ch?m
         if (isGameOver) {
             gameOverHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);

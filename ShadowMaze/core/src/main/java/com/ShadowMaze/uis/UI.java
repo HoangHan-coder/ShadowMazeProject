@@ -16,7 +16,7 @@ public class UI {
     private BitmapFont text = new BitmapFont();
     private BitmapFont timePlay = new BitmapFont();
     float timeElapsed;
-    int second, min;
+    public int second, min;
     
     Texture key = new Texture("Object/key.png");
     Texture scrollFire = new Texture("items/ScrollFire.png");

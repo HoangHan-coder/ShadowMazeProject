@@ -29,8 +29,8 @@ public class GameOverHandler {
 
     private final ScoreBoard scoreBoard;
     private final Game game;
-
-    public GameOverHandler() {
+    private GameScreen gs;
+    public GameOverHandler(GameScreen gs) {
         gameOverImage = new Texture(Gdx.files.internal("menu/function/over.png"));
         scorePanelImage = new Texture(Gdx.files.internal("menu/function/score.png"));
         font = new BitmapFont();
@@ -75,6 +75,7 @@ public class GameOverHandler {
                 game.setScreen(new FadeTransitionScreen(game, current, next));
             }
         });
+        this.gs = gs;
     }
 
     public void trigger() {
@@ -110,7 +111,8 @@ public class GameOverHandler {
 
         // Draw time (e.g. 00:10 format)
         int seconds = (int) gameOverTime;
-        String timeText = String.format("Time: %02d:%02d", seconds / 60, seconds % 60);
+        String timeText = String.format("Time: %02d:%02d", gs.ui.min,gs.ui.second);
+        System.out.println(gs.ui.min);
         font.draw(batch, timeText, 530, 240);
     }
 

@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import java.util.ArrayList;
+import object.OBJ_CaveExit;
 
 /**
  * The Knight class represents the main player character in the game. It handles
@@ -93,7 +94,7 @@ public class Knight extends Entity {
         hasKey = 0;
 
         // Render at screen center
-        renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
+        renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2) - GameScreen.TILE_SIZE;
         renderY = (GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2)) - GameScreen.TILE_SIZE * 2;
 
         // Define collision area
@@ -118,7 +119,7 @@ public class Knight extends Entity {
         hasScrollFire = false;
         hasScrollIce = false;
         hasScrollThunder = false;
-        
+
         // Load animations
         moveUp = loadUpAnimation();
         moveDown = loadDownAnimation();
@@ -217,7 +218,7 @@ public class Knight extends Entity {
 
         if (currentFireball != null && currentFireball.isActive()) {
             currentFireball.update(Gdx.graphics.getDeltaTime());
-            currentFireball.render(gs.batch, renderX, renderY);
+            currentFireball.render(gs.batch, positionX + GameScreen.TILE_SIZE, positionY + GameScreen.TILE_SIZE * 2);
         }
 
         //debug hit box
@@ -378,24 +379,24 @@ public class Knight extends Entity {
                     gs.obj[indexOfObject].isOpened = true;
                     gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
                 }
-                 case "ScollIceChest" -> {
+                case "ScollIceChest" -> {
                     hasScrollIce = true;
                     System.out.println("You get a scoll-Ice!");
                     gs.obj[12].image = new Texture("Object/aqua_gem.png");
                     gs.obj[15].image = new Texture("Object/aqua_gem.png");
                     gs.obj[indexOfObject].isOpened = true;
-                    gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");                    
+                    gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
                 }
-                  case "ScollThunderChest" -> {
+                case "ScollThunderChest" -> {
                     hasScrollThunder = true;
                     System.out.println("You get a scoll-Thunder!");
                     gs.obj[13].image = new Texture("Object/thunder_gem.png");
                     gs.obj[16].image = new Texture("Object/thunder_gem.png");
                     gs.obj[indexOfObject].isOpened = true;
-                    gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png"); 
+                    gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
                 }
                 case "Cave exit" -> {
-                    if(hasScrollFire && hasScrollIce && hasScrollThunder) {
+                    if (hasScrollFire && hasScrollIce && hasScrollThunder) {
                         gs.obj[indexOfObject].isOpened = true;
                         gs.obj[indexOfObject].image = new Texture("Object/cave_exit_open.png");
                     }

@@ -53,7 +53,7 @@ public class OBJ_Coin extends SuperObject {
         float screenX = gs.SCREEN_WIDTH / 2f + (mapX - gs.knight.getPositionX()) - GameScreen.TILE_SIZE / 2f;
         float screenY = gs.SCREEN_HEIGHT / 2f + (mapY - gs.knight.getPositionY()) - GameScreen.TILE_SIZE / 2f;
 
-        gs.batch.draw(currentFrame, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
+        gs.batch.draw(currentFrame, screenX - GameScreen.TILE_SIZE, screenY - GameScreen.TILE_SIZE * 2, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
     }
     public void dispose() {
         for (Texture t : loadedTextures) {
