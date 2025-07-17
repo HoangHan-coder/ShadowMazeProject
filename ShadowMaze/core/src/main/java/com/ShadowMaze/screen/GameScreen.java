@@ -314,8 +314,6 @@ public class GameScreen implements Screen {
             } else {
                 iterator.remove(); 
                 isSkillAvailable = true; 
-                iterator.remove(); // Xo? n?u kh?ng c?n active
-                isSkillAvailable = true; // ? Cho ph?p d?ng skill l?i
             }
         }
 
