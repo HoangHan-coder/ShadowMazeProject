@@ -5,6 +5,7 @@ import com.ShadowMaze.screen.AboutUs;
 import com.ShadowMaze.screen.GameOverHandler;
 import com.ShadowMaze.screen.GameScreen;
 import com.ShadowMaze.screen.HowToPlayScreen;
+import com.ShadowMaze.screen.QuitGame;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
@@ -40,7 +41,6 @@ public class MenuRenderer implements Screen {
     private ArrayList<Texture> idleTextures = new ArrayList<>();
 
     private GameScreen screen;
-    
 
     public MenuRenderer(Game game) {
         this.game = game;
@@ -92,7 +92,7 @@ public class MenuRenderer implements Screen {
                 game.setScreen(new FadeTransitionScreen(game, current, next));
             }
         });
-       optionsButton.addListener(new InputListener() {
+        optionsButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -103,6 +103,21 @@ public class MenuRenderer implements Screen {
                 Screen current = game.getScreen();
                 Screen next = new AboutUs(game);
                 game.setScreen(new FadeTransitionScreen(game, current, next));
+            }
+        });
+        quitButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Screen current = game.getScreen();
+                Screen next = new QuitGame(game);
+                game.setScreen(new FadeTransitionScreen(game, current, next));
+//                Gdx.app.exit();
+
             }
         });
 // Arrange buttons in a table

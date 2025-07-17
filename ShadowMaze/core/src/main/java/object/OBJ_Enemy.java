@@ -22,7 +22,7 @@ public class OBJ_Enemy extends SuperObject {
     private Array<Texture> frames = new Array<>();
     private float scale = 3f;
     private int direction = 0; // 0=left, 1=down, 2=right,  3=up
-    private float speed = 50f;
+    private float speed = 350f;
     private float moveTimer = 0f;
     private float moveInterval = 0.1f;
     public int hp = 125;

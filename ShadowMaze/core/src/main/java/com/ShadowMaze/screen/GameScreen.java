@@ -186,17 +186,24 @@ public class GameScreen implements Screen {
             return;
         }
 
-        if (!isGameOver) {
+        if (isGameOver) {
+//            System.out.println(gameOverHandler.isTriggered());
+            if (isGameOver) {
+                gameOverHandler.trigger(stage);
+                gameOverHandler.isSetTriggered();
+            }
+
             gameOverHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
 
             batch.begin();
             map.drawMap();
-            gameOverHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT, delta);
+
             batch.end();
-            gameOverHandler.addToStage(stage);
-            stage.act(delta);
+
+            stage.act(delta);   // Cho phép ch?y Actions nh? fadeIn
             stage.draw();
+            gameOverHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT, delta);
             return;
         }
 
