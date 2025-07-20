@@ -22,8 +22,12 @@ public class OBJ_CaveExit extends SuperObject {
      * - Collision enabled to prevent walking through it
      */
     public OBJ_CaveExit() {
-        setDefault();                                 
+        setDefault();
+        isOpened = false;
     }
+    
+    
+    
     private void setDefault() {
         name = "Cave exit";                    
         image = new Texture("Object/cave_exit_close.png");             

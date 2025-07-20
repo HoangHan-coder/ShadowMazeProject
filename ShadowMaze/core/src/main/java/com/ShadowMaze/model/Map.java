@@ -161,28 +161,6 @@ public class Map {
     }
 
     /**
-     * Loads a new map layout from the given text file path.
-     *
-     * @param mapFilePath path to the new map file
-     */
-    public void changeMap(String mapFilePath) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(mapFilePath))) {
-            this.mapPath = mapFilePath;
-            String line;
-            int row = 0;
-            while ((line = reader.readLine()) != null && row < GameScreen.MAP_Y) {
-                String[] tokens = line.trim().split(" ");
-                for (int col = 0; col < tokens.length && col < GameScreen.MAP_X; col++) {
-                    tileNum[row][col] = Integer.parseInt(tokens[col]);
-                }
-                row++;
-            }
-        } catch (IOException e) {
-            System.out.println("Failed to read map file: " + e.getMessage());
-        }
-    }
-
-    /**
      * Sets the map background image to show instead of tile map.
      *
      * @param imagePath file path to background texture

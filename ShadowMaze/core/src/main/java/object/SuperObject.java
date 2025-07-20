@@ -4,9 +4,7 @@
 package object;
 
 import com.ShadowMaze.screen.GameScreen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 /**
@@ -60,22 +58,10 @@ public class SuperObject {
                 && mapX - GameScreen.TILE_SIZE < gs.knight.positionX + gs.knight.renderX
                 && mapY + GameScreen.TILE_SIZE > gs.knight.positionY - gs.knight.renderY
                 && mapY - GameScreen.TILE_SIZE < gs.knight.positionY + gs.knight.renderY) {
+                if(name.equals("Cave exit") && isOpened) {
+                    image = new Texture("Object/cave_exit_open.png");  
+                }
                 gs.batch.draw(image, screenX, screenY, GameScreen.TILE_SIZE, GameScreen.TILE_SIZE);
-            
-            //debug hit box
-//            int renderX = GameScreen.SCREEN_WIDTH / 2 - (GameScreen.TILE_SIZE / 2);
-//            int renderY = GameScreen.SCREEN_HEIGHT / 2 - (GameScreen.TILE_SIZE / 2);
-//            ShapeRenderer shapeRenderer = new ShapeRenderer();
-//            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//            shapeRenderer.setColor(Color.RED);
-//            shapeRenderer.rect(
-//                    renderX + solidArea.x,
-//                    renderY + solidArea.y,
-//                    solidArea.width,
-//                    solidArea.height
-//            );
-//
-//            shapeRenderer.end();
         }
     }
 

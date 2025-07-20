@@ -1,6 +1,5 @@
 package com.ShadowMaze.screen;
 
-import com.ShadowMaze.core.Main;
 import com.ShadowMaze.model.FadeTransitionScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
@@ -35,13 +34,13 @@ public class HowToPlayScreen implements Screen {
         background2 = new Texture("menu/howtoplay/type2.png");
         background3 = new Texture("menu/howtoplay/back.png");
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage); // Gán stage ?? nh?n input
+        Gdx.input.setInputProcessor(stage); // Gï¿½n stage ?? nh?n input
 
         TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(background3));
         backButton = new ImageButton(drawable);
 
         backButton.setSize(150, 50);
-        backButton.setPosition(20, 30); // V? trí gi?ng nh? c? b?n dùng v?i batch
+        backButton.setPosition(20, 30); // V? trï¿½ gi?ng nh? c? b?n dï¿½ng v?i batch
 
         backButton.addListener(new ClickListener() {
             @Override
@@ -71,7 +70,7 @@ public class HowToPlayScreen implements Screen {
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.draw(background1, 20, y, newWidth, newHeight); // canh gi?a background1        
         batch.draw(background2, 600, y, newWidth, newHeight); // canh gi?a background1
-        // V? thêm h??ng d?n t?i ?ây n?u c?n
+        // V? thï¿½m h??ng d?n t?i ?ï¿½y n?u c?n
         batch.end();
         stage.act(delta);
         stage.draw();

@@ -191,13 +191,13 @@ public class GameScreen implements Screen {
 
             batch.end();
 
-            stage.act(delta);   // Cho phép ch?y Actions nh? fadeIn
+            stage.act(delta);  
             stage.draw();
             gameOverHandler.render(batch, SCREEN_WIDTH, SCREEN_HEIGHT, delta);
             return;
         }
 
-        if (knight.countOpenChest == 7) {
+        if (knight.isWin) {
             gameVictoryHandler.update(delta);
             ScreenUtils.clear(0, 0, 0, 1);
 
@@ -210,7 +210,6 @@ public class GameScreen implements Screen {
             stage.draw();
             return;
         }
-        knight.movementHandle(delta);
         // === UPDATE PHASE ===
         knight.inputHandle(delta);
         knight.update(delta);

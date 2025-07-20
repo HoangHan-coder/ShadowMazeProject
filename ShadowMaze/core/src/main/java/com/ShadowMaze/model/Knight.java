@@ -39,7 +39,7 @@ public class Knight extends Entity {
     public int hasKey;
     private Array<Sword> skills = new Array<>();
     public boolean isRunning = false;  
-    public int baseSpeed = 4;         
+    public int baseSpeed = 12;         
     private boolean hasFired = false; 
     // Movement and stamina management
     public final int runSpeed = 8;
@@ -54,6 +54,7 @@ public class Knight extends Entity {
     public boolean hasScrollIce;
     public boolean hasScrollThunder;
     public int countOpenChest = 0;
+    public boolean isWin = false;
     //skill
     public Fireball currentFireball;
 
@@ -157,7 +158,12 @@ public class Knight extends Entity {
      */
     public void update(float delta) {
         stateTime += delta;
-
+        
+        if(countOpenChest == 3) {
+            gs.obj[6].isOpened = true;
+            gs.obj[10].isOpened = true;
+        }
+        
         for (int i = 0; i < skills.size; i++) {
             Sword skill = skills.get(i);
 
@@ -334,6 +340,20 @@ public class Knight extends Entity {
         }
     }
 
+    private void resetObject() {
+        String filePath = "Object/gem_empty.png";
+        gs.obj[11].image = new Texture(filePath);
+        gs.obj[14].image = new Texture(filePath);
+        gs.obj[12].image = new Texture(filePath);
+        gs.obj[15].image = new Texture(filePath);
+        gs.obj[13].image = new Texture(filePath);
+        gs.obj[16].image = new Texture(filePath);
+        hasScrollFire = false;
+        hasScrollIce = false;
+        hasScrollThunder = false;
+        countOpenChest = 0;
+    }
+    
     /**
      * Handles interaction with objects based on collision index.
      *
@@ -407,12 +427,15 @@ public class Knight extends Entity {
                     gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
                 }
                 case "Cave exit" -> {
-                    if (countOpenChest == 3 || countOpenChest == 7) {
-                        countOpenChest++;
                         gs.obj[indexOfObject].isOpened = true;
-                        gs.obj[indexOfObject].image = new Texture("Object/cave_exit_open.png");
-                        setPosition(70 * GameScreen.TILE_SIZE, 43 * GameScreen.TILE_SIZE);
-                    }
+                        if (countOpenChest == 3) {
+                            setPosition(70 * GameScreen.TILE_SIZE, 43 * GameScreen.TILE_SIZE);
+                            resetObject();
+                        }
+                        if (countOpenChest == 7) {
+                            isWin = true;
+                        }
+                    
                 }
 
             }
@@ -489,18 +512,22 @@ public class Knight extends Entity {
         return lastMoveDirection;
     }
 
+    @Override
     public int getPositionX() {
         return positionX;
     }
 
+    @Override
     public void setPositionX(int positionX) {
         this.positionX = positionX;
     }
 
+    @Override
     public int getPositionY() {
         return positionY;
     }
 
+    @Override
     public void setPositionY(int positionY) {
         this.positionY = positionY;
     }

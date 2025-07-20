@@ -1,13 +1,9 @@
 package com.ShadowMaze.core;
 
-import object.OBJ_CaveExit;
-import object.OBJ_Key;
 import com.ShadowMaze.screen.GameScreen;
 import object.OBJ_Enemy;
-import object.OBJ_Gate;
 import com.ShadowMaze.model.Entity;
 import static com.ShadowMaze.model.Entity.Direction.*;
-import com.ShadowMaze.model.Knight;
 import com.ShadowMaze.skill.Fireball;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
