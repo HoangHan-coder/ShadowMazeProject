@@ -42,7 +42,7 @@ public class OBJ_Enemy extends SuperObject {
 
     // Movement speed in pixels/second
     private final float normalSpeed = 50f;  // Base movement speed when idle or patrolling
-    private final float chaseSpeed = 100f;   // Increased movement speed when chasing the Knight
+    private final float chaseSpeed = 150f;   // Increased movement speed when chasing the Knight
     private float speed = normalSpeed; // Current movement speed applied to the enemy
 
     // Timers for throttling random re‑steering when idle
