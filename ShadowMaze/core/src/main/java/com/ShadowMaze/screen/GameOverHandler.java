@@ -80,7 +80,7 @@ public class GameOverHandler {
             public void clicked(InputEvent event, float x, float y) {
                 gs.isGameOver = false;
                 System.out.println(hasTriggered);
-                // Chuy?n màn hình
+              
                 Screen current = game.getScreen();
                 Screen next = new GameScreen(game);
                 game.setScreen(new FadeTransitionScreen(game, current, next));
@@ -101,15 +101,15 @@ public class GameOverHandler {
         gameOverImageActor = new Image(new TextureRegionDrawable(new TextureRegion(gameOverImage)));
         scorePanelImageActor = new Image(new TextureRegionDrawable(new TextureRegion(scorePanelImage)));
 
-// Kích th??c
+
         gameOverImageActor.setSize(300, 300);
         scorePanelImageActor.setSize(400, 400);
 
-// ??t v? trí ban ??u ngoài màn hình (hi?u ?ng ?i xu?ng)
+
         gameOverImageActor.setPosition(460, Gdx.graphics.getHeight());
         scorePanelImageActor.setPosition(405, Gdx.graphics.getHeight());
 
-// M? ban ??u
+
         gameOverImageActor.getColor().a = 0;
         scorePanelImageActor.getColor().a = 0;
         btnReplay.getColor().a = 0;
@@ -117,7 +117,7 @@ public class GameOverHandler {
         // T?o skin r?ng
         skin = new Skin();
 
-// T?o Label style t? font
+
         LabelStyle labelStyle = new LabelStyle();
         labelStyle.font = font;
 
@@ -140,7 +140,7 @@ public class GameOverHandler {
         this.active = true;
         this.gameOverTime = 0;
         if (!hasTriggered) {
-            return;  // ?ã g?i r?i thì không g?i n?a
+            return;  
         }
         // Add actors to stage
         stage.addActor(scorePanelImageActor);

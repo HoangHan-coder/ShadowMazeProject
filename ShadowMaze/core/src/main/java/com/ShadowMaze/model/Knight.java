@@ -61,7 +61,7 @@ public class Knight extends Entity {
     private Direction lastMoveDirection = Direction.RIGHT;
 
     // Animations for each direction
-    Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight;
+    Animation<TextureRegion> moveUp, moveDown, moveLeft, moveRight, idle;
     private Entity.Direction direction; // ? bi?n n�y ?� t?n t?i
 
     /**
@@ -115,12 +115,14 @@ public class Knight extends Entity {
         hasScrollFire = false;
         hasScrollIce = false;
         hasScrollThunder = false;
+        
 
         // Load animations
         moveUp = loadUpAnimation();
         moveDown = loadDownAnimation();
         moveLeft = loadLeftAnimation();
         moveRight = loadRightAnimation();
+        idle = loadIdleAnimation();
     }
 
     /**
@@ -157,8 +159,11 @@ public class Knight extends Entity {
         stateTime += delta;
         
         if(countOpenChest == 3) {
-            gs.obj[6].isOpened = true;
             gs.obj[10].isOpened = true;
+        }
+        
+        if(countOpenChest == 7) {
+            gs.obj[6].isOpened = true;
         }
         
         for (int i = 0; i < skills.size; i++) {
@@ -207,7 +212,7 @@ public class Knight extends Entity {
             case RIGHT ->
                 moveRight;
             default ->
-                moveDown;
+                idle;
         };
 
         TextureRegion frame = currentAnim.getKeyFrame(stateTime, true);
@@ -350,7 +355,6 @@ public class Knight extends Entity {
         hasScrollFire = false;
         hasScrollIce = false;
         hasScrollThunder = false;
-        countOpenChest = 0;
     }
     
     /**
@@ -426,8 +430,9 @@ public class Knight extends Entity {
                     gs.obj[indexOfObject].image = new Texture("Object/big_chest_open.png");
                 }
                 case "Cave exit" -> {
-                        gs.obj[indexOfObject].isOpened = true;
+                        
                         if (countOpenChest == 3) {
+                            countOpenChest +=1;
                             setPosition(70 * GameScreen.TILE_SIZE, 43 * GameScreen.TILE_SIZE);
                             resetObject();
                         }
@@ -474,6 +479,11 @@ public class Knight extends Entity {
         for (int i = 0; i < 4; i++) {
             frames[i] = new TextureRegion(new Texture("knight/knight_right_" + (i + 1) + ".png"));
         }
+        return new Animation<>(0.6f, frames);
+    }
+    
+    private Animation<TextureRegion> loadIdleAnimation() {
+        TextureRegion frames = new TextureRegion(new Texture("knight/knight_idle.png"));
         return new Animation<>(0.6f, frames);
     }
 

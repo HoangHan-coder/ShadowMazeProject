@@ -90,7 +90,7 @@ public class Map {
     private void getImageTiles() {
         tiles[0] = new Tile();
         tiles[0].image = new Texture("tiles/stone.png");
-//         tiles[0].collision = true; // You can uncomment this if this tile blocks movement
+//        tiles[0].collision = true; // You can uncomm ent this if this tile blocks movement
 
         tiles[1] = new Tile();
         tiles[1].image = new Texture("tiles/grass.png");

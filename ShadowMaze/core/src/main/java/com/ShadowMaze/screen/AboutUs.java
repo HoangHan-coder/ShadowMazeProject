@@ -33,13 +33,13 @@ public class AboutUs implements Screen {
         background1 = new Texture("menu/aboutus/aboutus.png");
         background3 = new Texture("menu/howtoplay/back.png");
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage); // Gán stage ?? nh?n input
+        Gdx.input.setInputProcessor(stage);
 
         TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(background3));
         backButton = new ImageButton(drawable);
 
         backButton.setSize(150, 50);
-        backButton.setPosition(20, 30); // V? trí gi?ng nh? c? b?n dùng v?i batch
+        backButton.setPosition(20, 30); 
 
         backButton.addListener(new ClickListener() {
             @Override
@@ -68,8 +68,7 @@ public class AboutUs implements Screen {
         float y = (Gdx.graphics.getHeight() - newHeight) / 2f;
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.draw(background1, 300, y, newWidth, newHeight); // canh gi?a background1      
-        // V? thêm h??ng d?n t?i ?ây n?u c?n
+        batch.draw(background1, 300, y, newWidth, newHeight);     
         batch.end();
         stage.act(delta);
         stage.draw();

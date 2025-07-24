@@ -86,15 +86,15 @@ public class QuitGame implements Screen {
         float y = (Gdx.graphics.getHeight() - newHeight) / 2f;
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        // V? thêm h??ng d?n t?i ?ây n?u c?n
+        
         batch.end();
 
-        // V? background và layer chính
+        
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-        // V? stage (?nh text m? d?n hi?n lên)
+        
         stage.act(delta);
         stage.draw();
 
